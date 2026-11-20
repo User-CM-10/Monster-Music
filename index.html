@@ -801,7 +801,7 @@ function vOpzioni(){
   ${acc('libreria','Libreria','Cartelle o playlist, ordine',`<div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
   ${acc('dati','Dati','Azzera ascolti, svuota libreria',`<div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p>`)}
   ${acc('privacy','Privacy','Quali dati restano e dove vanno',privacyHtml())}
-  <div class="ffoot">Monster Music · versione 1.5 · build 20-nov-l</div>`;
+  <div class="ffoot">Monster Music · versione 1.5 · build 20-nov-m</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
@@ -1059,20 +1059,29 @@ async function importFiles(files,dir){
 }
 
 /* ---------- disco: ruotalo per cambiare velocità o scorrere ---------- */
-let dg=null;
-function discMove(dt,m,dir){
+const DISC_W0=2*Math.PI/3;   /* velocità normale del disco: un giro ogni 3 secondi */
+let dg=null,discAng=0,dLast=0;
+function discFrame(t){
+  const dt=dLast?Math.min(.05,(t-dLast)/1000):0;dLast=t;
+  if(!dg&&P.playing)discAng+=DISC_W0*(P.rate||1)*dt*180/Math.PI;
+  const d=document.getElementById('disc');
+  if(d)d.style.transform='rotate('+(discAng%360).toFixed(2)+'deg)';
+  requestAnimationFrame(discFrame);
+}
+requestAnimationFrame(discFrame);
+function discMove(dt,rf,dir){
   const s=cur();if(!s)return;const mode=S.settings.discMode||'velocita';
   let delta=0;
-  if(mode==='seek')delta=dir*dt*m;
-  else if(mode==='velocita'&&dir<0)delta=-dt*m;
+  if(mode==='seek')delta=dir*dt*rf;
+  else if(mode==='velocita'&&dir<0)delta=-dt*rf;
   if(!delta)return;
   if(s.url){const t=Math.max(0,Math.min(s.dur,(P.audio.currentTime||0)+delta));P.audio.currentTime=t;P.pos=t}
   else P.pos=Math.max(0,Math.min(s.dur,P.pos+delta));
   syncPlayer();
 }
-function discRate(m,dir){
+function discRate(rf,dir){
   const s=cur();if(!s)return;const mode=S.settings.discMode||'velocita';
-  const r=(mode==='velocita'&&dir>0)?m:1;
+  const r=(mode==='velocita'&&dir>0)?Math.min(16,Math.max(.25,rf)):1;
   P.rate=r;if(s.url)P.audio.playbackRate=r;
 }
 document.addEventListener('pointerdown',e=>{const d=e.target.closest&&e.target.closest('#disc');if(!d)return;const r=d.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;dg={cx,cy,a:Math.atan2(e.clientY-cy,e.clientX-cx),t:performance.now(),w:0,idle:0}});
@@ -1081,10 +1090,11 @@ document.addEventListener('pointermove',e=>{if(!dg)return;
   if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;
   dg.a=na;const dt=Math.max(0.001,(now-dg.t)/1000);dg.t=now;
   if(Math.abs(d)<1e-4)return;
-  const w=Math.abs(d)/dt;dg.w=dg.w?0.6*w+0.4*dg.w:w;
-  const dir=d>0?1:-1,m=Math.min(3,Math.max(1,1+dg.w/2.5));
-  discRate(m,dir);discMove(dt,m,dir);
-  clearTimeout(dg.idle);dg.idle=setTimeout(()=>{if(dg){dg.w=0;discRate(1,1)}},200);
+  discAng+=d*180/Math.PI;
+  const w=Math.abs(d)/dt;dg.w=dg.w?0.5*w+0.5*dg.w:w;
+  const dir=d>0?1:-1,rf=dg.w/DISC_W0;
+  discRate(rf,dir);discMove(dt,rf,dir);
+  clearTimeout(dg.idle);dg.idle=setTimeout(()=>{if(dg){dg.w=0;discRate(1,1)}},150);
 });
 const dgEnd=()=>{if(dg){clearTimeout(dg.idle);discRate(1,1)}dg=null};
 document.addEventListener('pointerup',dgEnd);document.addEventListener('pointercancel',dgEnd);
