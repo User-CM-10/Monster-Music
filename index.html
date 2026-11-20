@@ -492,9 +492,10 @@ function applySettings(){const r=document.documentElement,t=S.settings.theme;if(
 const MMS=(c1,c2,id)=>`<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c2}"/><stop offset="1" stop-color="${c1}"/></linearGradient></defs><g fill="none" stroke="url(#${id})" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 80V22L25 56L44 22V80"/><path d="M56 80V22L75 56L94 22V80"/></g></svg>`;
 const CV=['--f-d','--paper','--card','--ink','--ink2','--violet','--on-v','--lime','--on-lime','--coral','--sky','--sun','--on-sun','--sh','--bd','--glow','--grid','--wob'];
 const FONTF={caveat:"'Caveat Brush','Segoe Print',cursive",anton:"'Anton','Impact','Arial Narrow',sans-serif",barlow:"'Barlow Condensed','Arial Narrow',sans-serif",patrick:"'Patrick Hand','Segoe Print',cursive",sistema:"'Arial Narrow',Arial,sans-serif"};
-function applyCustom(){const r=document.documentElement;
-  if(S.settings.style!=='custom'){CV.forEach(k=>r.style.removeProperty(k));return}
-  const C=S.settings.custom;
+const NATURA={bg:'#f1f6f0',ink:'#1f3d37',c1:'#3f8f6b',c2:'#4a8fb8',c3:'#9cc9b4',icon:'mm',round:'soft',font:'barlow',radius:22};
+function applyCustom(){const r=document.documentElement,isN=S.settings.style==='natura';
+  if(S.settings.style!=='custom'&&!isN){CV.forEach(k=>r.style.removeProperty(k));return}
+  const C=isN?NATURA:S.settings.custom;
   const v={'--paper':C.bg,'--card':`color-mix(in srgb, ${C.bg} 86%, ${C.ink})`,'--ink':C.ink,'--ink2':`color-mix(in srgb, ${C.ink} 65%, ${C.bg})`,'--violet':C.c1,'--on-v':'#ffffff','--lime':C.c1,'--on-lime':'#ffffff','--coral':C.c1,'--sky':C.c3,'--sun':C.c2,'--on-sun':'#111111','--sh':`color-mix(in srgb, ${C.c1} 45%, #000)`,'--bd':C.ink,'--glow':`color-mix(in srgb, ${C.c1} 35%, transparent)`,'--grid':`color-mix(in srgb, ${C.ink} 7%, transparent)`,'--wob':C.round==='sharp'?'3px 16px 3px 16px':'16px 22px 16px 24px / 22px 14px 24px 16px'};
   if(C.card)v['--card']=C.card;if(C.ink2)v['--ink2']=C.ink2;if(C.sh)v['--sh']=C.sh;
   if(C.font&&FONTF[C.font])v['--f-d']=FONTF[C.font];
@@ -793,7 +794,7 @@ function aiSettings(){
 const AIE=[['auto','Automatico'],['gemini','Gemini'],['claude','Claude'],['offline','Offline'],['local','Preimpostato']];
 function vOpzioni(){
   const s=S.settings,C=s.custom;
-  const sty=seg('style',s.style,[['inferno','Inferno'],['mostro','Mostro disegnato'],['custom','Personalizzato']]);
+  const sty=seg('style',s.style,[['inferno','Inferno'],['natura','Naturale'],['mostro','Disegno'],['custom','Personalizzato']]);
   const th=seg('theme',s.theme,[['auto','Automatico'],['light','Chiaro'],['dark','Scuro']]);
   const btn=seg('btn',s.btn,[['m3','Material 3'],['glass','Liquid Glass']]);
   const so=seg('defsort',s.sort,[['az','A–Z'],['artist','Artista'],['most','Più ascoltati'],['recent','Recenti']]);
@@ -816,7 +817,7 @@ function vOpzioni(){
   ${acc('libreria','Libreria','Cartelle o playlist, ordine',`<div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
   ${acc('dati','Dati','Azzera ascolti, svuota libreria',`<div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p>`)}
   ${acc('privacy','Privacy','Quali dati restano e dove vanno',privacyHtml())}
-  <div class="ffoot">Monster Music · versione 1.5 · build 20-nov-n</div>`;
+  <div class="ffoot">Monster Music · versione 1.5 · build 20-nov-o</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
