@@ -1,6 +1,15 @@
 <!doctype html>
 <html lang="it">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0506">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Monster Music">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-mm-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-mm.png">
 <title>Monster Music</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Caveat+Brush&family=Patrick+Hand&display=swap">
@@ -422,7 +431,6 @@ html.hassel main{padding-bottom:calc(var(--dock-h) + 130px)}
 <input type="file" id="fileIn" class="vh" accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.aac,.opus" multiple tabindex="-1" aria-hidden="true">
 <input type="file" id="dirIn" class="vh" multiple webkitdirectory tabindex="-1" aria-hidden="true">
 
-
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -555,7 +563,7 @@ function topComment(p,st){
   const t=st.songs[0],a=st.artists[0],moods={};
   st.songs.forEach(x=>moods[x.s.mood]=(moods[x.s.mood]||0)+x.k);
   const m=Object.entries(moods).sort((x,y)=>y[1]-x[1])[0][0];
-  const tone={energico:'Hai ascoltato musica piena di energia: giornate di corsa, eh?',calmo:'Gusti tranquilli: musica da divano, coperta e pensieri lenti.',malinconico:'Mood piuttosto nostalgico: un po\' di malinconia fa bene al cuore.',allegro:'Playlist di buonumore: si vede che ti piace sorridere.'}[m];
+  const tone=({energico:'Hai ascoltato musica piena di energia: giornate di corsa, eh?',calmo:'Gusti tranquilli: musica da divano, coperta e pensieri lenti.',malinconico:'Mood piuttosto nostalgico: un po\' di malinconia fa bene al cuore.',allegro:'Playlist di buonumore: si vede che ti piace sorridere.'})[m]||'Ascolti vari: ogni brano ha la sua storia.';
   const share=Math.round(a.k/st.n*100);
   const j=ageJoke(t.s);
   return `Nell'${p.long} «${t.s.title}» è stata la regina con ${t.k} ascolti. ${a.name} occupa il ${share}% del tuo tempo. ${tone} ${j||(MOOD_EMO[m]||'🎧')}`;
@@ -812,7 +820,7 @@ function vOpzioni(){
   ${acc('ascolto','Ascolto e navigazione','Chat, disco, testi, libreria',`${setRow('Apri la tastiera quando si apre la chat','Se spento, la chat si apre senza tastiera: la tastiera la apri col tasto in alto.',sw('kbAuto','Apri la tastiera'))+setRow('Scorrimento rapido','Una striscia sul lato: toccala e trascina per scorrere veloce la lista.',sw('fastScroll','Scorrimento rapido'))+(S.settings.fastScroll===false?'':`<div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}`)+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:14px">Disco del lettore</div><div class="s" style="white-space:normal">Ruotalo per cambiare la velocità. Più veloce giri, più va veloce (fino a ×3). Quando lo lasci torna normale.</div>${seg('dmode',S.settings.discMode||'velocita',[['velocita','Aumenta velocità'],['seek','Scorri la canzone'],['off','Nessuna azione']])}`}<div class="t" style="margin-top:22px">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t" style="margin-top:22px">Libreria</div><div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
   ${acc('profilo','Profilo','Nome, età, gusti',`${setRow('Il tuo profilo',pn?esc(pn)+(S.profile.age?' · '+esc(S.profile.age)+' anni':''):'Non ancora creato','<button class="btn alt" data-a="prof">'+(pn?'Modifica':'Crea')+'</button>')}${setRow('Condividi il profilo con '+AIN(),'Nome, età e gusti vengono inclusi nei messaggi a '+AIN()+' solo con un\'IA collegata.',sw('useProfile','Condividi il profilo'))}`)}
   ${acc('dati','Dati e privacy','Azzera ascolti, svuota libreria, privacy',`<div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t" style="margin-top:22px">Privacy</div>${privacyHtml()}`)}
-  <div class="ffoot">Monster Music · versione 1.5 · build 20-nov-r</div>`;
+  <div class="ffoot">Monster Music · versione 32 · 21 novembre 2026</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
