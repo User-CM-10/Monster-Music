@@ -578,7 +578,7 @@ function startCur(){
   const s=cur();if(!s)return;P.rate=1;if(P.audio)P.audio.playbackRate=1;if(s.nofile){P.playing=false;toast('File non trovato: reimportalo dalla sua cartella');renderMini();return}P.pos=0;P.playing=true;
   if(s.url){P.audio.src=s.url;P.audio.play().catch(()=>{})}else P.audio.pause();
   S.history.push({s:s.id,t:Date.now()});save();mediaMeta();
-  renderMini();if(sheetKind==='player')updatePlayer();markNow();if(ui.tab==='top'||ui.tab==='brani')softRefresh();
+  renderMini();lyrAuto(s);if(sheetKind==='player')updatePlayer();markNow();if(ui.tab==='top'||ui.tab==='brani')softRefresh();
 }
 function randIdx(){const n=P.q.length;if(n<2)return P.i;let j;do{j=Math.floor(Math.random()*n)}while(j===P.i);return j}
 function step(d,auto){
@@ -820,7 +820,7 @@ function vOpzioni(){
   ${acc('ascolto','Ascolto e navigazione','Chat, disco, testi, libreria',`${setRow('Apri la tastiera quando si apre la chat','Se spento, la chat si apre senza tastiera: la tastiera la apri col tasto in alto.',sw('kbAuto','Apri la tastiera'))+setRow('Scorrimento rapido','Una striscia sul lato: toccala e trascina per scorrere veloce la lista.',sw('fastScroll','Scorrimento rapido'))+(S.settings.fastScroll===false?'':`<div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}`)+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:14px">Disco del lettore</div><div class="s" style="white-space:normal">Ruotalo per cambiare la velocità. Più veloce giri, più va veloce (fino a ×3). Quando lo lasci torna normale.</div>${seg('dmode',S.settings.discMode||'velocita',[['velocita','Aumenta velocità'],['seek','Scorri la canzone'],['off','Nessuna azione']])}`}<div class="t" style="margin-top:22px">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t" style="margin-top:22px">Libreria</div><div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
   ${acc('profilo','Profilo','Nome, età, gusti',`${setRow('Il tuo profilo',pn?esc(pn)+(S.profile.age?' · '+esc(S.profile.age)+' anni':''):'Non ancora creato','<button class="btn alt" data-a="prof">'+(pn?'Modifica':'Crea')+'</button>')}${setRow('Condividi il profilo con '+AIN(),'Nome, età e gusti vengono inclusi nei messaggi a '+AIN()+' solo con un\'IA collegata.',sw('useProfile','Condividi il profilo'))}`)}
   ${acc('dati','Dati e privacy','Azzera ascolti, svuota libreria, privacy',`<div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t" style="margin-top:22px">Privacy</div>${privacyHtml()}`)}
-  <div class="ffoot">Monster Music · versione 32 · 21 novembre 2026</div>`;
+  <div class="ffoot">Monster Music · versione 33 · 22 novembre 2026</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
@@ -854,7 +854,7 @@ function render(keepScroll){
   {const T=tabs(),nv=$('#nav'),key=T.map(t=>t[0]).join(',');
     if(nv.dataset.k!==key){nv.dataset.k=key;nv.innerHTML='<span id="navind" aria-hidden="true"></span>'+T.map(([k,l,i])=>`<button data-a="tab" data-id="${k}" aria-label="${l}"><span class="nic">${ic(i)}</span><span>${l}</span></button>`).join('')}
     nv.querySelectorAll('button').forEach(b=>{const on=b.dataset.id===ui.tab;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
-    moveInd()}
+    const ind=$('#navind');if(ind){ind.style.transition='none';moveInd();void ind.offsetWidth;ind.style.transition=''}else moveInd()}
   renderMini();renderSel();if(window.paintFast)paintFast();
 }
 function moveInd(){const n=$('#nav'),ind=$('#navind'),b=n&&n.querySelector('button.on');if(!ind||!b)return;ind.style.width=b.offsetWidth+'px';ind.style.transform='translate3d('+b.offsetLeft+'px,0,0)'}
@@ -1053,13 +1053,15 @@ async function fetchWebLyr(s){
   if(!j){const arr=await ask(base+'search?'+new URLSearchParams({track_name:s.title,artist_name:s.artist}));j=(arr||[]).find(x=>x&&x.plainLyrics)||null}
   return j?(j.plainLyrics||''):'';
 }
-async function lyrOnlineFetch(s){try{const t=await fetchWebLyr(s);await saveLyr(s,t,'web');return true}catch(e){return null}}
+async function lyrOnlineFetch(s){try{const t=await fetchWebLyr(s);s.lyrWeb=true;await saveLyr(s,t,'web');save();return true}catch(e){return null}}
+/* ricerca in automatico, una volta per brano, solo se l'utente l'ha attivata e il brano non ha già un testo */
+function lyrAuto(s){if(!s||!S.settings.lyrOnline||s.lyr||s.lyrWeb)return;setTimeout(()=>{if(S.settings.lyrOnline&&!s.lyr&&!s.lyrWeb)lyrOnlineFetch(s)},2000)}
 async function showLyr(s){
   const b=$('#lyrbox');if(!b||!s)return;b.dataset.id=String(s.id);
   const put=h=>{if(b.dataset.id===String(s.id))b.innerHTML=h};
   put('<p class="sub">Cerco il testo…</p>');
   let t=await getLyr(s.id);
-  if(!t&&S.settings.lyrOnline&&!s.lyrChk){const r=await lyrOnlineFetch(s);if(r===null){put('<p class="sub">Non riesco a collegarmi. Controlla la connessione e riprova.</p>');return}t=await getLyr(s.id)}
+  if(!t&&S.settings.lyrOnline&&!s.lyrWeb){const r=await lyrOnlineFetch(s);if(r===null){put('<p class="sub">Non riesco a collegarmi. Controlla la connessione e riprova.</p>');return}t=await getLyr(s.id)}
   if(!t){put(S.settings.lyrOnline?'<p class="sub">Nessun testo trovato per questo brano.</p>':'<p class="sub">Il file non ha il testo. Puoi cercarlo online attivando «Cerca testi online» in Impostazioni › Ascolto e navigazione.</p>');return}
   const from={tag:'Testo letto dal file audio',file:'Testo dal file .lrc o .txt accanto al brano',web:'Testo cercato online (LRCLIB)'}[s.lyr]||'';
   put(`<div class="lyr">${esc(t)}</div><p class="sub">${esc(from)}</p>`);
@@ -1129,19 +1131,22 @@ function discRate(rf,dir){
   const r=(mode==='velocita'&&dir>0)?Math.min(16,Math.max(.25,rf)):1;
   P.rate=r;if(s.url)P.audio.playbackRate=r;
 }
-document.addEventListener('pointerdown',e=>{const d=e.target.closest&&e.target.closest('#disc');if(!d)return;const r=d.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;dg={cx,cy,a:Math.atan2(e.clientY-cy,e.clientX-cx),t:performance.now(),w:0,idle:0}});
+document.addEventListener('pointerdown',e=>{const d=e.target.closest&&e.target.closest('#disc');if(!d)return;const r=d.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;dg={cx,cy,a:Math.atan2(e.clientY-cy,e.clientX-cx),t:performance.now(),w:0,idle:0,tot:0,hold:0};
+  /* tenere premuto fermo il disco per mezzo secondo: ferma la canzone */
+  dg.hold=setTimeout(()=>{if(dg&&dg.tot<0.05&&P.playing){dg.held=true;toggle();buzz(10)}},500)});
 document.addEventListener('pointermove',e=>{if(!dg)return;
   const now=performance.now(),na=Math.atan2(e.clientY-dg.cy,e.clientX-dg.cx);let d=na-dg.a;
   if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;
   dg.a=na;const dt=Math.max(0.001,(now-dg.t)/1000);dg.t=now;
   if(Math.abs(d)<1e-4)return;
+  dg.tot+=Math.abs(d);if(dg.tot>=0.05)clearTimeout(dg.hold);
   discAng+=d*180/Math.PI;
   const w=Math.abs(d)/dt;dg.w=dg.w?0.5*w+0.5*dg.w:w;
   const dir=d>0?1:-1,rf=dg.w/DISC_W0;
   discRate(rf,dir);discMove(dt,rf,dir);
   clearTimeout(dg.idle);dg.idle=setTimeout(()=>{if(dg){dg.w=0;discRate(1,1)}},150);
 });
-const dgEnd=()=>{if(dg){clearTimeout(dg.idle);discRate(1,1)}dg=null};
+const dgEnd=()=>{if(dg){clearTimeout(dg.idle);clearTimeout(dg.hold);discRate(1,1)}dg=null};
 document.addEventListener('pointerup',dgEnd);document.addEventListener('pointercancel',dgEnd);
 
 /* ---------- selezione multipla ---------- */
