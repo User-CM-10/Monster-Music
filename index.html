@@ -2,15 +2,7 @@
 <html lang="it">
 <head>
 <title>Monster Music</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0506">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Monster Music">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-mm-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-mm.png">
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Caveat+Brush&family=Patrick+Hand&display=swap">
 <style>
 /* Layout: quaderno a quadretti, schermo da telefono con barra in basso e cassetto AI da destra */
@@ -103,6 +95,7 @@ h2{font:28px/1 var(--f-d);margin:18px 0 8px;font-weight:400}
 .say{position:relative;padding:12px 14px;margin:12px 0;background:color-mix(in srgb,var(--sky) 28%,var(--card))}
 .say::before{content:"";position:absolute;left:26px;top:-14px;border:8px solid transparent;border-bottom:8px solid var(--bd);border-top:0}
 .say small{display:block;color:var(--ink2);font-size:15px;margin-bottom:2px}
+.lyr{white-space:pre-wrap;line-height:1.6;max-height:46vh;overflow:auto;padding:12px 14px;margin:12px 0 4px;background:var(--card);border:2px solid var(--bd);-webkit-overflow-scrolling:touch}
 
 .mini{display:flex;align-items:center;gap:10px;padding:6px 8px;margin:2px 4px 8px;position:relative;overflow:hidden;text-align:left;width:calc(100% - 8px)}
 .mini .cov{width:42px;height:42px}
@@ -121,7 +114,7 @@ h2{font:28px/1 var(--f-d);margin:18px 0 8px;font-weight:400}
 .grab{width:54px;height:6px;border-radius:4px;background:var(--ink);opacity:.35;margin:0 auto 14px;box-shadow:0 0 0 12px transparent}
 .disc{width:min(62vw,250px);aspect-ratio:1;margin:6px auto 10px;border-radius:50%;border:3px solid var(--bd);background:repeating-radial-gradient(circle,#1b1b2f 0 3px,#2a2a47 3px 6px);display:grid;place-items:center;box-shadow:4px 5px 0 var(--sh)}
 .disc .cov{width:44%;height:44%;border-radius:50%;border:3px solid var(--bd)}
-.disc.spin{animation:spin 6s linear infinite}
+.disc.spin{animation:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ptitle{font:34px/1.05 var(--f-d);text-align:center;margin:0}
 .psub{text-align:center;color:var(--ink2);margin:2px 0 8px}
@@ -429,6 +422,7 @@ html.hassel main{padding-bottom:calc(var(--dock-h) + 130px)}
 <input type="file" id="fileIn" class="vh" accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.aac,.opus" multiple tabindex="-1" aria-hidden="true">
 <input type="file" id="dirIn" class="vh" multiple webkitdirectory tabindex="-1" aria-hidden="true">
 
+
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -666,7 +660,8 @@ function vCartelle(){
     <div class="bar">${l.length?`<button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button>`:''}<label class="btn alt" for="fileIn" tabindex="0" data-a="addhere" data-id="${esc(n)}">${ic('up')} Aggiungi file qui</label>${l.length?'':`<button class="btn bad" data-a="delfold" data-id="${esc(n)}">${ic('trash')} Elimina</button>`}</div><div class="chips" style="margin:10px 0">${fch}</div>${songList(l)}`}
   const f=folders();
   return `<h1>Le <span class="hl">cartelle</span></h1><p class="sub">Da qui arrivano le tue canzoni.</p>
-  <div class="bar"><label class="btn alt" for="fileIn" tabindex="0" data-a="import">${ic('up')} Scegli file</label></div>
+  <div class="bar"><label class="btn alt" for="fileIn" tabindex="0" data-a="import">${ic('up')} Scegli file</label>${dirSupported?'<button class="btn alt" data-a="syncall">Aggiorna la sincronizzazione</button>':''}</div>
+  ${dirSupported?'<p class="sub">Hai scaricato brani nuovi dentro una cartella già importata? Tocca «Aggiorna la sincronizzazione» e scegli la stessa cartella: vengono aggiunti solo i brani nuovi.</p>':''}
   ${srcBlock()}${dirSupported?'':'<p class="sub">Su questo dispositivo non si possono scegliere intere cartelle. Crea una cartella qui sotto, aprila e aggiungi i file dentro.</p>'}
   <p class="sub">Se toccando non si apre nulla, apri questa pagina in Chrome o Safari: l'app potrebbe non permettere di scegliere i file.</p>
   <form class="newpl" id="newfold"><input id="nfname" placeholder="Nome della nuova cartella" aria-label="Nome cartella" autocomplete="off"><button class="btn">${ic('plus')} Crea</button></form>
@@ -807,20 +802,17 @@ function vOpzioni(){
   setTimeout(fillStorage,60);
   return `<button class="back" data-a="tab" data-id="home">${ic('back')} Home</button><h1>Le <span class="hl">impostazioni</span></h1>
   <p class="sub">Tocca una voce per aprirla.</p>
-  ${acc('aspetto','Aspetto','Stile, tema, pulsanti, animazioni',`<div class="t">Stile dell'app</div>${sty}<div class="t" style="margin-top:14px">Tema</div>${th}<div class="t" style="margin-top:14px">Stile dei pulsanti</div>${btn}${s.btn==='glass'?`<div class="t" style="margin-top:14px">Trasparenza del vetro</div><div class="s">Più alto = più trasparente, meno colore. Valore: <span id="gval">${s.glass}</span></div><input type="range" data-g="1" min="0" max="40" value="${s.glass}"><div class="t" style="margin-top:14px">Sfocatura</div><div class="s">Quanto è sfocato ciò che sta dietro i pulsanti. Valore: <span id="bval">${s.blur==null?18:s.blur}</span> px</div><input type="range" data-bl="1" min="0" max="40" value="${s.blur==null?18:s.blur}">`:''}${s.btn==='m3'?setRow('Barra semitrasparente','Stessa intensità del vetro, applicata alla barra Material 3.',sw('m3Glass','Barra semitrasparente')):''}${setRow('Animazioni','Movimenti quando cambi sezione',sw('anim','Animazioni'))}${setRow('Commenti di '+AIN(),'Il parere su canzoni e ascolti',sw('comments','Commenti di '+AIN()))}`)}
-  ${acc('tema','Tema personalizzato','Colori, font, forma, temi salvati',`<div class="s">Cambia un colore e l'app passa subito allo stile Personalizzato.</div>${colorIn('bg','Sfondo')}${colorIn('ink','Testo e bordi')}${colorIn('c1','Colore principale')}${colorIn('c2','Colore secondario')}${colorIn('c3','Colore terziario')}<div class="t" style="margin-top:14px">Icona dentro l'app</div>${seg('ciicon',C.icon,[['mm','Doppia M'],['flame','Fiamma'],['monster','Mostro']])}<div class="t" style="margin-top:14px">Forma</div>${seg('cround',C.round,[['soft','Morbida'],['sharp','Spigolosa']])}<div class="t" style="margin-top:14px">Arrotondamento. Valore: <span id="crval">${C.radius!=null?C.radius:(C.round==='sharp'?3:16)}</span></div><input type="range" data-cr="1" min="0" max="30" value="${C.radius!=null?C.radius:(C.round==='sharp'?3:16)}">
+  ${acc('aspetto','Aspetto','Stile, tema e colori, pulsanti, animazioni',`<div class="t">Stile dell'app</div>${sty}<div class="t" style="margin-top:14px">Tema</div>${th}<div class="t" style="margin-top:14px">Stile dei pulsanti</div>${btn}${s.btn==='glass'?`<div class="t" style="margin-top:14px">Trasparenza del vetro</div><div class="s">Più alto = più trasparente, meno colore. Valore: <span id="gval">${s.glass}</span></div><input type="range" data-g="1" min="0" max="40" value="${s.glass}"><div class="t" style="margin-top:14px">Sfocatura</div><div class="s">Quanto è sfocato ciò che sta dietro i pulsanti. Valore: <span id="bval">${s.blur==null?18:s.blur}</span> px</div><input type="range" data-bl="1" min="0" max="40" value="${s.blur==null?18:s.blur}">`:''}${s.btn==='m3'?setRow('Barra semitrasparente','Stessa intensità del vetro, applicata alla barra Material 3.',sw('m3Glass','Barra semitrasparente')):''}${setRow('Animazioni','Movimenti quando cambi sezione',sw('anim','Animazioni'))}${setRow('Commenti di '+AIN(),'Il parere su canzoni e ascolti',sw('comments','Commenti di '+AIN()))}<div class="t" style="margin-top:22px">Tema personalizzato</div><div class="s" style="white-space:normal">Colori, font, forma e temi salvati.</div><div class="s">Cambia un colore e l'app passa subito allo stile Personalizzato.</div>${colorIn('bg','Sfondo')}${colorIn('ink','Testo e bordi')}${colorIn('c1','Colore principale')}${colorIn('c2','Colore secondario')}${colorIn('c3','Colore terziario')}<div class="t" style="margin-top:14px">Icona dentro l'app</div>${seg('ciicon',C.icon,[['mm','Doppia M'],['flame','Fiamma'],['monster','Mostro']])}<div class="t" style="margin-top:14px">Forma</div>${seg('cround',C.round,[['soft','Morbida'],['sharp','Spigolosa']])}<div class="t" style="margin-top:14px">Arrotondamento. Valore: <span id="crval">${C.radius!=null?C.radius:(C.round==='sharp'?3:16)}</span></div><input type="range" data-cr="1" min="0" max="30" value="${C.radius!=null?C.radius:(C.round==='sharp'?3:16)}">
   <div class="t" style="margin-top:14px">Font dei titoli</div>${seg('cfont',C.font||'caveat',[['caveat','Caveat Brush'],['anton','Anton'],['barlow','Barlow Condensed'],['patrick','Patrick Hand'],['sistema','Sistema']])}
   <div class="t" style="margin-top:14px">Altri colori</div>${colorIn('card','Sfondo delle schede')}${colorIn('ink2','Testo secondario')}${colorIn('sh','Colore delle ombre')}<div class="bar"><button class="btn alt" data-a="creset">Reimposta colori extra</button></div>
   <div class="t" style="margin-top:14px">Temi salvati</div><div class="s" style="white-space:normal">Salva la combinazione attuale con un nome e riapplicala quando vuoi (massimo 8).</div>
   <div class="bar"><input id="tname" class="field" placeholder="Nome del tema" maxlength="24" style="flex:1;min-width:0"><button class="btn" data-a="tsave">${ic('plus')} Salva</button></div>
   ${(s.themes||[]).map((t,i)=>setRow(esc(t.name),'','<span class="bar" style="margin:0;gap:8px;flex-wrap:nowrap"><button class="btn alt" data-a="tload" data-id="'+i+'">Applica</button><button class="btn bad" data-a="tdel" data-id="'+i+'">'+ic('trash')+'</button></span>')).join('')}`)}
   ${acc('ia','Intelligenza artificiale','Motore, nome, come si apre',aiSettings())}
-  ${acc('chat','Chat e navigazione','Tastiera e scorrimento rapido',setRow('Apri la tastiera quando si apre la chat','Se spento, la chat si apre senza tastiera: la tastiera la apri col tasto in alto.',sw('kbAuto','Apri la tastiera'))+setRow('Scorrimento rapido','Una striscia sul lato: toccala e trascina per scorrere veloce la lista.',sw('fastScroll','Scorrimento rapido'))+(S.settings.fastScroll===false?'':`<div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}`)+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:14px">Disco del lettore</div><div class="s" style="white-space:normal">Ruotalo per cambiare la velocità. Più veloce giri, più va veloce (fino a ×3). Quando lo lasci torna normale.</div>${seg('dmode',S.settings.discMode||'velocita',[['velocita','Aumenta velocità'],['seek','Scorri la canzone'],['off','Nessuna azione']])}`)}
+  ${acc('ascolto','Ascolto e navigazione','Chat, disco, testi, libreria',`${setRow('Apri la tastiera quando si apre la chat','Se spento, la chat si apre senza tastiera: la tastiera la apri col tasto in alto.',sw('kbAuto','Apri la tastiera'))+setRow('Scorrimento rapido','Una striscia sul lato: toccala e trascina per scorrere veloce la lista.',sw('fastScroll','Scorrimento rapido'))+(S.settings.fastScroll===false?'':`<div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}`)+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:14px">Disco del lettore</div><div class="s" style="white-space:normal">Ruotalo per cambiare la velocità. Più veloce giri, più va veloce (fino a ×3). Quando lo lasci torna normale.</div>${seg('dmode',S.settings.discMode||'velocita',[['velocita','Aumenta velocità'],['seek','Scorri la canzone'],['off','Nessuna azione']])}`}<div class="t" style="margin-top:22px">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t" style="margin-top:22px">Libreria</div><div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
   ${acc('profilo','Profilo','Nome, età, gusti',`${setRow('Il tuo profilo',pn?esc(pn)+(S.profile.age?' · '+esc(S.profile.age)+' anni':''):'Non ancora creato','<button class="btn alt" data-a="prof">'+(pn?'Modifica':'Crea')+'</button>')}${setRow('Condividi il profilo con '+AIN(),'Nome, età e gusti vengono inclusi nei messaggi a '+AIN()+' solo con un\'IA collegata.',sw('useProfile','Condividi il profilo'))}`)}
-  ${acc('libreria','Libreria','Cartelle o playlist, ordine',`<div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
-  ${acc('dati','Dati','Azzera ascolti, svuota libreria',`<div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p>`)}
-  ${acc('privacy','Privacy','Quali dati restano e dove vanno',privacyHtml())}
-  <div class="ffoot">Monster Music · versione 1.5 · build 20-nov-q</div>`;
+  ${acc('dati','Dati e privacy','Azzera ascolti, svuota libreria, privacy',`<div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t" style="margin-top:22px">Privacy</div>${privacyHtml()}`)}
+  <div class="ffoot">Monster Music · versione 1.5 · build 20-nov-r</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
@@ -891,7 +883,7 @@ function renderPlayer(){
   <div class="seek"><span id="pt">${mmss(P.pos)}</span><input type="range" id="seek" min="0" max="${Math.floor(s.dur)}" value="${Math.floor(P.pos)}" aria-label="Posizione"><span>${mmss(s.dur)}</span></div>
   <div class="ctl" id="ctl">${ctlHtml()}</div>
   <div class="say sk"><small>${AIN()} dice</small>${esc(songComment(s))}</div>
-  <div class="bar" style="justify-content:center"><button class="btn alt" data-a="edit" data-id="${s.id}">${ic('pencil')} Modifica</button><button class="btn" data-a="talk">Parlane con ${AIN()}</button></div>`;
+  <div class="bar" style="justify-content:center"><button class="btn alt" data-a="edit" data-id="${s.id}">${ic('pencil')} Modifica</button><button class="btn alt" data-a="lyrics">${ic('note')} Testo</button><button class="btn" data-a="talk">Parlane con ${AIN()}</button></div><div id="lyrbox" data-id="" hidden></div>`;
   $('#panel').innerHTML=html;syncPlayer();
 }
 function updatePlayer(){
@@ -901,6 +893,7 @@ function updatePlayer(){
   $('#disc').innerHTML=scov(s);
   const r=$('#seek');if(r){r.max=Math.floor(s.dur);r.value=Math.floor(P.pos);r.nextElementSibling.textContent=mmss(s.dur)}
   const say=$('#panel .say');if(say)say.innerHTML=`<small>${AIN()} dice</small>${esc(songComment(s))}`;
+  const lb=$('#lyrbox');if(lb&&!lb.hidden&&lb.dataset.id!==String(s.id))showLyr(s);
   syncPlayer();
 }
 function syncPlayer(){
@@ -968,6 +961,7 @@ async function id3v2(file,head){
     if(fs<=1||p+hl+fs>buf.length)break;
     const k=map[id];
     if((id==='APIC'||id==='PIC')&&!out.pic){try{const d=buf.subarray(p+hl,p+hl+fs),enc=d[0];let q=1,mime='image/jpeg';if(id==='PIC'){mime=/PNG/i.test(String.fromCharCode(d[1],d[2],d[3]))?'image/png':'image/jpeg';q=4}else{let e=q;while(e<d.length&&d[e]!==0)e++;mime=String.fromCharCode(...d.subarray(q,e))||'image/jpeg';q=e+1}q+=1;if(enc===1||enc===2){while(q+1<d.length&&!(d[q]===0&&d[q+1]===0))q+=2;q+=2}else{while(q<d.length&&d[q]!==0)q++;q+=1}if(d.length-q>200)out.pic={bytes:d.slice(q),mime}}catch(e){}}
+    if((id==='USLT'||id==='ULT')&&!out.lyr){try{const d=buf.subarray(p+hl,p+hl+fs),enc=d[0];let q=4;if(enc===1||enc===2){while(q+1<d.length&&!(d[q]===0&&d[q+1]===0))q+=2;q+=2}else{while(q<d.length&&d[q]!==0)q++;q+=1}const lt=decText(d.subarray(q),enc).replace(/\u0000/g,'').trim();if(lt)out.lyr=lt}catch(e){}}
     if(k&&!out[k]){const d=buf.subarray(p+hl,p+hl+fs),v=decText(d.subarray(1),d[0]).split('\u0000').map(x=>x.trim()).filter(Boolean);if(v.length)out[k]=v[0]}
     p+=hl+fs;
   }
@@ -978,7 +972,7 @@ function mp4atoms(u,s,e){const out=[];let p=s;while(p+8<=e){const l=((u[p]<<24)|
 function mp4find(u,s,e,path){for(const a of mp4atoms(u,s,e)){if(a.t===path[0]){if(path.length===1)return a;const r=mp4find(u,a.t==='meta'?a.s+4:a.s,a.e,path.slice(1));if(r)return r}}return null}
 function parseMoov(u){
   const il=mp4find(u,0,u.length,['udta','meta','ilst']),out={};if(!il)return out;
-  const map={'©nam':'title','©ART':'artist','©alb':'album','©day':'year','©gen':'genre','aART':'albumArtist'};
+  const map={'©nam':'title','©ART':'artist','©alb':'album','©day':'year','©gen':'genre','aART':'albumArtist','©lyr':'lyr'};
   for(const it of mp4atoms(u,il.s,il.e)){const k=map[it.t];if(!k)continue;const d=mp4atoms(u,it.s,it.e).find(x=>x.t==='data');if(d)out[k]=new TextDecoder().decode(u.subarray(d.s+8,d.e)).trim()}
   const cv=mp4atoms(u,il.s,il.e).find(x=>x.t==='covr');if(cv){const d=mp4atoms(u,cv.s,cv.e).find(x=>x.t==='data');if(d&&d.e-d.s>208){const b=u.slice(d.s+8,d.e);out.pic={bytes:b,mime:b[0]===0x89?'image/png':'image/jpeg'}}}
   return out;
@@ -1001,7 +995,7 @@ async function flacTags(file){
     const hd=await u8(file,pos,pos+4),last=hd[0]&128,type=hd[0]&127,len=(hd[1]<<16)|(hd[2]<<8)|hd[3];
     if(type===4){
       const u=await u8(file,pos+4,pos+4+len),dv=new DataView(u.buffer);let p=0;p+=4+dv.getUint32(0,true);const c=dv.getUint32(p,true);p+=4;
-      const m={TITLE:'title',ARTIST:'artist',ALBUM:'album',DATE:'year',GENRE:'genre',ALBUMARTIST:'albumArtist'};
+      const m={TITLE:'title',ARTIST:'artist',ALBUM:'album',DATE:'year',GENRE:'genre',ALBUMARTIST:'albumArtist',LYRICS:'lyr',UNSYNCEDLYRICS:'lyr'};
       for(let i=0;i<c&&p+4<=u.length;i++){const l=dv.getUint32(p,true);p+=4;const s=new TextDecoder().decode(u.subarray(p,p+l));p+=l;const k=s.indexOf('=');if(k>0){const key=s.slice(0,k).toUpperCase();if(m[key]&&!tags[m[key]])tags[m[key]]=s.slice(k+1).trim()}}
     }else if(type===6&&!pic&&len<8e6){
       try{const u=await u8(file,pos+4,pos+4+len),dv=new DataView(u.buffer);let p=4;const ml=dv.getUint32(p);const mime=new TextDecoder().decode(u.subarray(p+4,p+4+ml));p+=4+ml;const dl=dv.getUint32(p);p+=4+dl+16;const n2=dv.getUint32(p);p+=4;pic={bytes:u.slice(p,p+n2),mime:mime||'image/jpeg'}}catch(e){}
@@ -1040,8 +1034,30 @@ function applyTags(s,t){
   const ar=t.artist||t.albumArtist;if(ar)s.artist=ar;
   if(t.album)s.album=t.album;if(t.year)s.year=t.year;if(t.genre)s.genre=t.genre;
 }
+const LYR_OK=/\.(lrc|txt)$/i;
+const cleanLyr=t=>String(t||'').split(/\r?\n/).map(l=>l.replace(/\[\d{1,3}:\d{2}(?:[.:]\d{1,3})?\]/g,'').trimEnd()).join('\n').replace(/\n{3,}/g,'\n\n').trim();
+async function saveLyr(s,text,src){const c=cleanLyr(text);s.lyrChk=true;if(!c)return false;if(await putBlob('l'+s.id,new Blob([c],{type:'text/plain'}))){s.lyr=src;return true}return false}
+async function getLyr(id){try{const d=await idb();return await new Promise(res=>{const q=d.transaction('f').objectStore('f').get('l'+id);q.onsuccess=async()=>{const b=q.result;res(b?await b.text():'')};q.onerror=()=>res('')})}catch(e){return ''}}
+/* Ricerca online: solo se l'utente l'ha attivata. Fonte: LRCLIB (database libero e aperto). Lancia errore se la rete non risponde. */
+async function fetchWebLyr(s){
+  const base='https://lrclib.net/api/',ask=async u=>{const r=await fetch(u);if(r.status===404)return null;if(!r.ok)throw new Error('http '+r.status);return r.json()};
+  let j=await ask(base+'get?'+new URLSearchParams({track_name:s.title,artist_name:s.artist,album_name:s.album||'',duration:Math.round(s.dur||0)}));
+  if(!j){const arr=await ask(base+'search?'+new URLSearchParams({track_name:s.title,artist_name:s.artist}));j=(arr||[]).find(x=>x&&x.plainLyrics)||null}
+  return j?(j.plainLyrics||''):'';
+}
+async function lyrOnlineFetch(s){try{const t=await fetchWebLyr(s);await saveLyr(s,t,'web');return true}catch(e){return null}}
+async function showLyr(s){
+  const b=$('#lyrbox');if(!b||!s)return;b.dataset.id=String(s.id);
+  const put=h=>{if(b.dataset.id===String(s.id))b.innerHTML=h};
+  put('<p class="sub">Cerco il testo…</p>');
+  let t=await getLyr(s.id);
+  if(!t&&S.settings.lyrOnline&&!s.lyrChk){const r=await lyrOnlineFetch(s);if(r===null){put('<p class="sub">Non riesco a collegarmi. Controlla la connessione e riprova.</p>');return}t=await getLyr(s.id)}
+  if(!t){put(S.settings.lyrOnline?'<p class="sub">Nessun testo trovato per questo brano.</p>':'<p class="sub">Il file non ha il testo. Puoi cercarlo online attivando «Cerca testi online» in Impostazioni › Ascolto e navigazione.</p>');return}
+  const from={tag:'Testo letto dal file audio',file:'Testo dal file .lrc o .txt accanto al brano',web:'Testo cercato online (LRCLIB)'}[s.lyr]||'';
+  put(`<div class="lyr">${esc(t)}</div><p class="sub">${esc(from)}</p>`);
+}
 async function retag(force){
-  const todo=S.songs.filter(s=>s.stored&&(force||(!s.edited&&!s.tagged)||!s.covDone));
+  const todo=S.songs.filter(s=>s.stored&&(force||(!s.edited&&!s.tagged)||!s.covDone||!s.lyrChk));
   if(!todo.length){if(force)toast('Niente da aggiornare');return}
   let d;try{d=await idb()}catch(e){return}
   let n=0;
@@ -1049,7 +1065,7 @@ async function retag(force){
     n++;if(n%10===1)toast('Leggo tag e copertine… '+n+' di '+todo.length);
     const b=await new Promise(res=>{const q=d.transaction('f').objectStore('f').get(String(s.id));q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)});
     if(!b)continue;
-    const t=await readTags(b);if(!s.edited)applyTags(s,t);s.tagged=true;await saveCover(s,t);
+    const t=await readTags(b);if(!s.edited)applyTags(s,t);s.tagged=true;await saveCover(s,t);if(t.lyr)await saveLyr(s,t.lyr,'tag');else s.lyrChk=true;
     if(n%15===0){save();render(true)}
   }
   save();render(true);toast('Tag e copertine aggiornati');
@@ -1060,6 +1076,8 @@ async function importFiles(files,dir){
   let n=0,lost=0;
   if(dir){const srcs=new Set(ok.map(f=>(f.webkitRelativePath||'').split('/')[0]).filter(Boolean));const tp=s=>srcOf(s).split('/')[0];if(srcs.size){const back=S.hidden.filter(s=>srcs.has(tp(s)));S.hidden=S.hidden.filter(s=>!srcs.has(tp(s)));S.songs.push(...back)}}
   const have=new Set([...S.songs,...S.hidden].map(s=>s.rel).filter(Boolean));
+  const keyOf=f=>(f.webkitRelativePath||f.name).replace(/\.[^./]+$/,'').toLowerCase();
+  const side=new Map();files.forEach(f=>{if(LYR_OK.test(f.name))side.set(keyOf(f),f)});
   for(const f of ok){
     if(f.webkitRelativePath&&have.has(f.webkitRelativePath))continue;
     n++;toast('Importo '+n+' di '+ok.length+'…');
@@ -1070,7 +1088,7 @@ async function importFiles(files,dir){
     const [dur,t]=await Promise.all([durP,readTags(f)]);
     const id='u'+Date.now()+Math.random().toString(36).slice(2,6);
     const ok2=await putBlob(id,f);if(!ok2)lost++;
-    const ns={rel:f.webkitRelativePath||'',src:src||'File aggiunti',id,title:(t.title||(parts[1]||parts[0])).trim(),artist:(t.artist||t.albumArtist||(parts[1]?parts[0]:'')||gArtist||'Artista sconosciuto').trim(),album:(t.album||gAlbum||'').trim(),year:t.year||'',genre:t.genre||'',dur,folder,stored:ok2,tagged:true,url};await saveCover(ns,t);S.songs.push(ns);
+    const ns={rel:f.webkitRelativePath||'',src:src||'File aggiunti',id,title:(t.title||(parts[1]||parts[0])).trim(),artist:(t.artist||t.albumArtist||(parts[1]?parts[0]:'')||gArtist||'Artista sconosciuto').trim(),album:(t.album||gAlbum||'').trim(),year:t.year||'',genre:t.genre||'',dur,folder,stored:ok2,tagged:true,url};await saveCover(ns,t);if(t.lyr)await saveLyr(ns,t.lyr,'tag');else{const sf=side.get(keyOf(f));if(sf)await saveLyr(ns,await sf.text(),'file');else ns.lyrChk=true}S.songs.push(ns);
     if(n%10===0){save();render(true)}
   }
   importTarget=null;save();render(true);
@@ -1181,6 +1199,8 @@ document.addEventListener('click',e=>{
    case'import':case'importfolder':importTarget=null;break;
    case'addhere':importTarget=id;break;
    case'retag':retag(true);break;
+   case'syncall':pickFiles(dirSupported,null);break;
+   case'lyrics':{const b=$('#lyrbox'),c=cur();if(!b||!c)break;if(!b.hidden){b.hidden=true;break}b.hidden=false;showLyr(c);break}
    case'srcon':{const off=S.hidden.some(s=>inSrc(s,id));setSrcOn(id,off);render(true);toast(off?'Cartella rimessa in libreria':'Cartella tolta dalla libreria');break}
    case'srcrm':if(t.dataset.sure){removeSrc(id);render(true);toast('Cartella rimossa: i file sul telefono restano')}else{t.dataset.sure=1;t.lastChild.textContent=' Sicuro? Tocca ancora'}break;
    case'delfold':S.folders=S.folders.filter(f=>f!==id);ui.detail=null;save();render();break;
