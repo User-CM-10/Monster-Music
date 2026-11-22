@@ -793,7 +793,7 @@ function aiSettings(){
   <div class="t" style="margin-top:12px">Come si apre</div>${seg('aiopen',s.aiOpen,[['button','Pulsante'],['edge','Barra laterale'],['both','Entrambi']])}
   <div class="t" style="margin-top:14px">Come parla</div><div class="s" style="white-space:normal">Vale per ogni messaggio. Le scelte qui sono dette all'assistente insieme alla sua personalità.</div>
   ${seg('ptone',(s.persona||{}).tone||'def',[['def','Come sempre'],['amichevole','Amichevole e moderna'],['formale','Formale e rispettosa'],['asciutto','Asciutta e diretta']])}
-  <div class="t" style="margin-top:14px">Come ti si rivolge</div>${seg('paddr',(s.persona||{}).addr||'libero',[['libero','Non importa'],['tu','Tu'],['lei','Lei']])}
+  <div class="t" style="margin-top:14px">Come ti si rivolge</div>${seg('paddr',((s.persona||{}).addr==='lei'?'lei':'tu'),[['tu','Tu'],['lei','Lei']])}
   <div class="t" style="margin-top:14px">Emoji</div>${seg('pemoji',(['no','poche','tante'].includes((s.persona||{}).emoji)?s.persona.emoji:'poche'),[['no','Nessuna'],['poche','Poche'],['tante','Tante']])}
   <div class="t" style="margin-top:14px">Istruzioni fisse</div><div class="s" style="white-space:normal">Scrivi come deve parlare, con parole tue. Valgono per ogni messaggio.</div>
   <textarea id="ptext" class="field" rows="4" maxlength="600" placeholder="Es. Parla come un amico che conosce bene la musica. Chiamami per nome. Niente elenchi lunghi.">${esc((s.persona||{}).text||'')}</textarea>`;
@@ -1445,7 +1445,7 @@ async function offlineAsk(sys,msgs,bot){
 function personaParts(){const p=S.settings.persona||{};
   const tones={amichevole:'Tono amichevole e moderno: colloquiale e fresco, ma sempre rispettoso',formale:'Tono formale e rispettoso: frasi complete, niente slang né battute scherzose',asciutto:'Tono asciutto e diretto: risposte molto brevi e concrete'};
   const tone=tones[p.tone]||"simpatica, ironica e un po' sfacciata, ma sempre gentile";
-  const addr=p.addr==='tu'?" Dai del tu all'utente.":p.addr==='lei'?" Dai del Lei all'utente, in modo rispettoso.":'';
+  const addr=p.addr==='lei'?" Dai del Lei all'utente, in modo rispettoso.":" Dai del tu all'utente.";
   const emo={no:'Non usare mai emoji.',poche:'Usa al massimo una emoji per messaggio, solo se serve.',tante:'Usa emoji spesso, per rendere il messaggio vivace.'};
   return {tone,addr,emoji:emo[p.emoji]||'Usa al massimo 1 o 2 emoji per messaggio, mai di più.',text:String(p.text||'').trim().slice(0,600)}}
 async function ask(text){
