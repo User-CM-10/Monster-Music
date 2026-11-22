@@ -788,12 +788,13 @@ function aiSettings(){
   if(e==='offline')det=`<div class="s" style="white-space:normal">Un modello piccolo che gira sul telefono, senza internet dopo il download. Serve Chrome con WebGPU: su molti iPhone e telefoni vecchi non funziona.</div>${seg('offmodel',s.offModel,[['Qwen2.5-0.5B-Instruct-q4f16_1-MLC','Leggero ~0,4 GB'],['Qwen2.5-1.5B-Instruct-q4f16_1-MLC','Migliore ~1 GB']])}<div class="bar"><button class="btn alt" data-a="offdl" id="offdl">${ic('up')} ${s.offReady?'Scarica di nuovo / verifica':'Scarica il modello'}</button></div><div class="prog" id="offprog" hidden><i></i></div><div class="s" id="offtxt">${s.offReady?'Modello già scaricato.':'Non ancora scaricato.'}</div>`;
   if(e==='local')det='Nessuna IA: risposte scritte dentro l\'app, solo su argomenti noti.';
   return `<div class="t">Motore</div>${seg('aieng',e,AIE)}<div class="s" style="white-space:normal;margin-top:8px">${det}</div>
+  <div style="height:18px"></div>
   ${setRow("Nome dell'assistente",'Ora si chiama «'+esc(AIN())+'».','<button class="btn alt" data-a="ainame">'+ic('pencil')+' Cambia</button>')}
   <div class="t" style="margin-top:12px">Come si apre</div>${seg('aiopen',s.aiOpen,[['button','Pulsante'],['edge','Barra laterale'],['both','Entrambi']])}
   <div class="t" style="margin-top:14px">Come parla</div><div class="s" style="white-space:normal">Vale per ogni messaggio. Le scelte qui sono dette all'assistente insieme alla sua personalità.</div>
   ${seg('ptone',(s.persona||{}).tone||'def',[['def','Come sempre'],['amichevole','Amichevole e moderna'],['formale','Formale e rispettosa'],['asciutto','Asciutta e diretta']])}
   <div class="t" style="margin-top:14px">Come ti si rivolge</div>${seg('paddr',(s.persona||{}).addr||'libero',[['libero','Non importa'],['tu','Tu'],['lei','Lei']])}
-  <div class="t" style="margin-top:14px">Emoji</div>${seg('pemoji',(s.persona||{}).emoji||'def',[['def','Come sempre'],['no','Nessuna'],['poche','Poche'],['tante','Tante']])}
+  <div class="t" style="margin-top:14px">Emoji</div>${seg('pemoji',(['no','poche','tante'].includes((s.persona||{}).emoji)?s.persona.emoji:'poche'),[['no','Nessuna'],['poche','Poche'],['tante','Tante']])}
   <div class="t" style="margin-top:14px">Istruzioni fisse</div><div class="s" style="white-space:normal">Scrivi come deve parlare, con parole tue. Valgono per ogni messaggio.</div>
   <textarea id="ptext" class="field" rows="4" maxlength="600" placeholder="Es. Parla come un amico che conosce bene la musica. Chiamami per nome. Niente elenchi lunghi.">${esc((s.persona||{}).text||'')}</textarea>`;
 }
