@@ -584,10 +584,8 @@ html.hassel main{padding-bottom:calc(var(--dock-h) + 130px)}
 
 /* ===== v48: Home full-width, morph anim, fire canvas, lowPower, saved bgs, chat err, pcover, confirm ===== */
 html[data-tab="home"] #fast,html[data-tab="home"] #fast2{display:none!important}
-html[data-tab="home"] body{padding-left:max(6px,env(safe-area-inset-left,0px));padding-right:max(6px,env(safe-area-inset-right,0px))}
-html[data-tab="home"] main{padding-left:4px!important;padding-right:4px!important}
-html[data-tab="home"] .shelf{margin:0 -4px;padding:4px 6px 14px}
-html[data-tab="home"] header{padding-left:4px;padding-right:4px}
+html[data-tab="home"] main{margin-left:-10px;margin-right:-10px;padding-left:10px!important;padding-right:10px!important}
+html[data-tab="home"] .shelf{margin:0 -10px;padding:4px 10px 14px}
 
 /* Animazione cambio forma icona al cambio canzone */
 .row{transition:background-color .32s ease,transform .16s cubic-bezier(.2,.8,.2,1)}
@@ -641,6 +639,25 @@ html.lowpower[data-btn="glass"] .row.now{background-color:color-mix(in srgb,var(
 html.lowpower[data-btn="glass"] .ctl .big{background-color:var(--violet)!important}
 html.lowpower main.enter,html.lowpower main.enter :is(.list,.grid,.shelf)>*{animation:none!important}
 html.lowpower .sk{box-shadow:none!important}
+
+/* ===== v51: Icona Impostazioni attiva + animazione fluida barra di navigazione ===== */
+#navind{will-change:transform,width,opacity}
+html[data-btn="glass"] #navind{transition:transform .55s cubic-bezier(.34,1.4,.64,1),width .45s cubic-bezier(.2,0,0,1),opacity .22s ease!important}
+.aibtn.g{transition:transform .42s cubic-bezier(.34,1.56,.64,1),border-radius .4s cubic-bezier(.34,1.56,.64,1),background-color .3s ease,color .3s ease,box-shadow .35s ease,border-color .3s ease}
+.aibtn.g .ic{transition:transform .55s cubic-bezier(.34,1.4,.64,1)}
+html[data-tab="opzioni"] .aibtn.g,
+html[data-btn="glass"][data-tab="opzioni"] .aibtn.g,
+html.lowpower[data-btn="glass"][data-tab="opzioni"] .aibtn.g,
+.aibtn.g.on{
+  background-color:var(--violet)!important;
+  color:var(--on-v)!important;
+  border-radius:50%!important;
+  transform:scale(1.16)!important;
+  border-color:color-mix(in srgb,var(--violet) 65%,#fff)!important;
+  box-shadow:0 0 18px color-mix(in srgb,var(--violet) 55%,transparent),inset 0 1px 0 rgba(255,255,255,.45)!important;
+}
+html[data-tab="opzioni"] .aibtn.g:active,.aibtn.g.on:active{transform:scale(1.04)!important}
+html[data-tab="opzioni"] .aibtn.g .ic,.aibtn.g.on .ic{transform:rotate(90deg) scale(1.1)}
 </style>
 </head>
 <body>
@@ -1114,19 +1131,46 @@ function requestTopAiComment(p,st,force){
 }
 
 /* ---------- riproduzione ---------- */
-const P={q:[],i:-1,playing:false,pos:0,audio:new Audio(),back:[],speed:1};
-function applyRate(){P.rate=P.speed;const s=cur();if(!s||!s.url)return;const a=P.audio;if(P.speed>0){a.playbackRate=P.speed;if(P.playing&&a.paused&&!a.ended)a.play().catch(()=>{})}else if(!a.paused)a.pause()}
+const P={q:[],i:-1,playing:false,pos:0,audio:new Audio(),back:[],speed:1,switching:false,endedLock:false};
+P.audio.preload='auto';P.audio.playsInline=true;P.audio.hidden=true;
+function ensureEqRunning(){if(eqCtx&&eqCtx.state!=='running'&&P.playing&&!P.audio.paused){try{eqCtx.resume().catch(()=>{})}catch(e){}}}
+function mediaState(){
+  if(!('mediaSession' in navigator))return;
+  try{navigator.mediaSession.playbackState=P.playing?'playing':'paused'}catch(e){}
+}
+function mediaPos(){
+  const s=cur();if(!s||!('mediaSession' in navigator)||!navigator.mediaSession.setPositionState)return;
+  const dur=Number(s.url&&isFinite(P.audio.duration)&&P.audio.duration>0?P.audio.duration:s.dur)||0;
+  if(!(dur>0))return;
+  const pos=Math.max(0,Math.min(dur,Number(s.url?(P.audio.currentTime||0):P.pos)||0));
+  const rate=Math.max(0.25,Math.min(4,Math.abs(P.rate||P.speed||1)));
+  try{navigator.mediaSession.setPositionState({duration:dur,playbackRate:rate,position:pos})}catch(e){}
+}
+function applyRate(){P.rate=P.speed;const s=cur();if(!s||!s.url)return;const a=P.audio;if(P.speed>0){a.playbackRate=P.speed;if(P.playing&&a.paused&&!a.ended){ensureEqRunning();a.play().catch(()=>{})}}else if(!a.paused)a.pause();mediaPos()}
 function setSpeed(v){P.speed=Math.max(-3,Math.min(3,Math.round(v*4)/4));applyRate();paintSpeed()}
 function paintSpeed(){const r=$('#spd');if(r&&document.activeElement!==r)r.value=P.speed;if(r)r.style.setProperty('--p',((P.speed+3)/6*100)+'%');const t=$('#spv');if(t)t.textContent=(P.speed===0?'ferma':(P.speed<0?'−':'')+Math.abs(P.speed).toString().replace('.',',')+'×')}
 const cur=()=>byId(P.q[P.i]);
 function playSong(id,queue){buzz(6);P.q=(queue&&queue.length?queue:[id]).map(String);P.i=P.q.indexOf(String(id));if(P.i<0){P.q=[String(id)];P.i=0}P.back=[];startCur()}
 function mediaMeta(){const s=cur();if(!s||!('mediaSession' in navigator))return;try{navigator.mediaSession.metadata=new MediaMetadata({title:s.title,artist:s.artist,album:s.album||'',artwork:COV[s.id]?[{src:COV[s.id],sizes:'256x256',type:'image/jpeg'}]:[]})}catch(e){}}
 function startCur(){
-  const s=cur();if(!s)return;P.speed=1;P.rate=1;if(P.audio)P.audio.playbackRate=1;if(s.nofile){P.playing=false;toast('File non trovato: reimportalo dalla sua cartella');renderMini();return}P.pos=0;P.playing=true;
+  const s=cur();if(!s)return;P.speed=1;P.rate=1;P.endedLock=false;if(P.audio)P.audio.playbackRate=1;
+  if(s.nofile){P.playing=false;mediaState();toast('File non trovato: reimportalo dalla sua cartella');renderMini();return}
+  P.pos=0;P.playing=true;
   S.recentPlayed=[String(s.id),...(S.recentPlayed||[]).map(String).filter(x=>x!==String(s.id))].slice(0,20);
   if(S.settings.eqOn||eqNodes)eqApply();
-  if(s.url){P.audio.src=s.url;P.audio.play().catch(()=>{})}else P.audio.pause();
-  P.heard=0;P.lp=0;P.counted=false;save();mediaMeta();
+  if(s.url){
+    P.switching=true;
+    P.audio.src=s.url;
+    const pr=P.audio.play();
+    if(pr&&pr.then){
+      pr.then(()=>{P.switching=false;ensureEqRunning();mediaState();mediaPos()}).catch(err=>{
+        P.switching=false;
+        if(err&&err.name==='AbortError')return;
+        if(P.audio.paused){P.playing=false;mediaState();renderMini();syncPlayer()}
+      });
+    }else P.switching=false;
+  }else P.audio.pause();
+  P.heard=0;P.lp=0;P.counted=false;save();mediaMeta();mediaState();
   renderMini();lyrAuto(s);if(sheetKind==='player')updatePlayer();markNow();
   if(ui.tab==='top')softRefresh();
   if(ui.tab==='home'&&!ui.hq){const rl=$('#resumeList');if(rl){const rec=getResumeSongs();rl.innerHTML=rec.map(x=>row(x)).join('');markNow(true)}}
@@ -1136,25 +1180,93 @@ function step(d,auto){
   if(!P.q.length)return;
   const rep=S.settings.repeat;
   if(auto&&rep==='one'){startCur();return}
-  if(!auto&&d<0&&P.pos>3){P.pos=0;const c=cur();if(c&&c.url)P.audio.currentTime=0;syncPlayer();return}
+  if(!auto&&d<0&&P.pos>3){P.pos=0;const c=cur();if(c&&c.url)P.audio.currentTime=0;syncPlayer();mediaPos();return}
   if(S.settings.shuffle&&P.q.length>1){
     if(d>0){P.back.push(P.i);if(P.back.length>200)P.back.shift();P.i=randIdx()}
     else P.i=P.back.length?P.back.pop():randIdx();
   }else{
     const ni=P.i+d;
-    if(auto&&rep==='off'&&ni>=P.q.length){P.playing=false;P.pos=0;const c=cur();if(c&&c.url)P.audio.pause();renderMini();syncPlayer();return}
+    if(auto&&rep==='off'&&ni>=P.q.length){P.playing=false;P.pos=0;const c=cur();if(c&&c.url)P.audio.pause();mediaState();renderMini();syncPlayer();return}
     P.i=(ni+P.q.length)%P.q.length;
   }
   startCur();
 }
-function toggle(){const s=cur();if(!s)return;if(S.settings.eqOn||eqNodes)eqApply();P.playing=!P.playing;if(s.url){P.playing?P.audio.play().catch(()=>{}):P.audio.pause()}renderMini();syncPlayer()}
+function toggle(){
+  const s=cur();if(!s)return;
+  if(S.settings.eqOn||eqNodes)eqApply();
+  const wantPlay=s.url?(P.audio.paused||!P.playing):!P.playing;
+  P.playing=wantPlay;
+  if(s.url){
+    if(wantPlay){
+      ensureEqRunning();
+      const pr=P.audio.play();
+      if(pr&&pr.catch)pr.catch(err=>{if(err&&err.name==='AbortError')return;if(P.audio.paused){P.playing=false;mediaState();renderMini();syncPlayer()}});
+    }else P.audio.pause();
+  }
+  mediaState();mediaPos();renderMini();syncPlayer();
+}
 function toggleShuffle(){S.settings.shuffle=!S.settings.shuffle;P.back=[];save();syncPlayer();toast(S.settings.shuffle?'Riproduzione casuale attiva':'Riproduzione casuale spenta')}
 function cycleRepeat(){const o={off:'all',all:'one',one:'off'};S.settings.repeat=o[S.settings.repeat]||'off';save();syncPlayer();toast({off:'Ripetizione spenta',all:'Ripeti tutto',one:'Ripeti questo brano'}[S.settings.repeat])}
-function initMedia(){if(!('mediaSession' in navigator))return;const set=(a,f)=>{try{navigator.mediaSession.setActionHandler(a,f)}catch(e){}};set('play',()=>{if(!P.playing)toggle()});set('pause',()=>{if(P.playing)toggle()});set('nexttrack',()=>step(1));set('previoustrack',()=>step(-1))}
+function initMedia(){
+  if(!('mediaSession' in navigator))return;
+  const set=(a,f)=>{try{navigator.mediaSession.setActionHandler(a,f)}catch(e){}};
+  set('play',()=>{const s=cur();if(!s)return;if(!P.playing||(s.url&&P.audio.paused))toggle()});
+  set('pause',()=>{const s=cur();if(!s)return;if(P.playing||(s.url&&!P.audio.paused))toggle()});
+  set('stop',()=>{if(P.playing)toggle()});
+  set('nexttrack',()=>step(1));
+  set('previoustrack',()=>step(-1));
+  set('seekto',d=>{const s=cur();if(!s||d.seekTime==null)return;const t=Math.max(0,Math.min(s.dur||P.audio.duration||0,d.seekTime));P.pos=t;if(s.url)P.audio.currentTime=t;syncPlayer();mediaPos()});
+}
+/* Sincronizzazione nativa di P.audio: evita che l'app dica "in riproduzione" se Android mette in pausa o sospende l'audio */
+P.audio.addEventListener('play',()=>{
+  P.switching=false;P.endedLock=false;ensureEqRunning();
+  if(!P.playing){P.playing=true;renderMini();syncPlayer()}
+  mediaState();mediaPos();
+});
+P.audio.addEventListener('playing',()=>{
+  P.switching=false;P.endedLock=false;ensureEqRunning();
+  if(!P.playing){P.playing=true;renderMini();syncPlayer()}
+  mediaState();mediaPos();
+});
+P.audio.addEventListener('pause',()=>{
+  if(P.switching||dg||P.speed<=0||P.audio.ended)return;
+  if(P.playing){P.playing=false;mediaState();renderMini();syncPlayer()}
+});
+P.audio.addEventListener('ended',()=>{
+  if(P.endedLock||P.speed<=0)return;
+  P.endedLock=true;
+  step(1,true);
+});
+P.audio.addEventListener('loadedmetadata',()=>{
+  const s=cur();
+  if(s&&isFinite(P.audio.duration)&&P.audio.duration>0&&Math.abs((s.dur||0)-P.audio.duration)>1){s.dur=P.audio.duration;mediaPos()}
+});
+let lastEqChk=0;
+P.audio.addEventListener('timeupdate',()=>{
+  const now=Date.now();
+  if(now-lastEqChk>1500){lastEqChk=now;ensureEqRunning()}
+});
+['stalled','waiting'].forEach(ev=>P.audio.addEventListener(ev,()=>ensureEqRunning()));
+function reconcileAudioState(){
+  const s=cur();if(!s||!s.url||dg||P.switching||P.speed<=0)return;
+  if(P.audio.ended&&P.playing&&!P.endedLock){P.endedLock=true;step(1,true);return}
+  if(!P.audio.paused){
+    ensureEqRunning();
+    if(!P.playing){P.playing=true;mediaState();renderMini();syncPlayer()}
+  }else if(P.playing){
+    P.playing=false;mediaState();renderMini();syncPlayer();
+  }
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)reconcileAudioState()});
+window.addEventListener('focus',()=>reconcileAudioState());
 setInterval(()=>{
   const s=cur();if(!s||!P.playing)return;
   if(P.speed<=0&&!dg){const t=Math.max(0,Math.min(s.dur,(s.url?(P.audio.currentTime||0):P.pos)+.25*P.speed));if(s.url)P.audio.currentTime=t;P.pos=t}
-  else if(s.url){P.pos=P.audio.currentTime||0;if(P.audio.ended)step(1,true)}else{P.pos+=.25*(P.rate||1);if(P.pos>=s.dur)step(1,true)}
+  else if(s.url){
+    if(P.audio.ended&&!P.endedLock){P.endedLock=true;step(1,true);return}
+    if(P.audio.paused&&!P.switching&&!dg){P.playing=false;mediaState();renderMini();syncPlayer();return}
+    P.pos=P.audio.currentTime||0;
+  }else{P.pos+=.25*(P.rate||1);if(P.pos>=s.dur)step(1,true)}
   if(!P.counted){const d=P.pos-(P.lp||0);P.lp=P.pos;if(d>0&&d<5)P.heard+=d;if(P.heard>=Math.max(1,(s.dur||0)/2)){P.counted=true;S.history.push({s:s.id,t:Date.now()});save();if(ui.tab==='top'||(ui.tab==='brani'&&(ui.sort==='most'||ui.sort==='recent')))softRefresh()}}
   syncPlayer();const f=$('#mini .fill');if(f)f.style.width=Math.min(100,P.pos/s.dur*100)+'%';
 },250);
@@ -1369,6 +1481,8 @@ function aiSettings(){
   <div style="height:18px"></div>
   ${setRow("Nome dell'assistente",'Ora si chiama «'+esc(AIN())+'».','<button class="btn alt" data-a="ainame">'+ic('pencil')+' Cambia</button>')}
   <div class="t" style="margin-top:12px">Come si apre</div>${seg('aiopen',s.aiOpen,[['button','Pulsante'],['edge','Barra laterale'],['both','Entrambi']])}
+  <div style="height:14px"></div>
+  ${setRow("Apri la tastiera appena apri la chat con l'IA","Se spento, la chat con l'IA si apre senza tastiera: puoi aprirla quando vuoi col tasto in alto.",sw('kbAuto',"Apri la tastiera appena apri la chat con l'IA"))}
   <div class="t" style="margin-top:14px">Come parla</div><div class="s" style="white-space:normal">Vale per ogni messaggio. Le scelte qui sono dette all'assistente insieme alla sua personalità.</div>
   ${seg('ptone',(s.persona||{}).tone||'def',[['def','Come sempre'],['amichevole','Amichevole e moderna'],['formale','Formale e rispettosa'],['asciutto','Asciutta e diretta']])}
   <div class="t" style="margin-top:14px">Come ti si rivolge</div>${seg('paddr',((s.persona||{}).addr==='lei'?'lei':'tu'),[['tu','Tu'],['lei','Lei']])}
@@ -1395,12 +1509,12 @@ function vOpzioni(){
   <div class="t" style="margin-top:14px">Temi salvati</div><div class="s" style="white-space:normal">Salva la combinazione attuale con un nome e riapplicala quando vuoi (massimo 8).</div>
   <div class="bar"><input id="tname" class="field" placeholder="Nome del tema" maxlength="24" style="flex:1;min-width:0"><button class="btn" data-a="tsave">${ic('plus')} Salva</button></div>
   ${(s.themes||[]).map((t,i)=>setRow(esc(t.name),'','<span class="bar" style="margin:0;gap:8px;flex-wrap:nowrap"><button class="btn alt" data-a="tload" data-id="'+i+'">Applica</button><button class="btn bad" data-a="tdel" data-id="'+i+'">'+ic('trash')+'</button></span>')).join('')}`:''}`)}
-  ${acc('ia','Intelligenza artificiale','Motore, nome, come si apre',aiSettings())}
-  ${acc('ascolto','Ascolto e navigazione','Chat, lettore, testi, libreria',`${setRow('Apri la tastiera quando si apre la chat','Se spento, la chat si apre senza tastiera: la tastiera la apri col tasto in alto.',sw('kbAuto','Apri la tastiera'))+setRow('Scorrimento rapido','Una striscia sul lato nelle liste (nascosta nella Home): toccala e trascina per scorrere veloce.',sw('fastScroll','Scorrimento rapido'))+`<div id="fsideWrap"${S.settings.fastScroll===false?' hidden':''}><div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}</div>`+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:16px">Aspetto del lettore</div><div class="s" style="white-space:normal">Scegli se vedere il disco che ruota (puoi girarlo con il dito per cambiare velocità) oppure la copertina della canzone.</div>${seg('pview',S.settings.playerView||'disc',[['disc','Disco'],['cover','Icona della canzone']])}`}<div class="t" style="margin-top:22px">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t" style="margin-top:22px">Libreria</div><div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Come si vedono cartelle e playlist</div>${seg('libview',s.libView||'cards',[['cards','Schede'],['list','Elenco']])}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
+  ${acc('ia','Intelligenza artificiale','Motore, nome, tastiera, come si apre',aiSettings())}
+  ${acc('ascolto','Ascolto e navigazione','Lettore, testi, libreria, scorrimento',`${setRow('Scorrimento rapido','Una striscia sul lato nelle liste (nascosta nella Home): toccala e trascina per scorrere veloce.',sw('fastScroll','Scorrimento rapido'))+`<div id="fsideWrap"${S.settings.fastScroll===false?' hidden':''}><div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}</div>`+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:16px">Aspetto del lettore</div><div class="s" style="white-space:normal">Scegli se vedere il disco che ruota (puoi girarlo con il dito per cambiare velocità) oppure la copertina della canzone.</div>${seg('pview',S.settings.playerView||'disc',[['disc','Disco'],['cover','Icona della canzone']])}`}<div class="t" style="margin-top:22px">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t" style="margin-top:22px">Libreria</div><div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Come si vedono cartelle e playlist</div>${seg('libview',s.libView||'cards',[['cards','Schede'],['list','Elenco']])}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
   ${acc('eq','Equalizzatore','Bassi, voci, acuti',eqHtml())}
   ${acc('profilo','Profilo','Nome, età, gusti',`${setRow('Il tuo profilo',pn?esc(pn)+(S.profile.age?' · '+esc(S.profile.age)+' anni':''):'Non ancora creato','<button class="btn alt" data-a="prof">'+(pn?'Modifica':'Crea')+'</button>')}${setRow('Condividi il profilo con '+AIN(),'Nome, età e gusti vengono inclusi nei messaggi a '+AIN()+' solo con un\'IA collegata.',sw('useProfile','Condividi il profilo'))}`)}
   ${acc('dati','Dati e privacy','Backup, azzera ascolti, svuota libreria, privacy',`<div class="t">Backup e ripristino</div><p class="sub">Salva o ripristina impostazioni, temi, sfondi salvati, profilo, playlist, cartelle, testi, commenti e ascolti in un file .json. I file audio restano sul telefono: se cambi dispositivo, dopo il ripristino reimporta le cartelle e tutto si ricollega.</p><div class="bar"><button class="btn" data-a="bkexp">${ic('down')} Esporta backup</button><label class="btn alt" for="bkIn" tabindex="0">${ic('up')} Carica backup</label></div><div class="t" style="margin-top:20px">Eliminazione dati</div><div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t" style="margin-top:22px">Privacy</div>${privacyHtml()}`)}
-  <div class="ffoot">Monster Music · versione 49 · 24 novembre 2026</div>`;
+  <div class="ffoot">Monster Music · versione 52 · 24 novembre 2026</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
@@ -1430,18 +1544,38 @@ const VIEWS={home:vHome,opzioni:vOpzioni,brani:vBrani,cartelle:vCartelle,playlis
 function render(keepScroll,restoreY){
   if(ui.tab!==ui.lastTab){OPEN.clear();ui.lastTab=ui.tab}
   document.documentElement.dataset.tab=ui.tab;
+  const gb=document.querySelector('[data-a="opzioni"]');
+  if(gb){const op=ui.tab==='opzioni';gb.classList.toggle('on',op);gb.setAttribute('aria-pressed',String(op))}
   const m=$('#main'),y=m.scrollTop;m.innerHTML=VIEWS[ui.tab]();
   if(keepScroll){m.scrollTop=y;m.classList.remove('enter')}
   else{m.scrollTop=typeof restoreY==='number'?restoreY:0;m.style.setProperty('--dx',(ui.dir||1)*30+'px');m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter')}
-  {const T=tabs();$('#nav').style.gridTemplateColumns='repeat('+T.length+',1fr)'}
   {const T=tabs(),nv=$('#nav'),key=T.map(t=>t[0]).join(',');
+    nv.style.gridTemplateColumns='repeat('+T.length+',1fr)';
     if(nv.dataset.k!==key){nv.dataset.k=key;nv.innerHTML='<span id="navind" aria-hidden="true"></span>'+T.map(([k,l,i])=>`<button data-a="tab" data-id="${k}" aria-label="${l}"><span class="nic">${ic(i)}</span><span>${l}</span></button>`).join('');nv.dataset.fresh='1'}
     nv.querySelectorAll('button').forEach(b=>{const on=b.dataset.id===ui.tab;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     if(nv.dataset.fresh){delete nv.dataset.fresh;snapInd()}else moveInd()}
   renderMini();renderSel();if(window.paintFast)paintFast();
 }
-function snapInd(){const ind=$('#navind');if(!ind)return;ind.style.transition='none';moveInd();void ind.offsetWidth;ind.style.transition=''}
-function moveInd(){const n=$('#nav'),ind=$('#navind'),b=n&&n.querySelector('button.on');if(!ind)return;if(!b){ind.style.opacity='0';return}ind.style.opacity='1';ind.style.width=b.offsetWidth+'px';ind.style.transform='translate3d('+b.offsetLeft+'px,0,0)'}
+function snapInd(){const ind=$('#navind');if(!ind)return;ind.style.setProperty('transition','none','important');moveInd(true);void ind.offsetWidth;ind.style.removeProperty('transition')}
+function moveInd(snap){
+  const n=$('#nav'),ind=$('#navind'),b=n&&n.querySelector('button.on');
+  if(!ind)return;
+  if(!b){ind.style.opacity='0';return}
+  const wasHidden=!snap&&ind.style.opacity==='0';
+  if(wasHidden){
+    ind.style.setProperty('transition','none','important');
+    ind.style.width=b.offsetWidth+'px';
+    ind.style.transform='translate3d('+b.offsetLeft+'px,0,0) scale(.86)';
+    void ind.offsetWidth;
+    ind.style.removeProperty('transition');
+    ind.style.opacity='1';
+    ind.style.transform='translate3d('+b.offsetLeft+'px,0,0) scale(1)';
+    return;
+  }
+  ind.style.opacity='1';
+  ind.style.width=b.offsetWidth+'px';
+  ind.style.transform='translate3d('+b.offsetLeft+'px,0,0) scale(1)';
+}
 let softT=0;function softRefresh(){clearTimeout(softT);softT=setTimeout(()=>{const a=document.activeElement;if(a&&(a.id==='q'||a.id==='npname'||a.id==='hq'||a.id==='nfname'))return;render(true)},400)}
 function go(tab){
   if(tab===ui.tab){
@@ -1797,7 +1931,9 @@ function eqInit(){
   try{const AC=window.AudioContext||window.webkitAudioContext;eqCtx=new AC();const src=eqCtx.createMediaElementSource(P.audio);
     eqNodes=EQF.map((f,i)=>{const b=eqCtx.createBiquadFilter();b.type=i===0?'lowshelf':i===EQF.length-1?'highshelf':'peaking';b.frequency.value=f;b.Q.value=1;b.gain.value=0;return b});
     eqMaster=eqCtx.createGain();
-    let n=src;eqNodes.forEach(x=>{n.connect(x);n=x});n.connect(eqMaster);eqMaster.connect(eqCtx.destination);return true}
+    let n=src;eqNodes.forEach(x=>{n.connect(x);n=x});n.connect(eqMaster);eqMaster.connect(eqCtx.destination);
+    eqCtx.onstatechange=()=>{if(eqCtx&&eqCtx.state!=='running'&&P.playing&&!P.audio.paused){try{eqCtx.resume().catch(()=>{})}catch(e){}}};
+    return true}
   catch(e){eqNodes=null;return false}
 }
 function eqApply(){
@@ -1958,7 +2094,7 @@ document.addEventListener('click',e=>{
    case'rmsong':{const p=S.playlists.find(x=>x.id===ui.detail.id);p.songs=p.songs.filter(x=>String(x)!==String(id));save();render(true);break}
    case'delpl':if(confirmTap(t,'Tocca ancora')){S.playlists=S.playlists.filter(x=>x.id!==id);ui.detail=null;ui.tabMem[ui.tab]={detail:null,scroll:0};save();render();toast('Playlist eliminata')}break;
    case'delsong':if(confirmTap(t,'Tocca ancora')){delBlob(id);delBlob('c'+id);S.songs=S.songs.filter(s=>String(s.id)!==String(id));S.playlists.forEach(p=>p.songs=p.songs.filter(x=>String(x)!==String(id)));S.recentPlayed=(S.recentPlayed||[]).filter(x=>String(x)!==String(id));const wasCur=cur()&&String(cur().id)===String(id);P.q=P.q.filter(x=>String(x)!==String(id));if(wasCur){P.i=Math.min(P.i,P.q.length-1);P.audio.pause();P.playing=false}save();closeSheet();render(true);toast('Brano eliminato')}break;
-   case'opzioni':jump('opzioni',null);break;
+   case'opzioni':if(ui.tab==='opzioni'){go(ui.prevTab&&ui.prevTab!=='opzioni'?ui.prevTab:'home')}else{ui.prevTab=ui.tab;jump('opzioni',null)}break;
    case'goart':closeSheet();jump('artisti',{t:'art',id});break;
    case'gopl':jump('playlist',{t:'pl',id});break;
    case'shuffle':{S.settings.shuffle=true;save();const q=S.songs.map(s=>String(s.id));for(let i=q.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[q[i],q[j]]=[q[j],q[i]]}if(q.length)playSong(q[0],q);break}
@@ -2340,7 +2476,7 @@ async function exportBackup(){
     for(const item of (S.settings.bgs||[])){const b=await getBlob('bg_'+item.id);if(b)bgs['bg_'+item.id]=await blobToDataUrl(b)}
     const lyrics={};
     for(const s of [...S.songs,...(S.hidden||[])]){if(s.lyr){const t=await getLyr(s.id);if(t)lyrics[String(s.id)]=t}}
-    const payload={app:'monster-music',version:49,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
+    const payload={app:'monster-music',version:52,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const url=URL.createObjectURL(blob),a=document.createElement('a');
     const dt=new Date().toISOString().slice(0,10);
@@ -2431,11 +2567,13 @@ document.addEventListener('change',e=>{if(e.target.id==='ptext'){S.settings.pers
 
 /* ---------- misure per il dock fluttuante ---------- */
 (function(){if(!window.ResizeObserver)return;const set=(k,v)=>document.documentElement.style.setProperty(k,v);
-  const ro=new ResizeObserver(()=>{set('--dock-h',$('#dock').offsetHeight+'px');set('--mt',$('#main').offsetTop+'px');snapInd()});
-  ro.observe($('#dock'));ro.observe($('#main'));ro.observe($('#nav'));ro.observe(document.querySelector('header'));})();
+  const ro=new ResizeObserver(()=>{set('--dock-h',$('#dock').offsetHeight+'px');set('--mt',$('#main').offsetTop+'px')});
+  ro.observe($('#dock'));ro.observe($('#main'));ro.observe(document.querySelector('header'));
+  let _nw=$('#nav')?$('#nav').offsetWidth:0;window.addEventListener('resize',()=>{const w=$('#nav')?$('#nav').offsetWidth:0;if(w&&w!==_nw){_nw=w;snapInd()}},{passive:true});})();
 
 /* ---------- avvio ---------- */
 (function init(){
+  if(!P.audio.isConnected)document.body.appendChild(P.audio);
   applySettings();initMedia();
   applyIcon();
   render();renderChat();restoreBlobs();applyBg();
