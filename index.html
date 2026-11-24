@@ -366,32 +366,46 @@ html[data-style="bn"][data-btn="m3"] .btn.bad{background:color-mix(in srgb,var(-
   --paper:#04141f; --grid:rgba(70,170,215,.08); --ink:#e8f4f8; --ink2:#8fb3c4; --card:#08202f;
   --violet:#2ea6d6; --on-v:#03121c; --lime:#1b8fc2; --on-lime:#03121c; --coral:#0a3550; --sky:#38bdd8; --sun:#e0b050; --on-sun:#04141f;
   --sh:#0a3048; --bd:#d4a645; --glow:rgba(40,150,200,.30); color-scheme:dark}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) body{font-size:20px;font-weight:500;letter-spacing:.2px;background-image:radial-gradient(120% 55% at 50% 118%,var(--glow),transparent 62%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:100% 100%,26px 26px,26px 26px}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) h1,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) h2,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .logo,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .ptitle,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .medal,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .rank,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .kpi b,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .dhead h3{text-transform:uppercase;letter-spacing:.6px;font-weight:400}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) h1{font-size:40px}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) h2{font-size:26px}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .logo{font-size:28px}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .ptitle{font-size:32px}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .t{font-size:21px;font-weight:600}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .s{font-size:17px}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .sk{border-width:2px}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) :focus-visible{outline:3px solid var(--sun)}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .scrib{background:linear-gradient(90deg,#ff2d1a,#ff8a00,#ffd23f);border-color:var(--bd)}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .say{background:color-mix(in srgb,var(--sky) 20%,var(--card))}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .disc{background:repeating-radial-gradient(circle,#0a0405 0 3px,#24090c 3px 6px)}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"]) .ctl .big{box-shadow:0 0 22px color-mix(in srgb,var(--violet) 55%,transparent),3px 4px 0 var(--sh)}
+/* ===== Stile Neon: metropoli di notte, luci soffuse viola e blu ===== */
+:root[data-style="neon"]{
+  --paper:#050814; --grid:rgba(96,165,250,.06); --ink:#eaf2ff; --ink2:#93a8d4; --card:#0c1328;
+  --violet:#9d5cff; --on-v:#060916; --lime:#3b82f6; --on-lime:#ffffff; --coral:#c026d3; --sky:#38bdf8; --sun:#60a5fa; --on-sun:#050814;
+  --sh:#1b1140; --bd:#5b73e8; --glow:rgba(139,92,246,.30); --wob:3px 16px 3px 16px;
+  --f-d:'Anton','Impact','Arial Narrow',sans-serif; --f-b:'Barlow Condensed','Arial Narrow',sans-serif; color-scheme:dark}
+:root[data-style="neon"][data-theme="light"]{
+  --paper:#0b1126; --grid:rgba(129,140,248,.07); --ink:#eff5ff; --ink2:#a3b6de; --card:#131c38;
+  --violet:#a86bff; --on-v:#070a18; --lime:#4f94ff; --on-lime:#ffffff; --coral:#d946ef; --sky:#56ccff; --sun:#7ab8ff; --on-sun:#070a18;
+  --sh:#241752; --bd:#6f86f2; --glow:rgba(157,92,255,.32); color-scheme:dark}
+:root[data-style="neon"][data-theme="dark"]{
+  --paper:#040610; --grid:rgba(96,165,250,.055); --ink:#eaf2ff; --ink2:#8fa4d0; --card:#0a1022;
+  --violet:#9d5cff; --on-v:#050814; --lime:#3b82f6; --on-lime:#ffffff; --coral:#c026d3; --sky:#38bdf8; --sun:#60a5fa; --on-sun:#050814;
+  --sh:#160d36; --bd:#546ce0; --glow:rgba(139,92,246,.32); color-scheme:dark}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) body{font-size:20px;font-weight:500;letter-spacing:.2px;background-image:radial-gradient(120% 55% at 50% 118%,var(--glow),transparent 62%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:100% 100%,26px 26px,26px 26px}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) h1,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) h2,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .logo,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .ptitle,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .medal,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .rank,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .kpi b,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .dhead h3{text-transform:uppercase;letter-spacing:.6px;font-weight:400}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) h1{font-size:40px}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) h2{font-size:26px}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .logo{font-size:28px}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .ptitle{font-size:32px}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .t{font-size:21px;font-weight:600}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .s{font-size:17px}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .sk{border-width:2px}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) :focus-visible{outline:3px solid var(--sun)}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .scrib{background:linear-gradient(90deg,#ff2d1a,#ff8a00,#ffd23f);border-color:var(--bd)}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .say{background:color-mix(in srgb,var(--sky) 20%,var(--card))}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .disc{background:repeating-radial-gradient(circle,#0a0405 0 3px,#24090c 3px 6px)}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"]) .ctl .big{box-shadow:0 0 22px color-mix(in srgb,var(--violet) 55%,transparent),3px 4px 0 var(--sh)}
 
 /* ===== Pulsanti: Material 3 (nel tema Inferno) ===== */
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .btn{border:0;border-radius:999px;box-shadow:none;padding:10px 20px;font-weight:600;letter-spacing:.3px}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .btn.alt{background:color-mix(in srgb,var(--violet) 18%,var(--card));color:var(--ink)}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .btn.bad{background:color-mix(in srgb,#ff3b30 26%,var(--card));color:var(--ink)}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .chip{border:1px solid color-mix(in srgb,var(--ink) 35%,transparent);border-radius:10px;box-shadow:none;background:transparent}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .chip.on{background:color-mix(in srgb,var(--violet) 30%,var(--card));color:var(--ink);border-color:transparent}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .aibtn{border:0;border-radius:16px;box-shadow:none}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .nav button{border:0;border-radius:18px;box-shadow:none}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .nav button.on{background:color-mix(in srgb,var(--violet) 30%,var(--card));color:var(--ink);transform:none;box-shadow:none}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .ctl .big{border:0;border-radius:30px;box-shadow:0 4px 16px color-mix(in srgb,var(--violet) 45%,transparent)}
-html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .btn:active,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .chip:active,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"])[data-btn="m3"] .nav button:active{transform:scale(.97);box-shadow:none}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .btn{border:0;border-radius:999px;box-shadow:none;padding:10px 20px;font-weight:600;letter-spacing:.3px}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .btn.alt{background:color-mix(in srgb,var(--violet) 18%,var(--card));color:var(--ink)}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .btn.bad{background:color-mix(in srgb,#ff3b30 26%,var(--card));color:var(--ink)}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .chip{border:1px solid color-mix(in srgb,var(--ink) 35%,transparent);border-radius:10px;box-shadow:none;background:transparent}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .chip.on{background:color-mix(in srgb,var(--violet) 30%,var(--card));color:var(--ink);border-color:transparent}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .aibtn{border:0;border-radius:16px;box-shadow:none}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .nav button{border:0;border-radius:18px;box-shadow:none}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .nav button.on{background:color-mix(in srgb,var(--violet) 30%,var(--card));color:var(--ink);transform:none;box-shadow:none}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .ctl .big{border:0;border-radius:30px;box-shadow:0 4px 16px color-mix(in srgb,var(--violet) 45%,transparent)}
+html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .btn:active,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .chip:active,html:is([data-style="inferno"],[data-style="bn"],[data-style="sea"],[data-style="sunny"],[data-style="sunset"],[data-style="neon"])[data-btn="m3"] .nav button:active{transform:scale(.97);box-shadow:none}
 /* decorazioni e ritocchi per Dark e Sea (dopo le regole condivise) */
 /* ---- decorazioni Sea (onde, bolle, barca) e Natural (ramo, erba) ---- */
 html[data-style="sea"] body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 24'%3E%3Cpath d='M0 12Q30 0 60 12T120 12V24H0Z' fill='%2338bdd8' fill-opacity='.13'/%3E%3Cpath d='M0 17Q30 6 60 17T120 17V24H0Z' fill='%2338bdd8' fill-opacity='.2'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 130'%3E%3Cg fill='%2338bdd8' fill-opacity='.07' stroke='%2338bdd8' stroke-opacity='.4' stroke-width='1.5'%3E%3Ccircle cx='20' cy='112' r='9'/%3E%3Ccircle cx='48' cy='88' r='5'/%3E%3Ccircle cx='28' cy='58' r='12'/%3E%3Ccircle cx='60' cy='34' r='6'/%3E%3Ccircle cx='38' cy='12' r='4'/%3E%3C/g%3E%3C/svg%3E"),radial-gradient(120% 55% at 50% 118%,var(--glow),transparent 62%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-repeat:repeat-x,no-repeat,no-repeat,repeat,repeat;background-position:left bottom,right 6px top 130px,0 0,0 0,0 0;background-size:120px 24px,80px 130px,100% 100%,26px 26px,26px 26px}
@@ -640,24 +654,84 @@ html.lowpower[data-btn="glass"] .ctl .big{background-color:var(--violet)!importa
 html.lowpower main.enter,html.lowpower main.enter :is(.list,.grid,.shelf)>*{animation:none!important}
 html.lowpower .sk{box-shadow:none!important}
 
-/* ===== v51: Icona Impostazioni attiva + animazione fluida barra di navigazione ===== */
+/* ===== v51-v53: Icona Impostazioni attiva, spaziatura uniforme e menu a tendina puliti ===== */
 #navind{will-change:transform,width,opacity}
 html[data-btn="glass"] #navind{transition:transform .55s cubic-bezier(.34,1.4,.64,1),width .45s cubic-bezier(.2,0,0,1),opacity .22s ease!important}
-.aibtn.g{transition:transform .42s cubic-bezier(.34,1.56,.64,1),border-radius .4s cubic-bezier(.34,1.56,.64,1),background-color .3s ease,color .3s ease,box-shadow .35s ease,border-color .3s ease}
-.aibtn.g .ic{transition:transform .55s cubic-bezier(.34,1.4,.64,1)}
+
+/* Icona Impostazioni attiva: leggermente più compatta e meno accecante */
+.aibtn.g{transition:transform .4s cubic-bezier(.34,1.56,.64,1),border-radius .38s cubic-bezier(.34,1.56,.64,1),background-color .3s ease,color .3s ease,box-shadow .35s ease,border-color .3s ease}
+.aibtn.g .ic{transition:transform .5s cubic-bezier(.34,1.4,.64,1)}
 html[data-tab="opzioni"] .aibtn.g,
 html[data-btn="glass"][data-tab="opzioni"] .aibtn.g,
 html.lowpower[data-btn="glass"][data-tab="opzioni"] .aibtn.g,
 .aibtn.g.on{
-  background-color:var(--violet)!important;
+  background-color:color-mix(in srgb,var(--violet) 74%,var(--card))!important;
   color:var(--on-v)!important;
   border-radius:50%!important;
-  transform:scale(1.16)!important;
-  border-color:color-mix(in srgb,var(--violet) 65%,#fff)!important;
-  box-shadow:0 0 18px color-mix(in srgb,var(--violet) 55%,transparent),inset 0 1px 0 rgba(255,255,255,.45)!important;
+  transform:scale(1.02)!important;
+  border-color:color-mix(in srgb,var(--violet) 55%,transparent)!important;
+  box-shadow:0 0 10px color-mix(in srgb,var(--violet) 32%,transparent),inset 0 1px 0 rgba(255,255,255,.28)!important;
 }
-html[data-tab="opzioni"] .aibtn.g:active,.aibtn.g.on:active{transform:scale(1.04)!important}
-html[data-tab="opzioni"] .aibtn.g .ic,.aibtn.g.on .ic{transform:rotate(90deg) scale(1.1)}
+html[data-tab="opzioni"] .aibtn.g:active,.aibtn.g.on:active{transform:scale(.95)!important}
+html[data-tab="opzioni"] .aibtn.g .ic,.aibtn.g.on .ic{transform:rotate(90deg) scale(.98)}
+
+/* Spaziatura standard e uniforme dentro le sezioni delle impostazioni */
+.accin{padding:18px 14px 18px;border-top:2px dashed var(--bd);display:flex;flex-direction:column;gap:14px}
+.accin>*{margin-top:0!important;margin-bottom:0!important}
+.accin>.t+ :is(.s,.dd,.bar,input[type=range],textarea,.ticks,.list,.cin,.eqrow){margin-top:-6px!important}
+.accin>.t+.setrow{margin-top:-4px!important}
+.accin>.s+ :is(.dd,.bar,input[type=range],textarea,.list){margin-top:-6px!important}
+.accin>input[type=range]+.ticks{margin-top:-10px!important}
+.accin .setrow+.setrow{margin-top:0!important}
+.accin .chips+.setrow{margin-top:0!important}
+.accin .eqrow+.eqrow{margin-top:-6px!important}
+.accin .cin+.cin{margin-top:-4px!important}
+#fsideWrap{display:flex;flex-direction:column;gap:8px;margin:0!important}
+#fsideWrap[hidden]{display:none!important}
+.aidet{display:flex;flex-direction:column;gap:12px;white-space:normal}
+.aidet>*{margin-top:0!important;margin-bottom:0!important}
+.aidet>.t+ :is(.s,.dd){margin-top:-6px!important}
+.privwrap{display:flex;flex-direction:column;gap:10px}
+.privwrap>*{margin:0!important}
+.privwrap>.t+.sub{margin-top:-4px!important}
+.secsep{margin-top:6px!important;padding-top:12px;border-top:1.5px dashed color-mix(in srgb,var(--bd) 35%,transparent)}
+
+/* Menu a tendina pulito per opzioni e ordinamenti */
+.dd{position:relative;width:100%}
+.dd.compact{width:fit-content;min-width:190px;max-width:100%;margin:10px 0 12px}
+.dd-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:16px;text-align:left;transition:transform .16s ease,background-color .22s ease,border-color .22s ease}
+.dd.compact .dd-btn{padding:8px 14px;border-radius:999px}
+.dd-btn:active{transform:scale(.98)}
+.dd-lbl{display:flex;align-items:baseline;gap:6px;min-width:0;overflow:hidden}
+.dd-lbl b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dd-pre{color:var(--ink2);font-size:15.5px;flex:none}
+.dd-arr{width:20px;height:20px;flex:none;color:var(--ink2);transition:transform .28s cubic-bezier(.2,.8,.2,1),color .22s ease}
+.dd.open .dd-arr{transform:rotate(180deg);color:var(--violet)}
+.dd-menu{margin-top:6px;padding:6px;border-radius:18px;display:flex;flex-direction:column;gap:4px;transform-origin:top;animation:ddIn .22s cubic-bezier(.2,.8,.2,1)}
+.dd-menu[hidden]{display:none!important}
+@keyframes ddIn{from{opacity:0;transform:translateY(-6px) scaleY(.95)}to{opacity:1;transform:none}}
+.dd-opt{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:12px;text-align:left;font-size:17px;color:var(--ink);transition:background-color .16s ease,transform .14s ease}
+.dd-opt:active{transform:scale(.98)}
+.dd-opt:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.dd-opt.on{background:color-mix(in srgb,var(--violet) 26%,transparent);font-weight:600}
+.dd-chk{width:18px;height:18px;flex:none;color:var(--violet)}
+html[data-btn="glass"] .dd-btn,html[data-btn="glass"] .dd-menu{
+  background-color:color-mix(in srgb,var(--card) var(--glass-op),transparent)!important;
+  backdrop-filter:blur(var(--glass-blur,18px)) saturate(170%);-webkit-backdrop-filter:blur(var(--glass-blur,18px)) saturate(170%);
+  border:1px solid color-mix(in srgb,var(--ink) 26%,transparent)!important;
+  box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 20%,transparent),0 6px 18px rgba(0,0,0,.14)!important;
+}
+html[data-btn="glass"] .dd.open .dd-btn{border-color:color-mix(in srgb,var(--violet) 55%,transparent)!important}
+html.lowpower[data-btn="glass"] .dd-btn,html.lowpower[data-btn="glass"] .dd-menu{background-color:var(--card)!important;box-shadow:0 2px 6px rgba(0,0,0,.18)!important}
+
+/* ===== Stile Neon: dettagli metropoli, canvas e bagliori viola/blu ===== */
+#neonCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+html[data-style="neon"] body{background-image:radial-gradient(85% 48% at 18% 18%,rgba(157,92,255,.22),transparent 65%),radial-gradient(90% 52% at 84% 82%,rgba(56,189,248,.20),transparent 65%),radial-gradient(110% 50% at 50% 112%,rgba(124,58,237,.26),transparent 62%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:100% 100%,100% 100%,100% 100%,26px 26px,26px 26px}
+html[data-style="neon"] h2::before{content:"";display:inline-block;width:.55em;height:.55em;margin-right:.38em;vertical-align:.06em;border-radius:50%;background:linear-gradient(135deg,#38bdf8,#a855f7);box-shadow:0 0 8px rgba(168,85,247,.75),0 0 14px rgba(56,189,248,.45)}
+html[data-style="neon"] .scrib{background:linear-gradient(90deg,#38bdf8,#6366f1,#a855f7)}
+html[data-style="neon"] .disc{background:repeating-radial-gradient(circle,#040714 0 3px,#131b3d 3px 6px);box-shadow:0 0 24px rgba(157,92,255,.28),4px 5px 0 var(--sh)}
+html[data-style="neon"] .hl{background:linear-gradient(transparent 55%,rgba(157,92,255,.42) 55%,rgba(56,189,248,.42) 94%,transparent 94%);color:var(--ink)}
+html[data-style="neon"] .say{background:color-mix(in srgb,#6366f1 18%,var(--card))}
 </style>
 </head>
 <body>
@@ -693,7 +767,7 @@ html[data-tab="opzioni"] .aibtn.g .ic,.aibtn.g.on .ic{transform:rotate(90deg) sc
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const DAY=864e5;
-const PALS={mostro:['#7b4dff','#ff6b57','#4cc9f0','#ffd23f','#9be22f','#ff8fd0'],inferno:['#e5252a','#ff5a1f','#ff8a00','#b3121c','#ff3b30','#c9182b'],sunny:['#f0b400','#e89b00','#7fd0f2','#ffd45e','#5bb8e8','#ffb020'],sunset:['#a24bb8','#ff7a3d','#ff4f81','#ffb347','#c084fc','#d6336c'],sea:['#0b6e99','#2aa7c9','#e0b050','#1b8fc2','#38bdd8','#c99a3b'],bn:['#f4eecf','#d9d3b3','#bcb695','#9d9879','#e8e2c2','#cfc9a8']};
+const PALS={mostro:['#7b4dff','#ff6b57','#4cc9f0','#ffd23f','#9be22f','#ff8fd0'],inferno:['#e5252a','#ff5a1f','#ff8a00','#b3121c','#ff3b30','#c9182b'],sunny:['#f0b400','#e89b00','#7fd0f2','#ffd45e','#5bb8e8','#ffb020'],sunset:['#a24bb8','#ff7a3d','#ff4f81','#ffb347','#c084fc','#d6336c'],sea:['#0b6e99','#2aa7c9','#e0b050','#1b8fc2','#38bdd8','#c99a3b'],bn:['#f4eecf','#d9d3b3','#bcb695','#9d9879','#e8e2c2','#cfc9a8'],neon:['#9d5cff','#38bdf8','#6366f1','#c084fc','#3b82f6','#22d3ee']};
 let PAL=PALS.inferno;
 function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function hash(s){let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
@@ -778,6 +852,8 @@ function decoHtml(st){
     return h}
   if(st==='inferno'){
     return '<canvas id="fireCanvas" aria-hidden="true"></canvas>'}
+  if(st==='neon'){
+    return '<canvas id="neonCanvas" aria-hidden="true"></canvas>'}
   if(st==='bn'){
     let h='';const n=26;
     for(let i=0;i<n;i++)h+=`<i class="eqb" style="left:${(i*100/n+.4).toFixed(2)}%;width:${(100/n-.8).toFixed(2)}%;height:${rnd(70,170)}px;animation-duration:${rnd(.7,1.9)}s;animation-delay:-${rnd(0,2)}s"></i>`;
@@ -923,6 +999,270 @@ const FIRE=(function(){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&running)lastT=performance.now()});
   return {sync,stop};
 })();
+
+/* ---------- metropoli notturna vista dall'alto + pioggia (tema Neon) ---------- */
+const NEON=(function(){
+  let raf=0,running=false,lastT=0;
+  let cityOff=document.createElement('canvas'),cityW=0,cityH=0,citySeeded=false;
+  let drops=[],glows=[];
+  function buildCity(cw,ch){
+    cityW=cw;cityH=ch;
+    const scale=0.55;
+    const ow=Math.max(120,Math.round(cw*scale)),oh=Math.max(180,Math.round(ch*scale));
+    cityOff.width=ow;cityOff.height=oh;
+    const ctx=cityOff.getContext('2d');
+    const rng=mulberry(207711);
+
+    // 1. Base notte profonda nero-blu
+    const bg=ctx.createLinearGradient(0,0,ow,oh);
+    bg.addColorStop(0,'#03050e');
+    bg.addColorStop(0.5,'#060b1d');
+    bg.addColorStop(1,'#09071c');
+    ctx.fillStyle=bg;
+    ctx.fillRect(0,0,ow,oh);
+
+    // 2. Aloni soffusi viola e blu della metropoli
+    const haze=[
+      [ow*0.20,oh*0.22,ow*0.65,'rgba(157,92,255,0.22)'],
+      [ow*0.82,oh*0.34,ow*0.62,'rgba(56,189,248,0.20)'],
+      [ow*0.30,oh*0.76,ow*0.70,'rgba(59,130,246,0.20)'],
+      [ow*0.78,oh*0.82,ow*0.66,'rgba(168,85,247,0.24)'],
+      [ow*0.50,oh*0.48,ow*0.55,'rgba(99,102,241,0.14)']
+    ];
+    for(const [x,y,r,col] of haze){
+      const g=ctx.createRadialGradient(x,y,0,x,y,r);
+      g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g;ctx.fillRect(0,0,ow,oh);
+    }
+
+    // 3. Reticolo di strade luminose in profondità tra i grattacieli
+    ctx.save();
+    const cols=5,rows=8;
+    for(let i=1;i<cols;i++){
+      const x=(ow/cols)*i+(rng()-0.5)*14;
+      const isV=i%2===0;
+      ctx.strokeStyle=isV?'rgba(168,85,247,0.20)':'rgba(56,189,248,0.18)';
+      ctx.lineWidth=Math.max(1.5,ow*0.008);
+      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+(rng()-0.5)*18,oh);ctx.stroke();
+    }
+    for(let j=1;j<rows;j++){
+      const y=(oh/rows)*j+(rng()-0.5)*14;
+      const isV=j%2===1;
+      ctx.strokeStyle=isV?'rgba(139,92,246,0.18)':'rgba(59,130,246,0.18)';
+      ctx.lineWidth=Math.max(1.5,oh*0.006);
+      ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(ow,y+(rng()-0.5)*18);ctx.stroke();
+    }
+    // Piccole scie luminose lontane sulle strade
+    for(let k=0;k<22;k++){
+      const sx=rng()*ow,sy=rng()*oh,len=8+rng()*20,horiz=rng()>0.5;
+      ctx.strokeStyle=rng()>0.5?'rgba(120,210,255,0.28)':'rgba(196,132,252,0.28)';
+      ctx.lineWidth=1.4;
+      ctx.beginPath();
+      ctx.moveTo(sx,sy);
+      ctx.lineTo(sx+(horiz?len:0),sy+(horiz?0:len));
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 4. Grattacieli visti dall'alto (prospettiva aerea convergente verso il centro)
+    const vpX=ow*0.52,vpY=oh*0.45;
+    const blds=[];
+    const gx=4,gy=6;
+    for(let ix=0;ix<gx;ix++){
+      for(let iy=0;iy<gy;iy++){
+        // Lascia un po' di respiro vicino al centro per vedere le strade in basso
+        const cx=(ix+0.5)/gx*ow+(rng()-0.5)*(ow/gx*0.38);
+        const cy=(iy+0.5)/gy*oh+(rng()-0.5)*(oh/gy*0.38);
+        const bw=(ow/gx)*(0.44+rng()*0.32);
+        const bh=(oh/gy)*(0.38+rng()*0.32);
+        const dist=Math.hypot((cx-vpX)/ow,(cy-vpY)/oh);
+        const hFactor=1.10+rng()*0.28+dist*0.16;
+        const accent=rng()>0.48?'purple':'blue';
+        blds.push({bx:cx-bw/2,by:cy-bh/2,bw,bh,hFactor,dist,accent,seed:rng(),hasRim:rng()>0.28});
+      }
+    }
+    // Disegna dai più bassi/centrali ai più alti verso i bordi
+    blds.sort((a,b)=>a.hFactor-b.hFactor);
+
+    function proj(x,y,hf){return [vpX+(x-vpX)*hf,vpY+(y-vpY)*hf]}
+
+    for(const b of blds){
+      const x1=b.bx,y1=b.by,x2=b.bx+b.bw,y2=b.by+b.bh;
+      const [rx1,ry1]=proj(x1,y1,b.hFactor);
+      const [rx2,ry2]=proj(x2,y2,b.hFactor);
+      const rw=rx2-rx1,rh=ry2-ry1;
+
+      // Bagliore diffuso alla base del grattacielo
+      const bGlow=ctx.createRadialGradient((rx1+rx2)/2,(ry1+ry2)/2,0,(rx1+rx2)/2,(ry1+ry2)/2,Math.max(rw,rh)*1.15);
+      bGlow.addColorStop(0,b.accent==='purple'?'rgba(157,92,255,0.14)':'rgba(56,189,248,0.13)');
+      bGlow.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=bGlow;
+      ctx.fillRect(rx1-rw,ry1-rh,rw*3,rh*3);
+
+      // Facciate laterali in prospettiva (visibili in base al lato rispetto al punto di fuga)
+      const sides=[];
+      if(rx1>vpX)sides.push([[x1,y1],[x1,y2],[rx1,ry2],[rx1,ry1],0.75]);
+      if(rx2<vpX)sides.push([[x2,y1],[x2,y2],[rx2,ry2],[rx2,ry1],0.75]);
+      if(ry1>vpY)sides.push([[x1,y1],[x2,y1],[rx2,ry1],[rx1,ry1],0.95]);
+      if(ry2<vpY)sides.push([[x1,y2],[x2,y2],[rx2,ry2],[rx1,ry2],0.95]);
+
+      for(const [p0,p1,p2,p3,shade] of sides){
+        const sg=ctx.createLinearGradient(p0[0],p0[1],p3[0],p3[1]);
+        sg.addColorStop(0,'#030510');
+        sg.addColorStop(1,shade>0.85?'#0b122b':'#080d22');
+        ctx.fillStyle=sg;
+        ctx.beginPath();
+        ctx.moveTo(p0[0],p0[1]);ctx.lineTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.lineTo(p3[0],p3[1]);
+        ctx.closePath();ctx.fill();
+
+        // Finestre soffuse lungo la facciata in prospettiva
+        const floors=5+Math.floor(b.seed*5),colsW=3+Math.floor(rng()*4);
+        for(let f=1;f<floors;f++){
+          const tf=f/floors;
+          for(let c=1;c<colsW;c++){
+            if(rng()<0.52)continue;
+            const tc=c/colsW;
+            const ax=p0[0]+(p1[0]-p0[0])*tc,ay=p0[1]+(p1[1]-p0[1])*tc;
+            const bx2=p3[0]+(p2[0]-p3[0])*tc,by2=p3[1]+(p2[1]-p3[1])*tc;
+            const wx=ax+(bx2-ax)*tf,wy=ay+(by2-ay)*tf;
+            const pick=rng();
+            ctx.fillStyle=pick>0.55?'rgba(105,195,255,0.48)':(pick>0.22?'rgba(186,120,255,0.46)':'rgba(215,232,255,0.34)');
+            const ws=1.3+tf*1.4;
+            ctx.fillRect(wx-ws*0.5,wy-ws*0.5,ws,ws*0.85);
+          }
+        }
+      }
+
+      // Tetto del grattacielo
+      const rg=ctx.createLinearGradient(rx1,ry1,rx2,ry2);
+      rg.addColorStop(0,'#0e1633');
+      rg.addColorStop(1,'#090e24');
+      ctx.fillStyle=rg;
+      ctx.fillRect(rx1,ry1,rw,rh);
+
+      // Strutture tecniche sfocate sul tetto
+      ctx.fillStyle='rgba(4,7,18,0.65)';
+      ctx.fillRect(rx1+rw*0.18,ry1+rh*0.2,rw*0.42,rh*0.36);
+      if(rw>26&&rh>26&&b.seed>0.55){
+        ctx.strokeStyle=b.accent==='purple'?'rgba(192,132,252,0.22)':'rgba(96,165,250,0.22)';
+        ctx.lineWidth=1.2;
+        ctx.beginPath();ctx.arc(rx1+rw*0.66,ry1+rh*0.65,Math.min(rw,rh)*0.16,0,6.283);ctx.stroke();
+      }
+
+      // Contorno neon soffuso sul tetto
+      if(b.hasRim){
+        ctx.strokeStyle=b.accent==='purple'?'rgba(176,108,255,0.36)':'rgba(72,188,255,0.34)';
+        ctx.lineWidth=1.4;
+        ctx.strokeRect(rx1+0.7,ry1+0.7,Math.max(1,rw-1.4),Math.max(1,rh-1.4));
+      }
+    }
+
+    // 5. Nebbia/foschia notturna soffusa sopra la metropoli per renderla meno definita e leggibile
+    const mist=ctx.createRadialGradient(vpX,vpY,ow*0.05,vpX,vpY,Math.max(ow,oh)*0.78);
+    mist.addColorStop(0,'rgba(22,18,52,0.26)');
+    mist.addColorStop(0.55,'rgba(7,11,28,0.34)');
+    mist.addColorStop(1,'rgba(3,5,14,0.62)');
+    ctx.fillStyle=mist;ctx.fillRect(0,0,ow,oh);
+
+    if(!citySeeded){
+      citySeeded=true;
+      drops=Array.from({length:105},(_,i)=>{
+        const layer=i<40?0:(i<82?1:2);
+        return {
+          x:Math.random(),y:Math.random(),
+          layer,
+          len:layer===0?(10+Math.random()*10):(layer===1?(18+Math.random()*16):(28+Math.random()*22)),
+          vy:layer===0?(0.42+Math.random()*0.18):(layer===1?(0.74+Math.random()*0.26):(1.15+Math.random()*0.38)),
+          hue:Math.random()>0.44?'blue':'purple',
+          alpha:layer===0?(0.14+Math.random()*0.10):(layer===1?(0.22+Math.random()*0.14):(0.30+Math.random()*0.18))
+        };
+      });
+      glows=[
+        {x:0.22,y:0.24,r:0.42,col:[157,92,255],ph:0.4,sp:0.8},
+        {x:0.78,y:0.36,r:0.40,col:[56,189,248],ph:2.1,sp:0.65},
+        {x:0.66,y:0.80,r:0.46,col:[168,85,247],ph:4.0,sp:0.72}
+      ];
+    }
+  }
+  function drawFrame(cv,dt,nowS){
+    const dpr=Math.min(window.devicePixelRatio||1,1.5);
+    const cw=Math.max(1,Math.round(window.innerWidth*dpr)),ch=Math.max(1,Math.round(window.innerHeight*dpr));
+    if(cv.width!==cw||cv.height!==ch){cv.width=cw;cv.height=ch}
+    if(cityW!==cw||cityH!==ch)buildCity(cw,ch);
+    const ctx=cv.getContext('2d');
+    ctx.clearRect(0,0,cw,ch);
+
+    // Disegna la metropoli vista dall'alto con sfocatura morbida (grattacieli non troppo definiti)
+    ctx.save();
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality='high';
+    if('filter' in ctx)ctx.filter=`blur(${(2.6*dpr).toFixed(1)}px)`;
+    ctx.drawImage(cityOff,-8*dpr,-8*dpr,cw+16*dpr,ch+16*dpr);
+    ctx.restore();
+
+    // Leggero respiro delle luci neon viola e blu nella notte
+    ctx.save();
+    ctx.globalCompositeOperation='lighter';
+    for(const g of glows){
+      const a=0.075+0.035*Math.sin(nowS*g.sp+g.ph);
+      const gx=g.x*cw,gy=g.y*ch,gr=g.r*Math.max(cw,ch);
+      const rad=ctx.createRadialGradient(gx,gy,0,gx,gy,gr);
+      rad.addColorStop(0,`rgba(${g.col[0]},${g.col[1]},${g.col[2]},${a.toFixed(3)})`);
+      rad.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=rad;ctx.fillRect(0,0,cw,ch);
+    }
+    ctx.restore();
+
+    // Pioggia animata con lieve inclinazione e riflessi blu/viola
+    const wind=-0.11;
+    ctx.save();
+    ctx.lineCap='round';
+    for(const d of drops){
+      if(dt>0){
+        d.y+=d.vy*dt;
+        d.x+=d.vy*wind*dt;
+        if(d.y>1.08){d.y=-0.08-Math.random()*0.1;d.x=Math.random()*1.18}
+        if(d.x<-0.1)d.x+=1.18;
+      }
+      const x1=d.x*cw,y1=d.y*ch;
+      const dl=d.len*dpr;
+      const x2=x1+dl*wind,y2=y1+dl;
+      ctx.lineWidth=(d.layer===0?0.85:(d.layer===1?1.15:1.55))*dpr;
+      ctx.strokeStyle=d.hue==='blue'
+        ?`rgba(135,205,255,${d.alpha.toFixed(2)})`
+        :`rgba(196,142,255,${d.alpha.toFixed(2)})`;
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function loop(t){
+    if(!running)return;
+    const cv=$('#neonCanvas');
+    if(!cv||document.hidden){raf=requestAnimationFrame(loop);return}
+    if(t-lastT>=28){
+      const dt=Math.min(0.06,(t-lastT)/1000||0.03);lastT=t;
+      drawFrame(cv,dt,t/1000);
+    }
+    raf=requestAnimationFrame(loop);
+  }
+  function sync(){
+    const want=S.settings.style==='neon'&&!S.settings.lowPower;
+    const cv=$('#neonCanvas');
+    if(!want||!cv){stop();return}
+    if(S.settings.animBg===false){
+      stop();
+      drawFrame(cv,0,1.2);
+      return;
+    }
+    if(!running){
+      running=true;lastT=0;
+      raf=requestAnimationFrame(loop);
+    }
+  }
+  function stop(){running=false;if(raf){cancelAnimationFrame(raf);raf=0}}
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&running)lastT=performance.now()});
+  return {sync,stop};
+})();
 const BN_VARS=['--wh','--paper','--card','--ink','--ink2','--violet','--lime','--sky','--sun','--sh','--bd','--grid','--glow'];
 function applyBnTone(){
   const r=document.documentElement;
@@ -953,7 +1293,7 @@ function applyBnTone(){
     ['--ink','--ink2','--violet','--lime','--sky','--sun','--sh','--bd','--grid','--glow'].forEach(k=>r.style.removeProperty(k));
   }
 }
-function applyDeco(){const d=$('#deco');if(!d)return;const st=S.settings.style;if(d.dataset.s!==st){FIRE.stop();d.dataset.s=st;d.innerHTML=decoHtml(st)}FIRE.sync()}
+function applyDeco(){const d=$('#deco');if(!d)return;const st=S.settings.style;if(d.dataset.s!==st){FIRE.stop();NEON.stop();d.dataset.s=st;d.innerHTML=decoHtml(st)}FIRE.sync();NEON.sync()}
 function applySettings(){const r=document.documentElement,t=S.settings.theme;if(t==='auto'){if(themeSet){r.removeAttribute('data-theme');themeSet=false}}else{r.setAttribute('data-theme',t);themeSet=true}r.dataset.style=S.settings.style;r.dataset.deco=S.settings.animBg===false?'off':'on';r.classList.toggle('lowpower',!!S.settings.lowPower);applyDeco();r.dataset.cshape=S.settings.coverShape||'theme';applyBnTone();r.dataset.btn=S.settings.btn;r.dataset.ai=S.settings.aiOpen;r.dataset.fast=S.settings.fastSide||'right';PAL=PALS[S.settings.style]||PALS.inferno;r.style.setProperty('--glass-op',Math.max(12,100-S.settings.glass*3.5)+'%');r.style.setProperty('--glass-blur',(S.settings.blur==null?18:S.settings.blur)+'px');r.classList.toggle('m3glass',!!S.settings.m3Glass);r.classList.toggle('noanim',!S.settings.anim);r.classList.toggle('nocomm',!S.settings.comments);r.classList.toggle('nofast',S.settings.fastScroll===false);applyCustom();applyAIName();applyIcon()}
 const MMS=(c1,c2,id)=>`<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c2}"/><stop offset="1" stop-color="${c1}"/></linearGradient></defs><g fill="none" stroke="url(#${id})" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 80V22L25 56L44 22V80"/><path d="M56 80V22L75 56L94 22V80"/></g></svg>`;
 const CV=['--f-d','--paper','--card','--ink','--ink2','--violet','--on-v','--lime','--on-lime','--coral','--sky','--sun','--on-sun','--sh','--bd','--glow','--grid','--wob'];
@@ -978,7 +1318,7 @@ function brandHtml(seed){
     if(C.icon==='mm')return `<span class="cov" style="--c:${C.c1}">${MMS(C.c1,C.c2,'mg'+Math.random().toString(36).slice(2,7))}</span>`;
     if(C.icon==='flame'){const f=flame(seed);return `<span class="cov" style="--c:${f.col}">${f.svg}</span>`}
   }
-  if(seed==='monster-music'&&(s.style==='inferno'||s.style==='bn'||s.style==='sea'||s.style==='sunny'||s.style==='sunset')){const a={bn:['#f4eecf','#9d9879'],sea:['#2ea6d6','#e0b050'],sunny:['#f0b400','#7fd0f2'],sunset:['#c084fc','#ff7a3d']}[s.style]||['#e11d2a','#ff8a00'];return `<span class="cov" style="--c:${a[0]}">${MMS(a[0],a[1],'mg'+Math.random().toString(36).slice(2,7))}</span>`}
+  if(seed==='monster-music'&&(s.style==='inferno'||s.style==='bn'||s.style==='sea'||s.style==='sunny'||s.style==='sunset'||s.style==='neon')){const a={bn:['#f4eecf','#9d9879'],sea:['#2ea6d6','#e0b050'],sunny:['#f0b400','#7fd0f2'],sunset:['#c084fc','#ff7a3d'],neon:['#a855f7','#38bdf8']}[s.style]||['#e11d2a','#ff8a00'];return `<span class="cov" style="--c:${a[0]}">${MMS(a[0],a[1],'mg'+Math.random().toString(36).slice(2,7))}</span>`}
   return cov(seed);
 }
 function applyIcon(){try{const a=$('#logoMo'),b=$('#aiMo');if(a)a.innerHTML=brandHtml('monster-music');if(b)b.innerHTML=brandHtml('nota')}catch(e){}}
@@ -1309,15 +1649,15 @@ function brList(){
   return songList(l);
 }
 function vBrani(){
-  const ch=[['az','A–Z'],['artist','Artista'],['most','Più ascoltati'],['recent','Recenti'],['added','Appena aggiunti']].map(([k,t])=>`<button class="chip${ui.sort===k?' on':''}" data-a="sort" data-id="${k}">${t}</button>`).join('');
+  const dd=seg('sort',ui.sort,[['az','A–Z'],['artist','Artista'],['most','Più ascoltati'],['recent','Recenti'],['added','Appena aggiunti']],'Ordina');
   return `<h1>I miei <span class="hl">brani</span></h1><p class="sub">${S.songs.length} canzoni, tutte in un posto solo.</p>
   <label class="search sk">${ic('search')}<input id="q" type="search" placeholder="Cerca titolo, artista, album…" value="${esc(ui.q)}"></label>
-  <div class="chips">${ch}</div><div id="blist">${brList()}</div>
+  ${dd}<div id="blist">${brList()}</div>
   <div class="bar"><label class="btn" for="fileIn" tabindex="0" data-a="import">${ic('up')} Aggiungi file</label></div>`;
 }
 const FSORT={az:(a,b)=>a.title.localeCompare(b.title),artist:(a,b)=>a.artist.localeCompare(b.artist)||a.title.localeCompare(b.title),album:(a,b)=>(a.album||'').localeCompare(b.album||'')||a.title.localeCompare(b.title),year:(a,b)=>(Number(a.year)||9999)-(Number(b.year)||9999)||a.title.localeCompare(b.title),most:(a,b)=>plays(b.id)-plays(a.id),recent:(a,b)=>lastPlay(b.id)-lastPlay(a.id),added:(a,b)=>addedOf(b)-addedOf(a)||a.title.localeCompare(b.title)};
 const FSL=[['az','A–Z'],['artist','Artista'],['album','Album'],['year','Anno, dal più vecchio'],['most','Più ascoltati'],['recent','Recenti'],['added','Appena aggiunti']];
-function fsortChips(){return FSL.map(([k,t])=>`<button class="chip${(S.settings.folderSort||'az')===k?' on':''}" data-a="fsort" data-id="${k}">${t}</button>`).join('')}
+function fsortChips(){return seg('fsort',S.settings.folderSort||'az',FSL,'Ordina')}
 const srcOf=s=>s.src||s.folder||'File aggiunti';
 const inSrc=(s,n)=>{const v=srcOf(s);return v===n||v.startsWith(n+'/')};
 function srcList(){const m=new Map();
@@ -1343,7 +1683,7 @@ function srcBlock(){const sl=srcList();if(!sl.length&&!dirSupported)return '';
 function vCartelle(){
   if(ui.detail&&ui.detail.t==='folder'){const n=ui.detail.id,l=S.songs.filter(s=>s.folder===n).sort(FSORT[S.settings.folderSort]||FSORT.az),fch=fsortChips();
     return `<button class="back" data-a="back">${ic('back')} Tutte le cartelle</button><div class="hero sk">${folderSvg(n)}<div style="min-width:0"><h1>${esc(n)}</h1><div class="sub" style="margin:0">${l.length} brani importati da qui</div></div></div>
-    <div class="bar">${l.length?`<button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button>`:''}<label class="btn alt" for="fileIn" tabindex="0" data-a="addhere" data-id="${esc(n)}">${ic('up')} Aggiungi file qui</label>${l.length?'':`<button class="btn bad" data-a="delfold" data-id="${esc(n)}">${ic('trash')} Elimina</button>`}</div><div class="chips" style="margin:10px 0">${fch}</div>${songList(l)}`}
+    <div class="bar">${l.length?`<button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button>`:''}<label class="btn alt" for="fileIn" tabindex="0" data-a="addhere" data-id="${esc(n)}">${ic('up')} Aggiungi file qui</label>${l.length?'':`<button class="btn bad" data-a="delfold" data-id="${esc(n)}">${ic('trash')} Elimina</button>`}</div>${fch}${songList(l)}`}
   const f=folders();
   return `<h1>Le <span class="hl">cartelle</span></h1><p class="sub">Da qui arrivano le tue canzoni.</p>
   <div class="bar"><label class="btn alt" for="fileIn" tabindex="0" data-a="import">${ic('up')} Scegli file</label>${dirSupported?'<button class="btn alt" data-a="syncall">Aggiorna la sincronizzazione</button>':''}</div>
@@ -1351,7 +1691,7 @@ function vCartelle(){
   ${srcBlock()}${dirSupported?'':'<p class="sub">Su questo dispositivo non si possono scegliere intere cartelle. Crea una cartella qui sotto, aprila e aggiungi i file dentro.</p>'}
   <p class="sub">Se toccando non si apre nulla, apri questa pagina in Chrome o Safari: l'app potrebbe non permettere di scegliere i file.</p>
   <form class="newpl" id="newfold"><input id="nfname" placeholder="Nome della nuova cartella" aria-label="Nome cartella" autocomplete="off"><button class="btn">${ic('plus')} Crea</button></form>
-  <div class="viewsw"><span class="s">Vista</span>${seg('libview',S.settings.libView||'cards',[['cards','Schede'],['list','Elenco']])}</div>
+  ${seg('libview',S.settings.libView||'cards',[['cards','Schede'],['list','Elenco']],'Vista')}
   ${f.length?(S.settings.libView==='list'?`<div class="list">${f.map(n=>`<button class="row sk" data-a="open" data-t="folder" data-id="${esc(n)}" style="text-align:left"><span class="fico">${folderSvg(n)}</span><div class="rowmain" style="gap:0"><div><div class="t">${esc(n)}</div><div class="s">${S.songs.filter(s=>s.folder===n).length} brani</div></div></div></button>`).join('')}</div>`:`<div class="grid">${f.map(n=>`<button class="card sk" data-a="open" data-t="folder" data-id="${esc(n)}">${folderSvg(n)}<div class="t">${esc(n)}</div><div class="s">${S.songs.filter(s=>s.folder===n).length} brani</div></button>`).join('')}</div>`):'<div class="empty sk">Ancora nessuna cartella. Importane una oppure creane una tu.</div>'}`;
 }
 function vPlaylist(){
@@ -1361,7 +1701,7 @@ function vPlaylist(){
     <div class="bar">${l.length?`<button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button>`:''}<button class="btn alt" data-a="picker">${ic('plus')} Aggiungi brani</button><button class="btn bad" data-a="delpl" data-id="${p.id}" id="delpl">${ic('trash')} Elimina</button></div>${songList(l,'remove')}`}
   return `<h1>Le <span class="hl">playlist</span></h1><p class="sub">Raccolte tue, scelte a mano.</p>
   <form class="newpl" id="newpl"><input id="npname" placeholder="Nome della nuova playlist" value="${esc(ui.newpl)}" aria-label="Nome playlist"><button class="btn">${ic('plus')} Crea</button></form>
-  <div class="viewsw"><span class="s">Vista</span>${seg('libview',S.settings.libView||'cards',[['cards','Schede'],['list','Elenco']])}</div>
+  ${seg('libview',S.settings.libView||'cards',[['cards','Schede'],['list','Elenco']],'Vista')}
   ${S.settings.libView!=='list'&&S.playlists.length?`<div class="grid">${S.playlists.map(p=>{const l=p.songs.map(byId).filter(Boolean).slice(0,4);return `<button class="card sk" data-a="open" data-t="pl" data-id="${p.id}"><span class="mosaic">${[0,1,2,3].map(i=>l[i]?scov(l[i],''):'<span></span>').join('')}</span><div class="t">${esc(p.name)}</div><div class="s">${p.songs.length} brani</div></button>`}).join('')}</div>`:''}
   <div class="list">${S.settings.libView!=='list'&&S.playlists.length?'':S.playlists.map(p=>{const l=p.songs.map(byId).filter(Boolean).slice(0,4);
    return `<button class="row sk" data-a="open" data-t="pl" data-id="${p.id}" style="text-align:left"><span class="mosaic">${[0,1,2,3].map(i=>l[i]?scov(l[i],''):'<span></span>').join('')}</span><div class="rowmain" style="gap:0"><div><div class="t">${esc(p.name)}</div><div class="s">${p.songs.length} brani</div></div></div></button>`}).join('')||'<div class="empty sk">Nessuna playlist. Creane una qui sopra.</div>'}</div>`;
@@ -1380,22 +1720,22 @@ function vArtisti(){
     ${best?`<div class="say sk"><small>${AIN()} dice</small>Il tuo preferito di ${esc(n)} è «${esc(best.title)}», con ${plays(best.id)} ascolti.</div>`:''}
     <div class="bar"><button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button><button class="btn alt" data-a="renart" data-id="${esc(n)}">${ic('pencil')} Rinomina</button></div>${songList(l)}`}
   const a=artists();
-  const chips=[['az','A–Z'],['most','Più ascoltati'],['songs','Più brani']].map(([k,t])=>`<button class="chip${(ui.asort||'az')===k?' on':''}" data-a="asort" data-id="${k}">${t}</button>`).join('');
+  const dd=seg('asort',ui.asort||'az',[['az','A–Z'],['most','Più ascoltati'],['songs','Più brani']],'Ordina');
   return `<h1>Gli <span class="hl">artisti</span></h1><p class="sub">${a.length} voci nella tua collezione.</p>${a.length?'':'<div class="empty sk">Nessun artista ancora. Importa dei brani e compariranno qui.</div>'}
-  ${a.length?`<label class="search sk">${ic('search')}<input id="aq" type="search" placeholder="Cerca artista…" value="${esc(ui.aq)}"></label><div class="chips">${chips}</div>`:''}
+  ${a.length?`<label class="search sk">${ic('search')}<input id="aq" type="search" placeholder="Cerca artista…" value="${esc(ui.aq)}"></label>${dd}`:''}
   <div id="alist">${artList()}</div>`;
 }
 function vTop(){
   const p=PERIODS.find(x=>x.k===ui.period),st=stats(p.ms),mx=st.songs[0]?st.songs[0].k:1;
   if(st.n)setTimeout(()=>requestTopAiComment(p,st,false),40);
-  const chips=PERIODS.map(x=>`<button class="chip${x.k===p.k?' on':''}" data-a="period" data-id="${x.k}">${x.l}</button>`).join('');
+  const periodDd=seg('period',p.k,PERIODS.map(x=>[x.k,x.l]),'Periodo');
   const pod=st.songs.slice(0,3),order=[pod[1],pod[0],pod[2]],cls=['p2','p1','p3'],med=['2','1','3'];
   const podium=pod.length===3?`<div class="podium">${order.map((x,i)=>`<button class="pod sk ${cls[i]}" data-a="play" data-id="${x.s.id}"><span class="medal">${med[i]}°</span>${scov(x.s)}<span class="t">${esc(x.s.title)}</span><span class="s">${x.k} ascolti</span></button>`).join('')}</div>`:'';
   ui.ctx=st.songs.map(x=>x.s.id);
   const rest=st.songs.slice(0,10).map((x,i)=>`<button class="row sk" data-a="play" data-id="${x.s.id}" style="text-align:left;width:100%"><span class="rank">${i+1}</span><div class="rowmain" style="gap:0"><div style="width:100%"><div class="t">${esc(x.s.title)}</div><div class="s">${esc(x.s.artist)} · ${x.k} ascolti</div><div class="scrib" style="width:${Math.max(8,x.k/mx*100)}%"></div></div></div></button>`).join('');
   const arts=st.artists.slice(0,3).map(a=>`<div class="row sk" style="gap:12px">${acov(a.name,'')}<div class="rowmain"><div><div class="t">${esc(a.name)}</div><div class="s">${a.k} ascolti</div></div></div></div>`).join('');
   return `<h1>Il tuo <span class="hl">resoconto</span></h1><p class="sub">Cosa hai ascoltato di più, secondo ${AIN()}.</p>
-  <div class="chips">${chips}</div>
+  ${periodDd}
   <div class="kpis"><div class="kpi sk"><b>${st.n}</b><span>ascolti</span></div><div class="kpi sk"><b>${st.sec>=3600?(st.sec/3600).toFixed(1).replace('.',','):Math.round(st.sec/60)}</b><span>${st.sec>=3600?'ore':'minuti'}</span></div><div class="kpi sk"><b>${st.songs.length}</b><span>brani diversi</span></div></div>
   <div class="say sk"><div class="sayhead"><small>Il commento di ${AIN()}</small>${st.n&&aiAvailableForComments()?`<button class="sayref" data-a="reftopc" data-id="${p.k}" aria-label="Nuovo commento">${ic('refresh')}</button>`:''}</div><span data-topsay="${topCommentKey(p,st)}">${esc(topComment(p,st))}</span></div>
   ${st.n?`${podium}<h2>Canzoni più ascoltate</h2><div class="list">${rest}</div><h2>Artisti del periodo</h2><div class="list">${arts}</div>`:''}`;
@@ -1456,7 +1796,11 @@ function fillStorage(){
   const e=$('#stor');if(!e)return;
   try{navigator.storage.estimate().then(r=>{const mb=(r.usage||0)/1048576;e.textContent=mb>=1024?(mb/1024).toFixed(1).replace('.',',')+' GB':Math.round(mb)+' MB'}).catch(()=>{e.textContent='non disponibile'})}catch(x){e.textContent='non disponibile'}
 }
-const seg=(act,curv,opts)=>`<div class="chips" style="margin:6px 0 0">${opts.map(([k,l])=>`<button class="chip${curv===k?' on':''}" data-a="${act}" data-id="${k}">${l}</button>`).join('')}</div>`;
+const seg=(act,curv,opts,prefix)=>{
+  const hit=opts.find(([k])=>String(k)===String(curv));
+  const curLbl=hit?hit[1]:(curv==='custom'?'Personalizzata':(opts[0]?opts[0][1]:''));
+  return `<div class="dd${prefix?' compact':''}"><button type="button" class="dd-btn sk" data-a="ddtog" aria-expanded="false"><span class="dd-lbl">${prefix?`<span class="dd-pre">${esc(prefix)}:</span>`:''}<b>${esc(curLbl)}</b></span><svg class="ic dd-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="dd-menu sk" hidden>${opts.map(([k,l])=>{const on=String(curv)===String(k);return `<button type="button" class="dd-opt${on?' on':''}" data-a="${act}" data-id="${esc(k)}"><span>${esc(l)}</span>${on?'<svg class="ic dd-chk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>':''}</button>`}).join('')}</div></div>`;
+};
 const OPEN=new Set();
 const acc=(id,title,sub,body)=>`<details class="acc sk" data-acc="${id}"${OPEN.has(id)?' open':''}><summary><span><span class="t">${title}</span><span class="s">${sub}</span></span></summary><div class="accb"><div class="accin">${body}</div></div></details>`;
 function privacyHtml(){const N=esc(AIN());return `<p class="sub"><b>Monster Music non ha un server suo</b>: non ci sono account, statistiche, pubblicità né tracciamento. Il sito non riceve né i tuoi brani né i tuoi ascolti.</p>
@@ -1477,23 +1821,21 @@ function aiSettings(){
   if(e==='claude')det=setRow('Chiave Claude (Anthropic)',ks('apiKey'),'<button class="btn alt" data-a="aikey" data-id="claude">'+(s.apiKey?'Modifica':'Inserisci')+'</button>');
   if(e==='offline')det=`<div class="s" style="white-space:normal">Un modello piccolo che gira sul telefono, senza internet dopo il download. Serve Chrome con WebGPU: su molti iPhone e telefoni vecchi non funziona.</div>${seg('offmodel',s.offModel,[['Qwen2.5-0.5B-Instruct-q4f16_1-MLC','Leggero ~0,4 GB'],['Qwen2.5-1.5B-Instruct-q4f16_1-MLC','Migliore ~1 GB']])}<div class="bar"><button class="btn alt" data-a="offdl" id="offdl">${ic('up')} ${s.offReady?'Scarica di nuovo / verifica':'Scarica il modello'}</button></div><div class="prog" id="offprog" hidden><i></i></div><div class="s" id="offtxt">${s.offReady?'Modello già scaricato.':'Non ancora scaricato.'}</div>`;
   if(e==='local')det='Nessuna IA: risposte scritte dentro l\'app, solo su argomenti noti.';
-  return `<div class="t">Motore</div>${seg('aieng',e,AIE)}<div class="s" style="white-space:normal;margin-top:8px">${det}</div>
-  <div style="height:18px"></div>
+  return `<div class="t">Motore</div>${seg('aieng',e,AIE)}<div class="s aidet">${det}</div>
   ${setRow("Nome dell'assistente",'Ora si chiama «'+esc(AIN())+'».','<button class="btn alt" data-a="ainame">'+ic('pencil')+' Cambia</button>')}
-  <div class="t" style="margin-top:12px">Come si apre</div>${seg('aiopen',s.aiOpen,[['button','Pulsante'],['edge','Barra laterale'],['both','Entrambi']])}
-  <div style="height:14px"></div>
+  <div class="t">Come si apre</div>${seg('aiopen',s.aiOpen,[['button','Pulsante'],['edge','Barra laterale'],['both','Entrambi']])}
   ${setRow("Apri la tastiera appena apri la chat con l'IA","Se spento, la chat con l'IA si apre senza tastiera: puoi aprirla quando vuoi col tasto in alto.",sw('kbAuto',"Apri la tastiera appena apri la chat con l'IA"))}
-  <div class="t" style="margin-top:14px">Come parla</div><div class="s" style="white-space:normal">Vale per ogni messaggio. Le scelte qui sono dette all'assistente insieme alla sua personalità.</div>
+  <div class="t secsep">Come parla</div><div class="s" style="white-space:normal">Vale per ogni messaggio. Le scelte qui sono dette all'assistente insieme alla sua personalità.</div>
   ${seg('ptone',(s.persona||{}).tone||'def',[['def','Come sempre'],['amichevole','Amichevole e moderna'],['formale','Formale e rispettosa'],['asciutto','Asciutta e diretta']])}
-  <div class="t" style="margin-top:14px">Come ti si rivolge</div>${seg('paddr',((s.persona||{}).addr==='lei'?'lei':'tu'),[['tu','Tu'],['lei','Lei']])}
-  <div class="t" style="margin-top:14px">Emoji</div>${seg('pemoji',(['no','poche','tante'].includes((s.persona||{}).emoji)?s.persona.emoji:'poche'),[['no','Nessuna'],['poche','Poche'],['tante','Tante']])}
-  <div class="t" style="margin-top:14px">Istruzioni fisse</div><div class="s" style="white-space:normal">Scrivi come deve parlare, con parole tue. Valgono per ogni messaggio.</div>
+  <div class="t">Come ti si rivolge</div>${seg('paddr',((s.persona||{}).addr==='lei'?'lei':'tu'),[['tu','Tu'],['lei','Lei']])}
+  <div class="t">Emoji</div>${seg('pemoji',(['no','poche','tante'].includes((s.persona||{}).emoji)?s.persona.emoji:'poche'),[['no','Nessuna'],['poche','Poche'],['tante','Tante']])}
+  <div class="t">Istruzioni fisse</div><div class="s" style="white-space:normal">Scrivi come deve parlare, con parole tue. Valgono per ogni messaggio.</div>
   <textarea id="ptext" class="field" rows="4" maxlength="600" placeholder="Es. Parla come un amico che conosce bene la musica. Chiamami per nome. Niente elenchi lunghi.">${esc((s.persona||{}).text||'')}</textarea>`;
 }
 const AIE=[['auto','Automatico'],['gemini','Gemini'],['claude','Claude'],['offline','Offline'],['local','Preimpostato']];
 function vOpzioni(){
   const s=S.settings,C=s.custom;
-  const sty=seg('style',s.style,[['inferno','Inferno'],['bn','Dark'],['sea','Sea'],['sunny','Sunny'],['sunset','Sunset'],['natura','Natural'],['mostro','Disegno'],['custom','Personalizzato']]);
+  const sty=seg('style',s.style,[['inferno','Inferno'],['neon','Neon'],['bn','Dark'],['sea','Sea'],['sunny','Sunny'],['sunset','Sunset'],['natura','Natural'],['mostro','Disegno'],['custom','Personalizzato']]);
   const th=seg('theme',s.theme,[['auto','Automatico'],['light','Chiaro'],['dark','Scuro']]);
   const btn=seg('btn',s.btn,[['m3','Material 3'],['glass','Liquid Glass']]);
   const so=seg('defsort',s.sort,[['az','A–Z'],['artist','Artista'],['most','Più ascoltati'],['recent','Recenti'],['added','Appena aggiunti']]);
@@ -1503,18 +1845,18 @@ function vOpzioni(){
   setTimeout(()=>{fillStorage();paintBgThumbs()},60);
   return `<button class="back" data-a="tab" data-id="home">${ic('back')} Home</button><h1>Le <span class="hl">impostazioni</span></h1>
   <p class="sub">Tocca una voce per aprirla.</p>
-  ${acc('aspetto','Aspetto','Stile, tema e colori, sfondo, animazioni',`<div class="t">Stile dell'app</div>${sty}${s.style==='bn'?`<div class="t" style="margin-top:14px">Tonalità del bianco</div><input type="range" class="wslider" data-bnt="1" min="0" max="100" step="1" value="${s.bnTone==null?55:s.bnTone}" aria-label="Tonalità del bianco"><div class="ticks" style="display:flex;justify-content:space-between;font-size:14px;color:var(--ink2)"><span>Bianco puro</span><span>Giallastro</span></div>`:''}<div class="t" style="margin-top:14px">Tema</div>${th}<div class="t" style="margin-top:14px">Sfondo</div><div class="s" style="white-space:normal">Scegli una foto dalla galleria, dagli un nome e salvala nell'app per riusarla quando vuoi.</div><div class="bar"><label class="btn alt" for="bgIn" tabindex="0">${ic('up')} Scegli immagine</label>${s.bgImg?'<button class="btn bad" data-a="bgdel">'+ic('trash')+' Rimuovi sfondo</button>':''}<input type="file" id="bgIn" class="vh" accept="image/*" tabindex="-1" aria-hidden="true"></div>${s.bgImg?`<div class="t" style="margin-top:10px">Luminosità dello sfondo: <span id="bgbv">${s.bgBright==null?60:s.bgBright}%</span></div><input type="range" data-bgb="1" min="10" max="150" step="5" value="${s.bgBright==null?60:s.bgBright}" aria-label="Luminosità dello sfondo">`:''}${(s.bgs&&s.bgs.length)?`<div class="t" style="margin-top:14px">Sfondi salvati</div><div class="list" style="margin-top:8px">${s.bgs.map(b=>`<div class="bgrow sk"><img class="bgthumb" data-bgth="${esc(b.id)}" alt=""><div style="flex:1;min-width:0"><div class="t">${esc(b.name)}</div><div class="s">${s.bgImg&&s.bgId===b.id?'Attivo ora':'Salvato nell\'app'}</div></div><span class="bar" style="margin:0;gap:6px;flex-wrap:nowrap"><button class="btn${s.bgImg&&s.bgId===b.id?'':' alt'}" data-a="bguse" data-id="${esc(b.id)}">${s.bgImg&&s.bgId===b.id?'Attivo':'Applica'}</button><button class="btn bad" data-a="bgrm" data-id="${esc(b.id)}" aria-label="Elimina sfondo">${ic('trash')}</button></span></div>`).join('')}</div>`:''}<div class="t" style="margin-top:14px">Forma delle icone dei brani</div>${seg('cshape',s.coverShape||'theme',[['theme','Preimpostata dal tema'],['circle','Cerchio'],['square','Quadrato'],['soft','Quadrato smussato']])}${s.btn==='glass'?`<div class="t" style="margin-top:14px">Trasparenza del vetro</div><div class="s">Più alto = più trasparente, meno colore. Valore: <span id="gval">${s.glass}</span></div><input type="range" data-g="1" min="0" max="40" value="${s.glass}"><div class="t" style="margin-top:14px">Sfocatura</div><div class="s">Quanto è sfocato ciò che sta dietro i pulsanti. Valore: <span id="bval">${s.blur==null?18:s.blur}</span> px</div><input type="range" data-bl="1" min="0" max="40" value="${s.blur==null?18:s.blur}">`:''}${s.btn==='m3'?setRow('Barra semitrasparente','Stessa intensità del vetro, applicata alla barra Material 3.',sw('m3Glass','Barra semitrasparente')):''}<div style="height:20px"></div>${setRow('Animazioni','Movimenti quando cambi sezione',sw('anim','Animazioni'))}<div style="height:14px"></div>${setRow('Sfondo animato','Fiamme, onde, foglie e altre decorazioni che si muovono dietro l\'app. Spento: restano ferme.',sw('animBg','Sfondo animato'))}${setRow('Dispositivo poco potente','Riduce sfocature, trasparenze e decorazioni animate per rendere l\'app molto più fluida.',sw('lowPower','Dispositivo poco potente'))}${setRow('Commenti di '+AIN(),'Il parere su canzoni e ascolti',sw('comments','Commenti di '+AIN()))}${s.style==='custom'?`<div class="t" style="margin-top:22px">Tema personalizzato</div><div class="s" style="white-space:normal">Colori, font, forma e temi salvati.</div><div class="s">Cambia un colore e l'app passa subito allo stile Personalizzato.</div>${colorIn('bg','Sfondo')}${colorIn('ink','Testo e bordi')}${colorIn('c1','Colore principale')}${colorIn('c2','Colore secondario')}${colorIn('c3','Colore terziario')}<div class="t" style="margin-top:14px">Icona dentro l'app</div>${seg('ciicon',C.icon,[['mm','Doppia M'],['flame','Fiamma'],['monster','Mostro']])}<div class="t" style="margin-top:14px">Forma</div>${seg('cround',C.round,[['soft','Morbida'],['sharp','Spigolosa']])}<div class="t" style="margin-top:14px">Arrotondamento. Valore: <span id="crval">${C.radius!=null?C.radius:(C.round==='sharp'?3:16)}</span></div><input type="range" data-cr="1" min="0" max="30" value="${C.radius!=null?C.radius:(C.round==='sharp'?3:16)}">
+  ${acc('aspetto','Aspetto','Stile, tema e colori, sfondo, animazioni',`<div class="t">Stile dell'app</div>${sty}${s.style==='bn'?`<div class="t" style="margin-top:14px">Tonalità del bianco</div><input type="range" class="wslider" data-bnt="1" min="0" max="100" step="1" value="${s.bnTone==null?55:s.bnTone}" aria-label="Tonalità del bianco"><div class="ticks" style="display:flex;justify-content:space-between;font-size:14px;color:var(--ink2)"><span>Bianco puro</span><span>Giallastro</span></div>`:''}<div class="t" style="margin-top:14px">Tema</div>${th}<div class="t" style="margin-top:14px">Sfondo</div><div class="s" style="white-space:normal">Scegli una foto dalla galleria, dagli un nome e salvala nell'app per riusarla quando vuoi.</div><div class="bar"><label class="btn alt" for="bgIn" tabindex="0">${ic('up')} Scegli immagine</label>${s.bgImg?'<button class="btn bad" data-a="bgdel">'+ic('trash')+' Rimuovi sfondo</button>':''}<input type="file" id="bgIn" class="vh" accept="image/*" tabindex="-1" aria-hidden="true"></div>${s.bgImg?`<div class="t" style="margin-top:10px">Luminosità dello sfondo: <span id="bgbv">${s.bgBright==null?60:s.bgBright}%</span></div><input type="range" data-bgb="1" min="10" max="150" step="5" value="${s.bgBright==null?60:s.bgBright}" aria-label="Luminosità dello sfondo">`:''}${(s.bgs&&s.bgs.length)?`<div class="t" style="margin-top:14px">Sfondi salvati</div><div class="list" style="margin-top:8px">${s.bgs.map(b=>`<div class="bgrow sk"><img class="bgthumb" data-bgth="${esc(b.id)}" alt=""><div style="flex:1;min-width:0"><div class="t">${esc(b.name)}</div><div class="s">${s.bgImg&&s.bgId===b.id?'Attivo ora':'Salvato nell\'app'}</div></div><span class="bar" style="margin:0;gap:6px;flex-wrap:nowrap"><button class="btn${s.bgImg&&s.bgId===b.id?'':' alt'}" data-a="bguse" data-id="${esc(b.id)}">${s.bgImg&&s.bgId===b.id?'Attivo':'Applica'}</button><button class="btn bad" data-a="bgrm" data-id="${esc(b.id)}" aria-label="Elimina sfondo">${ic('trash')}</button></span></div>`).join('')}</div>`:''}<div class="t" style="margin-top:14px">Forma delle icone dei brani</div>${seg('cshape',s.coverShape||'theme',[['theme','Preimpostata dal tema'],['circle','Cerchio'],['square','Quadrato'],['soft','Quadrato smussato']])}${s.btn==='glass'?`<div class="t" style="margin-top:14px">Trasparenza del vetro</div><div class="s">Più alto = più trasparente, meno colore. Valore: <span id="gval">${s.glass}</span></div><input type="range" data-g="1" min="0" max="40" value="${s.glass}"><div class="t" style="margin-top:14px">Sfocatura</div><div class="s">Quanto è sfocato ciò che sta dietro i pulsanti. Valore: <span id="bval">${s.blur==null?18:s.blur}</span> px</div><input type="range" data-bl="1" min="0" max="40" value="${s.blur==null?18:s.blur}">`:''}${s.btn==='m3'?setRow('Barra semitrasparente','Stessa intensità del vetro, applicata alla barra Material 3.',sw('m3Glass','Barra semitrasparente')):''}${setRow('Animazioni','Movimenti quando cambi sezione',sw('anim','Animazioni'))}${setRow('Sfondo animato','Fiamme, onde, foglie e altre decorazioni che si muovono dietro l\'app. Spento: restano ferme.',sw('animBg','Sfondo animato'))}${setRow('Dispositivo poco potente','Riduce sfocature, trasparenze e decorazioni animate per rendere l\'app molto più fluida.',sw('lowPower','Dispositivo poco potente'))}${setRow('Commenti di '+AIN(),'Il parere su canzoni e ascolti',sw('comments','Commenti di '+AIN()))}${s.style==='custom'?`<div class="t" style="margin-top:22px">Tema personalizzato</div><div class="s" style="white-space:normal">Colori, font, forma e temi salvati.</div><div class="s">Cambia un colore e l'app passa subito allo stile Personalizzato.</div>${colorIn('bg','Sfondo')}${colorIn('ink','Testo e bordi')}${colorIn('c1','Colore principale')}${colorIn('c2','Colore secondario')}${colorIn('c3','Colore terziario')}<div class="t" style="margin-top:14px">Icona dentro l'app</div>${seg('ciicon',C.icon,[['mm','Doppia M'],['flame','Fiamma'],['monster','Mostro']])}<div class="t" style="margin-top:14px">Forma</div>${seg('cround',C.round,[['soft','Morbida'],['sharp','Spigolosa']])}<div class="t" style="margin-top:14px">Arrotondamento. Valore: <span id="crval">${C.radius!=null?C.radius:(C.round==='sharp'?3:16)}</span></div><input type="range" data-cr="1" min="0" max="30" value="${C.radius!=null?C.radius:(C.round==='sharp'?3:16)}">
   <div class="t" style="margin-top:14px">Font dei titoli</div>${seg('cfont',C.font||'caveat',[['caveat','Caveat Brush'],['anton','Anton'],['barlow','Barlow Condensed'],['patrick','Patrick Hand'],['sistema','Sistema']])}
   <div class="t" style="margin-top:14px">Altri colori</div>${colorIn('card','Sfondo delle schede')}${colorIn('ink2','Testo secondario')}${colorIn('sh','Colore delle ombre')}<div class="bar"><button class="btn alt" data-a="creset">Reimposta colori extra</button></div>
   <div class="t" style="margin-top:14px">Temi salvati</div><div class="s" style="white-space:normal">Salva la combinazione attuale con un nome e riapplicala quando vuoi (massimo 8).</div>
   <div class="bar"><input id="tname" class="field" placeholder="Nome del tema" maxlength="24" style="flex:1;min-width:0"><button class="btn" data-a="tsave">${ic('plus')} Salva</button></div>
   ${(s.themes||[]).map((t,i)=>setRow(esc(t.name),'','<span class="bar" style="margin:0;gap:8px;flex-wrap:nowrap"><button class="btn alt" data-a="tload" data-id="'+i+'">Applica</button><button class="btn bad" data-a="tdel" data-id="'+i+'">'+ic('trash')+'</button></span>')).join('')}`:''}`)}
   ${acc('ia','Intelligenza artificiale','Motore, nome, tastiera, come si apre',aiSettings())}
-  ${acc('ascolto','Ascolto e navigazione','Lettore, testi, libreria, scorrimento',`${setRow('Scorrimento rapido','Una striscia sul lato nelle liste (nascosta nella Home): toccala e trascina per scorrere veloce.',sw('fastScroll','Scorrimento rapido'))+`<div id="fsideWrap"${S.settings.fastScroll===false?' hidden':''}><div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}</div>`+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:16px">Aspetto del lettore</div><div class="s" style="white-space:normal">Scegli se vedere il disco che ruota (puoi girarlo con il dito per cambiare velocità) oppure la copertina della canzone.</div>${seg('pview',S.settings.playerView||'disc',[['disc','Disco'],['cover','Icona della canzone']])}`}<div class="t" style="margin-top:22px">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t" style="margin-top:22px">Libreria</div><div class="t">Che cosa usa la barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Come si vedono cartelle e playlist</div>${seg('libview',s.libView||'cards',[['cards','Schede'],['list','Elenco']])}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
+  ${acc('ascolto','Ascolto e navigazione','Lettore, testi, libreria, scorrimento',`${setRow('Scorrimento rapido','Una striscia sul lato nelle liste (nascosta nella Home): toccala e trascina per scorrere veloce.',sw('fastScroll','Scorrimento rapido'))+`<div id="fsideWrap"${S.settings.fastScroll===false?' hidden':''}><div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}</div>`+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:16px">Aspetto del lettore</div><div class="s" style="white-space:normal">Scegli se vedere il disco che ruota (puoi girarlo con il dito per cambiare velocità) oppure la copertina della canzone.</div>${seg('pview',S.settings.playerView||'disc',[['disc','Disco'],['cover','Icona della canzone']])}`}<div class="t secsep">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t secsep">Libreria · barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Come si vedono cartelle e playlist</div>${seg('libview',s.libView||'cards',[['cards','Schede'],['list','Elenco']])}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
   ${acc('eq','Equalizzatore','Bassi, voci, acuti',eqHtml())}
   ${acc('profilo','Profilo','Nome, età, gusti',`${setRow('Il tuo profilo',pn?esc(pn)+(S.profile.age?' · '+esc(S.profile.age)+' anni':''):'Non ancora creato','<button class="btn alt" data-a="prof">'+(pn?'Modifica':'Crea')+'</button>')}${setRow('Condividi il profilo con '+AIN(),'Nome, età e gusti vengono inclusi nei messaggi a '+AIN()+' solo con un\'IA collegata.',sw('useProfile','Condividi il profilo'))}`)}
-  ${acc('dati','Dati e privacy','Backup, azzera ascolti, svuota libreria, privacy',`<div class="t">Backup e ripristino</div><p class="sub">Salva o ripristina impostazioni, temi, sfondi salvati, profilo, playlist, cartelle, testi, commenti e ascolti in un file .json. I file audio restano sul telefono: se cambi dispositivo, dopo il ripristino reimporta le cartelle e tutto si ricollega.</p><div class="bar"><button class="btn" data-a="bkexp">${ic('down')} Esporta backup</button><label class="btn alt" for="bkIn" tabindex="0">${ic('up')} Carica backup</label></div><div class="t" style="margin-top:20px">Eliminazione dati</div><div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t" style="margin-top:22px">Privacy</div>${privacyHtml()}`)}
-  <div class="ffoot">Monster Music · versione 52 · 24 novembre 2026</div>`;
+  ${acc('dati','Dati e privacy','Backup, azzera ascolti, svuota libreria, privacy',`<div class="t">Backup e ripristino</div><p class="sub">Salva o ripristina impostazioni, temi, sfondi salvati, profilo, playlist, cartelle, testi, commenti e ascolti in un file .json. I file audio restano sul telefono: se cambi dispositivo, dopo il ripristino reimporta le cartelle e tutto si ricollega.</p><div class="bar"><button class="btn" data-a="bkexp">${ic('down')} Esporta backup</button><label class="btn alt" for="bkIn" tabindex="0">${ic('up')} Carica backup</label></div><div class="t secsep">Eliminazione dati</div><div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t secsep">Privacy</div><div class="privwrap">${privacyHtml()}</div>`)}
+  <div class="ffoot">Monster Music · versione 54 · 24 novembre 2026</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
@@ -1949,7 +2291,7 @@ P.audio.addEventListener('play',()=>{if(eqCtx&&eqCtx.state!=='running'){try{eqCt
 function eqHtml(){
   const g=S.settings.eqGains||[0,0,0,0,0],on=!!S.settings.eqOn,pre=S.settings.eqPreset||'flat';
   return setRow('Equalizzatore','Regola bassi, voci e acuti della musica che ascolti nell\'app.',sw('eqOn','Equalizzatore'))
-   +`<div class="t" style="margin-top:14px">Preimpostazioni</div><div class="chips" style="margin:6px 0 0">${EQP.map(([k,t])=>`<button class="chip${pre===k?' on':''}" data-a="eqpre" data-id="${k}">${t}</button>`).join('')}</div>`
+   +`<div class="t">Preimpostazioni</div>${seg('eqpre',pre,EQP.map(([k,t])=>[k,t]))}`
    +`<div class="t" style="margin-top:14px">Regolazione manuale${pre==='custom'?' <span class="s">(personalizzata)</span>':''}</div>`
    +EQF.map((f,i)=>`<div class="eqrow"><span>${EQL[i]}</span><input type="range" min="-12" max="12" step="1" value="${g[i]||0}" data-eq="${i}" aria-label="${EQL[i]}"><b id="eqv${i}">${(g[i]>0?'+':'')+(g[i]||0)} dB</b></div>`).join('')
    +`<p class="sub" id="eqStatus">${on?'Acceso.':'Spento: le regolazioni si sentono solo con l\'interruttore acceso.'}</p>`;
@@ -2054,7 +2396,15 @@ document.addEventListener('pointermove',e=>{if(lpT&&(Math.abs(e.clientX-lpX)>10|
 ['pointerup','pointercancel','scroll'].forEach(n=>document.addEventListener(n,()=>{clearTimeout(lpT);lpT=0},true));
 document.addEventListener('contextmenu',e=>{if(e.target.closest('[data-a="play"]'))e.preventDefault()});
 document.addEventListener('click',e=>{
+  const inDd=e.target.closest('.dd');
+  document.querySelectorAll('.dd.open').forEach(d=>{if(d!==inDd){d.classList.remove('open');const m=d.querySelector('.dd-menu'),b=d.querySelector('.dd-btn');if(m)m.hidden=true;if(b)b.setAttribute('aria-expanded','false')}});
   const t=e.target.closest('[data-a]');if(!t)return;if(lpFired){lpFired=false;return}const a=t.dataset.a,id=t.dataset.id;
+  if(a==='ddtog'){
+    const d=t.closest('.dd'),m=d&&d.querySelector('.dd-menu');
+    if(d&&m){const op=!d.classList.contains('open');d.classList.toggle('open',op);m.hidden=!op;t.setAttribute('aria-expanded',String(op));buzz(5)}
+    return;
+  }
+  if(t.classList.contains('dd-opt')){const d=t.closest('.dd');if(d){d.classList.remove('open');const m=d.querySelector('.dd-menu'),b=d.querySelector('.dd-btn');if(m)m.hidden=true;if(b)b.setAttribute('aria-expanded','false')}}
   if(t.tagName==='INPUT')return;
   switch(a){
    case'tab':go(id);break;
@@ -2476,7 +2826,7 @@ async function exportBackup(){
     for(const item of (S.settings.bgs||[])){const b=await getBlob('bg_'+item.id);if(b)bgs['bg_'+item.id]=await blobToDataUrl(b)}
     const lyrics={};
     for(const s of [...S.songs,...(S.hidden||[])]){if(s.lyr){const t=await getLyr(s.id);if(t)lyrics[String(s.id)]=t}}
-    const payload={app:'monster-music',version:52,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
+    const payload={app:'monster-music',version:54,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const url=URL.createObjectURL(blob),a=document.createElement('a');
     const dt=new Date().toISOString().slice(0,10);
