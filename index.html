@@ -776,6 +776,12 @@ html[data-style="natura"][data-season="inverno"] .hl{background:url("data:image/
 html[data-style="natura"][data-season="inverno"] h1::after{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352b6f5' stroke-width='1.9' stroke-linecap='round'%3E%3Cpath d='M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1M10 4l2 2 2-2M10 20l2-2 2 2M4 10l2 2-2 2M20 10l-2 2 2 2'/%3E%3C/svg%3E") center/contain no-repeat}
 html[data-style="natura"][data-season="inverno"] h2::before{width:.76em;height:.76em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352b6f5' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 2v20M2 12h20M5 5l14 14M19 5L5 19'/%3E%3C/svg%3E") center/contain no-repeat}
 html[data-style="natura"][data-season="inverno"] .ffoot::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352b6f5' stroke-width='1.9' stroke-linecap='round'%3E%3Cpath d='M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1M10 4l2 2 2-2M10 20l2-2 2 2M4 10l2 2-2 2M20 10l-2 2 2 2'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* ===== v60: Rilevamento versioni modificate / remix ===== */
+.origline{text-align:center;color:var(--ink2);font-size:15.5px;margin:-4px 0 8px}
+.origline .linkish{color:var(--violet);font-weight:600}
+#remixWrap{display:flex;flex-direction:column;gap:12px;margin:0!important}
+#remixWrap[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -851,7 +857,7 @@ function monster(seed){
 }
 const COV={};
 const scov=(s,cls='')=>{const u=S.settings.covers==='own'&&COV[s.id];return u?`<span class="cov ${cls}"><img alt="" src="${u}" decoding="async" loading="lazy"></span>`:cov(s.album||s.title,cls)};
-const acov=(n,cls='')=>{if(S.settings.covers==='own'){const solo=S.songs.find(x=>songArtists(x).length===1&&hasArtist(x,n)&&COV[x.id]);if(solo)return scov(solo,cls);const any=S.songs.find(x=>hasArtist(x,n)&&COV[x.id]);if(any)return scov(any,cls)}return cov(n,cls)};
+const acov=(n,cls='')=>{if(S.settings.covers==='own'){const solo=S.songs.find(x=>songArtists(x).length===1&&hasOwnArtist(x,n)&&COV[x.id]);if(solo)return scov(solo,cls);const own=S.songs.find(x=>hasOwnArtist(x,n)&&COV[x.id]);if(own)return scov(own,cls);const any=S.songs.find(x=>hasArtist(x,n)&&COV[x.id]);if(any)return scov(any,cls)}return cov(n,cls)};
 const cov=(seed,cls='')=>{const m=monster(seed);return `<span class="cov ${cls}" style="--c:${m.col}">${m.svg}</span>`};
 function folderSvg(name){const c=PAL[hash(name)%PAL.length];return `<svg class="fold" viewBox="0 0 92 72" aria-hidden="true"><g style="stroke:var(--bd);stroke-width:3;stroke-linejoin:round"><path d="M6 14h28l8 9h44v42H6Z" fill="${c}"/><path d="M6 30h80v35H6Z" fill="color-mix(in srgb,${c} 55%,var(--card))"/></g></svg>`}
 
@@ -862,7 +868,7 @@ function load(){
   return {songs:[],folders:[],playlists:[],history:[]};
 }
 let S=load();
-S.settings=Object.assign({theme:'auto',persona:{tone:'def',addr:'libero',emoji:'def',text:''},themes:[],bgs:[],bgId:'',lowPower:false,playerView:'disc',haptic:true,fastSide:'right',discMode:'velocita',discSpin:true,animBg:true,eqOn:false,eqPreset:'flat',eqGains:[0,0,0,0,0],coverShape:'theme',anim:true,comments:true,sort:'az',style:'inferno',natSeason:'classico',btn:'m3',repeat:'off',shuffle:false,useProfile:true,apiKey:'',geminiKey:'',geminiModel:'gemini-3.8-flash',aiEngine:'auto',aiName:'',aiOpen:'button',covers:'own',libMode:'folders',kbAuto:false,fastScroll:true,glass:14,m3Glass:false,folderSort:'az',blur:18,custom:{bg:'#0b0506',ink:'#f7ece8',c1:'#e11d2a',c2:'#ff8a00',c3:'#7b4dff',icon:'mm',round:'soft'}},S.settings||{});
+S.settings=Object.assign({theme:'auto',persona:{tone:'def',addr:'libero',emoji:'def',text:''},themes:[],bgs:[],bgId:'',lowPower:false,playerView:'disc',haptic:true,fastSide:'right',discMode:'velocita',discSpin:true,animBg:true,eqOn:false,eqPreset:'flat',eqGains:[0,0,0,0,0],coverShape:'theme',anim:true,comments:true,detectRemixes:true,remixOnline:false,sort:'az',style:'inferno',natSeason:'classico',btn:'m3',repeat:'off',shuffle:false,useProfile:true,apiKey:'',geminiKey:'',geminiModel:'gemini-3.8-flash',aiEngine:'auto',aiName:'',aiOpen:'button',covers:'own',libMode:'folders',kbAuto:false,fastScroll:true,glass:14,m3Glass:false,folderSort:'az',blur:18,custom:{bg:'#0b0506',ink:'#f7ece8',c1:'#e11d2a',c2:'#ff8a00',c3:'#7b4dff',icon:'mm',round:'soft'}},S.settings||{});
 S.settings.discSpin=true;
 if(!Array.isArray(S.settings.bgs))S.settings.bgs=[];
 if(S.settings.bnTone==null&&S.settings.bnWhite==='classic')S.settings.bnTone=0;
@@ -1410,11 +1416,11 @@ function brandHtml(seed){
 function applyIcon(){try{const a=$('#logoMo'),b=$('#aiMo');if(a)a.innerHTML=brandHtml('monster-music');if(b)b.innerHTML=brandHtml('nota')}catch(e){}}
 const AIN=()=>(S.settings&&S.settings.aiName||'').trim()||'Nota';
 function applyAIName(){const n=AIN(),d=$('#drawer');if(!d)return;d.setAttribute('aria-label',n+', assistente musicale');const h3=$('#dhead h3');if(h3)h3.textContent=n;const i=$('#chatin');if(i)i.placeholder='Scrivi a '+n+'…';const b=$('#aistar');if(b)b.setAttribute('aria-label','Apri '+n+', l\'assistente');try{if(chat[0]&&chat[0].greet)chat[0].t='Ciao! Sono '+n+' 🎧 Posso spiegarti come funziona Monster Music o chiacchierare dei tuoi gusti. Cosa vuoi sapere?'}catch(e){}}
-function save(){try{const ac=S.aiComments||{};const ks=Object.keys(ac);if(ks.length>120){ks.sort((a,b)=>(ac[a].ts||0)-(ac[b].ts||0)).slice(0,ks.length-100).forEach(k=>delete ac[k])}localStorage.setItem(KEY,JSON.stringify({...S,songs:S.songs.filter(s=>s.stored||!s.url).map(({url,nofile,_lyrCand,...r})=>r),hidden:(S.hidden||[]).filter(s=>s.stored||!s.url).map(({url,nofile,_lyrCand,...r})=>r)}))}catch(e){}}
+function save(){invalidateOrigCache();try{const ac=S.aiComments||{};const ks=Object.keys(ac);if(ks.length>120){ks.sort((a,b)=>(ac[a].ts||0)-(ac[b].ts||0)).slice(0,ks.length-100).forEach(k=>delete ac[k])}localStorage.setItem(KEY,JSON.stringify({...S,songs:S.songs.filter(s=>s.stored||!s.url).map(({url,nofile,_lyrCand,...r})=>r),hidden:(S.hidden||[]).filter(s=>s.stored||!s.url).map(({url,nofile,_lyrCand,...r})=>r)}))}catch(e){}}
 const byId=id=>S.songs.find(s=>String(s.id)===String(id));
 const folders=()=>[...new Set([...S.songs.map(s=>s.folder),...S.folders])].filter(Boolean).sort();
 const akey=a=>String(a||'').trim().toLowerCase();
-const KEEP_ARTISTS=['AC/DC','Tyler, The Creator','Earth, Wind & Fire','Simon & Garfunkel','Florence + The Machine','Florence and the Machine','Crosby, Stills, Nash & Young','Crosby, Stills & Nash','Hall & Oates','Mumford & Sons','Above & Beyond','Chase & Status','Belle & Sebastian','Tegan & Sara','Kool & The Gang','Ike & Tina Turner','Brooks & Dunn','Dan + Shay','Coheed & Cambria','Me First and the Gimme Gimmes',"Guns N' Roses",'Of Monsters and Men','Tears for Fears','Tom Petty and the Heartbreakers','Nick Cave & The Bad Seeds','Nick Cave and the Bad Seeds','Bob Marley & The Wailers','Bob Marley and the Wailers','Bruce Springsteen & The E Street Band','Hootie & the Blowfish','KC and the Sunshine Band','Peter, Bjorn and John','Emerson, Lake & Palmer','Blood, Sweat & Tears','Derek and the Dominos','Siouxsie and the Banshees','Echo & the Bunnymen'];
+const KEEP_ARTISTS=['AC/DC','Lilly Wood & The Prick','Lilly Wood and the Prick','Tyler, The Creator','Earth, Wind & Fire','Simon & Garfunkel','Florence + The Machine','Florence and the Machine','Crosby, Stills, Nash & Young','Crosby, Stills & Nash','Hall & Oates','Mumford & Sons','Above & Beyond','Chase & Status','Belle & Sebastian','Tegan & Sara','Kool & The Gang','Ike & Tina Turner','Brooks & Dunn','Dan + Shay','Coheed & Cambria','Me First and the Gimme Gimmes',"Guns N' Roses",'Of Monsters and Men','Tears for Fears','Tom Petty and the Heartbreakers','Nick Cave & The Bad Seeds','Nick Cave and the Bad Seeds','Bob Marley & The Wailers','Bob Marley and the Wailers','Bruce Springsteen & The E Street Band','Hootie & the Blowfish','KC and the Sunshine Band','Peter, Bjorn and John','Emerson, Lake & Palmer','Blood, Sweat & Tears','Derek and the Dominos','Siouxsie and the Banshees','Echo & the Bunnymen'];
 const KEEP_RE=KEEP_ARTISTS.map(n=>[n,new RegExp(n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig')]);
 function splitArtistRaw(str){
   let s=String(str||'').trim();if(!s)return [];
@@ -1449,10 +1455,158 @@ function songArtists(s){
   }
   return res.length?res:['Artista sconosciuto'];
 }
-const hasArtist=(s,name)=>{const k=akey(name);return songArtists(s).some(a=>akey(a)===k)};
+/* ---------- Rilevamento versioni modificate / remix / slowed e collegamento all'autore originale ---------- */
+const MOD_KW_RE=/\b(slowed|super\s*slowed|ultra\s*slowed|mega\s*slowed|sped\s*up|speed\s*up|nightcore|daycore|reverb|bass\s*boost(?:ed)?|8d|remix|rmx|radio\s*edit|edit|bootleg|flip|mashup|hoodtrap|phonk|jersey\s*club|hardstyle|drill|lo-?fi|tiktok|pitched|pitch\s*shift(?:ed)?|doomer|synthwave|club\s*mix|extended\s*mix|vip\s*mix|rework|remake|cover|karaoke|instrumental|tribute|version|ver\.)\b/i;
+const MOD_ONLY_RE=/^([\s\(\)\[\]\{\}\/\-&+x·•,|]|super|ultra|mega|slowed|down|sped|speed|up|nightcore|daycore|reverb|bass|boosted?|8d|audio|video|remix|rmx|radio|edit|bootleg|flip|mashup|hoodtrap|phonk|jersey|club|hardstyle|drill|lofi|lo-fi|tiktok|pitched?|doomer|synthwave|extended|mix|vip|rework|remake|cover|karaoke|instrumental|official|version|ver\.?|hq|hd|4k|lyrics?|clean|explicit|re-?prod\.?|prod\.?)+$/i;
+const NOT_ARTIST_LEFT_RE=/^(part|pt\.?|vol\.?|ep\.?|track|disc|cd|side|slowed|sped\s*up|nightcore|daycore|remix|edit|official|audio|video|live|intro|outro|bonus)$/i;
+const NOT_TITLE_RIGHT_RE=/^(part|pt\.?|vol\.?|ep\.?|disc|cd|side|track|chapter|act)\s*\d/i;
+function isModifiedText(raw){return MOD_KW_RE.test(String(raw||''))}
+function stripModTags(raw){
+  let s=String(raw||'');
+  const kw=/(slowed|sped\s*up|speed\s*up|nightcore|daycore|reverb|bass\s*boost|8d|audio|video|lyric|official|remaster|version|edit|tiktok|clean|explicit|hq|hd|4k|live|acoustic|instrumental|karaoke|mono|stereo|radio|extended|mix|remix|rmx|bootleg|flip|mashup|hoodtrap|phonk|jersey\s*club|hardstyle|drill|lo-?fi|pitch|boosted|ultra|super|mega|rework|remake|cover|tribute|doomer|synthwave|feat\.?|ft\.?|prod\.?)/i;
+  s=s.replace(/\s*[\(\[\{]([^\)\]\}]*)[\)\]\}]\s*/g,(m,inner)=>kw.test(inner)?' ':m);
+  s=s.replace(/\s*[-–—|\/]\s*(super\s+|ultra\s+|mega\s+)?(slowed|sped\s*up|speed\s*up|nightcore|daycore|reverb|bass\s*boost|8d|remix|rmx|edit|hoodtrap|phonk|jersey\s*club|hardstyle|bootleg|flip|mashup|tiktok|official|lyric|remaster|clean|explicit|cover|instrumental|karaoke).*$/i,'');
+  s=s.replace(/\b(super\s+|ultra\s+|mega\s+)?(slowed(\s+down)?|sped\s*up|speed\s*up|nightcore|daycore|reverb|bass\s*boost(?:ed)?|8d(\s*audio)?|hoodtrap|phonk|jersey\s*club|hardstyle|tiktok\s*version|official\s*(music\s*)?(video|audio)|lyrics?|remix|rmx|bootleg|mashup)\b/gi,' ');
+  s=s.replace(/[\(\[\{]\s*[\)\]\}]/g,' ').replace(/[\+&]\s*$/g,'').replace(/\s*[-–—|\/+]\s*$/g,'').replace(/\s{2,}/g,' ').trim();
+  return s;
+}
+function extractTitleArtistPrefix(rawTitle,forceCheck){
+  const t=String(rawTitle||'').trim();if(!t)return null;
+  const m=/^(.{2,48}?)\s+[-–—]\s+(.+)$/.exec(t);
+  if(!m)return null;
+  const left=m[1].trim(),right=m[2].trim();
+  if(!left||!right||!/[\p{L}]/u.test(left))return null;
+  if(NOT_ARTIST_LEFT_RE.test(left)||MOD_ONLY_RE.test(left))return null;
+  if(NOT_TITLE_RIGHT_RE.test(right)||MOD_ONLY_RE.test(right))return null;
+  const cleanR=stripModTags(right);
+  if(cleanR.length<2)return null;
+  if(!forceCheck&&!isModifiedText(t))return null;
+  return {artists:splitArtistRaw(left),track:cleanR};
+}
+function extractCoverCredit(rawTitle){
+  const t=String(rawTitle||'');if(!t)return [];
+  let m=/[\(\[]\s*(?:originally\s+by|orig\.?\s+by|tribute\s+to)\s+([^\)\]]+)[\)\]]/i.exec(t);
+  if(m)return splitArtistRaw(m[1]);
+  m=/[\(\[]\s*([^\)\]]{2,36}?)\s+cover\s*[\)\]]/i.exec(t);
+  if(m&&!MOD_ONLY_RE.test(m[1]))return splitArtistRaw(m[1]);
+  return [];
+}
+function isModifiedTrack(s){
+  if(!s)return false;
+  if(s.origArtist&&!s.origOff)return true;
+  if(isModifiedText(s.title))return true;
+  if(s.rel){const base=s.rel.split('/').pop().replace(/\.[^.]+$/,'');if(isModifiedText(base))return true}
+  return false;
+}
+function songCleanBaseTitle(s){
+  if(!s)return '';
+  const pref=extractTitleArtistPrefix(s.title,isModifiedTrack(s));
+  if(pref&&pref.track)return pref.track;
+  return stripModTags(s.title);
+}
+let ORIG_CACHE=null,ORIG_VER=0;
+function invalidateOrigCache(){ORIG_CACHE=null;ORIG_VER++}
+function ensureOrigIndex(){
+  if(ORIG_CACHE)return ORIG_CACHE;
+  const map=new Map();
+  if(S.settings.detectRemixes===false){ORIG_CACHE=map;return map}
+  const knownArt=new Map();
+  const titleMap=new Map();
+  const multiOrigs=[];
+  const normKey=str=>String(str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+  // Pass 1: indicizza artisti noti e brani originali (non modificati) nella libreria
+  for(const s of S.songs){
+    const own=songArtists(s);
+    for(const a of own){
+      const k=akey(a);
+      if(k&&k!=='artista sconosciuto'&&!knownArt.has(k))knownArt.set(k,a);
+    }
+    if(isModifiedText(s.title))continue;
+    const realOwn=own.filter(a=>akey(a)!=='artista sconosciuto');
+    if(!realOwn.length)continue;
+    const ct=normKey(stripModTags(s.title));
+    if(ct.length<3)continue;
+    const entry={artists:realOwn,plays:plays(s.id)};
+    const arr=titleMap.get(ct)||[];
+    arr.push(entry);
+    titleMap.set(ct,arr);
+    const words=ct.split(' ').filter(Boolean);
+    if(words.length>=2&&ct.length>=8)multiOrigs.push({ct,artists:realOwn,plays:entry.plays});
+  }
+  const canonList=(cands,ownSet)=>{
+    const out=[],seen=new Set();
+    for(const raw of cands){
+      const k=akey(raw);
+      if(!k||k==='artista sconosciuto'||ownSet.has(k)||seen.has(k))continue;
+      seen.add(k);
+      out.push(knownArt.get(k)||raw.trim());
+    }
+    return out;
+  };
+  // Pass 2: risolve gli autori originali per ogni brano modificato
+  for(const s of S.songs){
+    if(s.origOff){map.set(String(s.id),[]);continue}
+    const own=songArtists(s),ownSet=new Set(own.map(akey));
+    if(s.origArtist){
+      map.set(String(s.id),canonList(splitArtistRaw(s.origArtist),ownSet));
+      continue;
+    }
+    const mod=isModifiedTrack(s);
+    const unk=own.length===1&&akey(own[0])==='artista sconosciuto';
+    let found=[];
+    // A. Prefisso "Artista - Titolo" dentro il titolo (es. "Skillet - Monster (slowed & reverb)")
+    const pref=extractTitleArtistPrefix(s.title,mod||unk);
+    if(pref&&pref.artists.length)found=canonList(pref.artists,ownSet);
+    // B. Prefisso nel nome del file se è una versione modificata
+    if(!found.length&&mod&&s.rel){
+      const base=s.rel.split('/').pop().replace(/\.[^.]+$/,'').replace(/^\d+[\s.\-_]+/,'');
+      const fp=extractTitleArtistPrefix(base,true);
+      if(fp&&fp.artists.length)found=canonList(fp.artists,ownSet);
+    }
+    // C. Credito esplicito "(originally by X)" o "(X cover)"
+    if(!found.length){
+      const cc=extractCoverCredit(s.title);
+      if(cc.length)found=canonList(cc,ownSet);
+    }
+    // D. Confronto con i brani originali già presenti nella libreria
+    if(!found.length&&mod){
+      const ct=normKey(songCleanBaseTitle(s));
+      if(ct.length>=3){
+        const exact=titleMap.get(ct);
+        if(exact&&exact.length){
+          const best=[...exact].sort((x,y)=>y.plays-x.plays)[0];
+          found=canonList(best.artists,ownSet);
+        }else if(ct.length>=8){
+          let bestM=null;
+          for(const o of multiOrigs){
+            if((' '+ct+' ').includes(' '+o.ct+' ')||(' '+o.ct+' ').includes(' '+ct+' ')){
+              if(!bestM||o.ct.length>bestM.ct.length||(o.ct.length===bestM.ct.length&&o.plays>bestM.plays))bestM=o;
+            }
+          }
+          if(bestM)found=canonList(bestM.artists,ownSet);
+        }
+      }
+    }
+    map.set(String(s.id),found);
+  }
+  ORIG_CACHE=map;
+  return map;
+}
+const origArtistsOf=s=>{if(!s||S.settings.detectRemixes===false)return [];return ensureOrigIndex().get(String(s.id))||[]};
+function allArtistsOf(s){
+  const own=songArtists(s),orig=origArtistsOf(s);
+  if(!orig.length)return own;
+  const seen=new Set(own.map(akey)),out=[...own];
+  for(const a of orig){const k=akey(a);if(!seen.has(k)){seen.add(k);out.push(a)}}
+  return out;
+}
+const hasOwnArtist=(s,name)=>{const k=akey(name);return songArtists(s).some(a=>akey(a)===k)};
+const hasOrigArtist=(s,name)=>{const k=akey(name);return origArtistsOf(s).some(a=>akey(a)===k)};
+const hasArtist=(s,name)=>hasOwnArtist(s,name)||hasOrigArtist(s,name);
 const artistDisplay=s=>songArtists(s).join(', ');
 const artistLinks=s=>songArtists(s).map(a=>`<button class="linkish" data-a="goart" data-id="${esc(a)}">${esc(a)}</button>`).join(', ');
-const artists=()=>{const m=new Map();S.songs.forEach(s=>{for(const a of songArtists(s)){const k=akey(a);if(!m.has(k))m.set(k,a)}});return [...m.values()].sort((a,b)=>a.localeCompare(b))};
+const origArtistLinks=s=>origArtistsOf(s).map(a=>`<button class="linkish" data-a="goart" data-id="${esc(a)}">${esc(a)}</button>`).join(', ');
+const artists=()=>{const m=new Map();S.songs.forEach(s=>{for(const a of allArtistsOf(s)){const k=akey(a);if(!m.has(k))m.set(k,a)}});return [...m.values()].sort((a,b)=>a.localeCompare(b))};
 const addedOf=s=>{if(!s)return 0;if(s.added)return s.added;const m=/^u(\d{13})/.exec(String(s.id));return m?+m[1]:0};
 const plays=id=>S.history.reduce((n,e)=>n+(String(e.s)===String(id)?1:0),0);
 const lastPlay=id=>{for(let i=S.history.length-1;i>=0;i--)if(String(S.history[i].s)===String(id))return S.history[i].t;return 0};
@@ -1460,7 +1614,7 @@ const lastPlay=id=>{for(let i=S.history.length-1;i>=0;i--)if(String(S.history[i]
 const PERIODS=[{k:'day',l:'Giorno',long:'ultimo giorno',ms:DAY},{k:'week',l:'Settimana',long:'ultima settimana',ms:7*DAY},{k:'m3',l:'3 mesi',long:'ultimi tre mesi',ms:90*DAY},{k:'year',l:'Anno',long:'ultimo anno',ms:365*DAY}];
 function stats(ms){
   const from=Date.now()-ms,c={},a={};let n=0,sec=0;
-  S.history.forEach(e=>{if(e.t<from)return;const s=byId(e.s);if(!s)return;c[s.id]=(c[s.id]||0)+1;for(const ar of songArtists(s)){const k=akey(ar);(a[k]=a[k]||{name:ar,k:0}).k++}n++;sec+=s.dur});
+  S.history.forEach(e=>{if(e.t<from)return;const s=byId(e.s);if(!s)return;c[s.id]=(c[s.id]||0)+1;for(const ar of allArtistsOf(s)){const k=akey(ar);(a[k]=a[k]||{name:ar,k:0}).k++}n++;sec+=s.dur});
   return {n,sec,songs:Object.keys(c).map(id=>({s:byId(id),k:c[id]})).sort((x,y)=>y.k-x.k),artists:Object.values(a).sort((x,y)=>y.k-x.k)};
 }
 
@@ -1633,7 +1787,7 @@ function startCur(){
     }else P.switching=false;
   }else P.audio.pause();
   P.heard=0;P.lp=0;P.counted=false;save();mediaMeta();mediaState();
-  renderMini();lyrAuto(s);if(sheetKind==='player')updatePlayer();markNow();
+  renderMini();lyrAuto(s);remixAuto(s);if(sheetKind==='player')updatePlayer();markNow();
   if(ui.tab==='top')softRefresh();
   if(ui.tab==='home'&&!ui.hq){const rl=$('#resumeList');if(rl){const rec=getResumeSongs();rl.innerHTML=rec.map(x=>row(x)).join('');markNow(true)}}
 }
@@ -1757,13 +1911,13 @@ const ui={tab:'home',hq:'',detail:null,q:'',aq:'',asort:'az',sort:S.settings.sor
 function saveTabState(){const m=$('#main');ui.tabMem[ui.tab]={detail:ui.detail,scroll:m?m.scrollTop:0}}
 function row(s,act,aid){
   const now=cur()&&String(cur().id)===String(s.id),on=selMode&&SEL.has(String(s.id));
-  return `<div class="row sk${now?' now':''}${on?' sel':''}"><button class="rowmain" data-a="play" data-id="${s.id}">${selMode?`<span class="selck${on?' on':''}" aria-hidden="true"></span>`:''}${scov(s)}<div><div class="t">${esc(s.title)}</div><div class="s">${esc(artistDisplay(s))} · ${esc(s.album||'Singolo')}</div></div></button>`+
+  return `<div class="row sk${now?' now':''}${on?' sel':''}"><button class="rowmain" data-a="play" data-id="${s.id}">${selMode?`<span class="selck${on?' on':''}" aria-hidden="true"></span>`:''}${scov(s)}<div><div class="t">${esc(s.title)}</div><div class="s">${esc(artistDisplay(s))}${origArtistsOf(s).length?' · orig. '+esc(origArtistsOf(s).join(', ')):''}${s.album&&String(s.album).trim()?' · '+esc(String(s.album).trim()):''}</div></div></button>`+
    (act==='remove'?`<button class="ib" data-a="rmsong" data-id="${s.id}" aria-label="Rimuovi dalla playlist">${ic('minus')}</button>`:'')+`</div>`;
 }
 function songList(list,act){ui.ctx=list.map(s=>s.id);return list.length?`<div class="list">${list.map(s=>row(s,act)).join('')}</div>`:`<div class="empty sk">Qui non c'è ancora nessun brano.</div>`}
 function brList(){
   let l=[...S.songs];const q=norm(ui.q);
-  if(q)l=l.filter(s=>norm([s.title,s.artist,artistDisplay(s),s.album,s.genre].join(' ')).includes(q));
+  if(q)l=l.filter(s=>norm([s.title,s.artist,artistDisplay(s),...origArtistsOf(s),s.album,s.genre].join(' ')).includes(q));
   const so={az:(a,b)=>a.title.localeCompare(b.title),artist:(a,b)=>a.artist.localeCompare(b.artist)||a.title.localeCompare(b.title),most:(a,b)=>plays(b.id)-plays(a.id),recent:(a,b)=>lastPlay(b.id)-lastPlay(a.id),added:(a,b)=>addedOf(b)-addedOf(a)||a.title.localeCompare(b.title)};
   l.sort(so[ui.sort]||so.az);
   if(!S.songs.length)return emptyLib();
@@ -1837,10 +1991,13 @@ function artList(){
   return `<div class="grid">${a.map(n=>{const x=st.get(n);return `<button class="card sk" data-a="open" data-t="art" data-id="${esc(n)}">${acov(n)}<div class="t">${esc(n)}</div><div class="s">${x.l.length} brani · ${x.pl} ascolti</div></button>`}).join('')}</div>`;
 }
 function vArtisti(){
-  if(ui.detail&&ui.detail.t==='art'){const n=ui.detail.id,l=S.songs.filter(s=>hasArtist(s,n)),coll=l.filter(s=>songArtists(s).length>1).length,tp=l.reduce((a,s)=>a+plays(s.id),0),best=[...l].sort((a,b)=>plays(b.id)-plays(a.id))[0];
-    return `<button class="back" data-a="back">${ic('back')} Tutti gli artisti</button><div class="hero sk">${acov(n)}<div style="min-width:0"><h1>${esc(n)}</h1><div class="sub" style="margin:0">${l.length} brani${coll?` (${coll} ${coll===1?'collab':'collab.'})`:''} · ${tp} ascolti</div></div></div>
+  if(ui.detail&&ui.detail.t==='art'){const n=ui.detail.id,own=S.songs.filter(s=>hasOwnArtist(s,n)),mods=S.songs.filter(s=>!hasOwnArtist(s,n)&&hasOrigArtist(s,n)),l=[...own,...mods],coll=own.filter(s=>songArtists(s).length>1).length,tp=l.reduce((a,s)=>a+plays(s.id),0),best=[...l].sort((a,b)=>plays(b.id)-plays(a.id))[0];
+    const tags=[];if(coll)tags.push(`${coll} ${coll===1?'collab':'collab.'}`);if(mods.length)tags.push(`${mods.length} ${mods.length===1?'modificata':'modificate'}`);
+    const body=(own.length?`<div class="list">${own.map(s=>row(s)).join('')}</div>`:'')+(mods.length?`<h2 style="margin-top:${own.length?18:6}px">Versioni modificate e remix</h2><div class="list">${mods.map(s=>row(s)).join('')}</div>`:'');
+    ui.ctx=l.map(s=>s.id);
+    return `<button class="back" data-a="back">${ic('back')} Tutti gli artisti</button><div class="hero sk">${acov(n)}<div style="min-width:0"><h1>${esc(n)}</h1><div class="sub" style="margin:0">${l.length} brani${tags.length?' ('+tags.join(', ')+')':''} · ${tp} ascolti</div></div></div>
     ${best?`<div class="say sk"><small>${AIN()} dice</small>Il tuo preferito di ${esc(n)} è «${esc(best.title)}», con ${plays(best.id)} ascolti.</div>`:''}
-    <div class="bar"><button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button><button class="btn alt" data-a="renart" data-id="${esc(n)}">${ic('pencil')} Rinomina</button></div>${songList(l)}`}
+    <div class="bar"><button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button><button class="btn alt" data-a="renart" data-id="${esc(n)}">${ic('pencil')} Rinomina</button></div>${body||'<div class="empty sk">Qui non c\'è ancora nessun brano.</div>'}`}
   const a=artists();
   const dd=seg('asort',ui.asort||'az',[['az','A–Z'],['most','Più ascoltati'],['songs','Più brani']],'Ordina');
   return `<h1>Gli <span class="hl">artisti</span></h1><p class="sub">${a.length} voci nella tua collezione.</p>${a.length?'':'<div class="empty sk">Nessun artista ancora. Importa dei brani e compariranno qui.</div>'}
@@ -1876,7 +2033,7 @@ function homeBody(q){
   q=norm(q);
   if(!S.songs.length){ui.ctx=[];return emptyLib()}
   if(q){
-    const ss=S.songs.filter(s=>norm([s.title,s.artist,artistDisplay(s),s.album,s.genre].join(' ')).includes(q)).slice(0,40);
+    const ss=S.songs.filter(s=>norm([s.title,s.artist,artistDisplay(s),...origArtistsOf(s),s.album,s.genre].join(' ')).includes(q)).slice(0,40);
     const aa=artists().filter(a=>norm(a).includes(q)).slice(0,10);
     ui.ctx=ss.map(s=>s.id);
     const arow=n=>`<button class="row sk" data-a="goart" data-id="${esc(n)}" style="text-align:left;width:100%">${acov(n)}<div class="rowmain"><div><div class="t">${esc(n)}</div><div class="s">${S.songs.filter(s=>hasArtist(s,n)).length} brani</div></div></div></button>`;
@@ -1932,6 +2089,8 @@ function privacyHtml(){const N=esc(AIN());return `<p class="sub"><b>Monster Musi
 <p class="sub">A ogni messaggio a ${N} partono: il testo del messaggio, un riassunto della libreria (titoli e artisti più ascoltati, anni, generi) e, se è attivo, il profilo. Vanno a <b>Google</b> (Gemini) o ad <b>Anthropic</b> (Claude), secondo le loro condizioni. Con l'IA di claude.ai vanno al tuo account Claude. I file audio non vengono mai inviati.</p>
 <div class="t" style="margin-top:12px">Assistente offline</div>
 <p class="sub">Funziona interamente sul tuo telefono senza download e senza inviare alcun dato su internet.</p>
+<div class="t" style="margin-top:12px">Ricerca testi e autori originali online</div>
+<p class="sub">Solo se attivi le relative opzioni in Impostazioni → Ascolto e navigazione, titolo e artista del brano vengono inviati a LRCLIB (e, per i remix, a iTunes Search) per trovare testo o autore originale.</p>
 <div class="t" style="margin-top:12px">Servizi del sito</div>
 <p class="sub">GitHub Pages, dove sta la pagina, e Google Fonts ricevono l'indirizzo IP di chi apre l'app, come ogni sito web.</p>
 <p class="sub">Per non inviare il profilo, spegni «Condividi il profilo» nella sezione Profilo.</p>`}
@@ -1973,11 +2132,11 @@ function vOpzioni(){
   <div class="bar"><input id="tname" class="field" placeholder="Nome del tema" maxlength="24" style="flex:1;min-width:0"><button class="btn" data-a="tsave">${ic('plus')} Salva</button></div>
   ${(s.themes||[]).map((t,i)=>setRow(esc(t.name),'','<span class="bar" style="margin:0;gap:8px;flex-wrap:nowrap"><button class="btn alt" data-a="tload" data-id="'+i+'">Applica</button><button class="btn bad" data-a="tdel" data-id="'+i+'">'+ic('trash')+'</button></span>')).join('')}`:''}`)}
   ${acc('ia','Intelligenza artificiale','Motore, nome, tastiera, come si apre',aiSettings())}
-  ${acc('ascolto','Ascolto e navigazione','Lettore, testi, libreria, scorrimento',`${setRow('Scorrimento rapido','Una striscia sul lato nelle liste (nascosta nella Home): toccala e trascina per scorrere veloce.',sw('fastScroll','Scorrimento rapido'))+`<div id="fsideWrap"${S.settings.fastScroll===false?' hidden':''}><div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}</div>`+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:16px">Aspetto del lettore</div><div class="s" style="white-space:normal">Scegli se vedere il disco che ruota (puoi girarlo con il dito per cambiare velocità) oppure la copertina della canzone.</div>${seg('pview',S.settings.playerView||'disc',[['disc','Disco'],['cover','Icona della canzone']])}`}<div class="t secsep">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t secsep">Libreria · barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Come si vedono cartelle e playlist</div>${seg('libview',s.libView||'cards',[['cards','Schede'],['list','Elenco']])}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
+  ${acc('ascolto','Ascolto e navigazione','Lettore, testi, libreria, scorrimento',`${setRow('Scorrimento rapido','Una striscia sul lato nelle liste (nascosta nella Home): toccala e trascina per scorrere veloce.',sw('fastScroll','Scorrimento rapido'))+`<div id="fsideWrap"${S.settings.fastScroll===false?' hidden':''}><div class="t" style="margin-top:14px">Lato dello scorrimento rapido</div>${seg('fside',S.settings.fastSide||'right',[['right','Destra'],['left','Sinistra'],['both','Entrambi']])}</div>`+setRow('Vibrazione','Piccola vibrazione quando riproduci, selezioni o tieni premuto. Solo sui telefoni che la supportano.',sw('haptic','Vibrazione'))+`<div class="t" style="margin-top:16px">Aspetto del lettore</div><div class="s" style="white-space:normal">Scegli se vedere il disco che ruota (puoi girarlo con il dito per cambiare velocità) oppure la copertina della canzone.</div>${seg('pview',S.settings.playerView||'disc',[['disc','Disco'],['cover','Icona della canzone']])}`}<div class="t secsep">Testi delle canzoni</div>${setRow('Cerca i testi online','Se il file non ha il testo, lo cerco su LRCLIB (database libero) solo quando apri «Testo». Il testo nel file ha sempre la precedenza. Serve la connessione. I testi restano protetti da copyright: usali solo per uso personale.',sw('lyrOnline','Cerca testi online'))}<div class="t secsep">Versioni modificate e remix</div>${setRow('Rileva versioni modificate (slowed, remix…)','Riconosce automaticamente brani slowed, sped up, nightcore, hoodtrap, remix o edit di DJ e li mostra anche nel profilo dell\'autore originale.',sw('detectRemixes','Rileva versioni modificate'))}<div id="remixWrap"${S.settings.detectRemixes===false?' hidden':''}>${setRow('Cerca l\'autore originale online','Se il cantante originale non è scritto nel titolo e non è in libreria, lo cerca online (LRCLIB / iTunes) come fa per i testi. Serve la connessione.',sw('remixOnline','Cerca autore originale online'))}<div class="bar"><button class="btn alt" data-a="scanremixes">${ic('refresh')} Analizza la libreria ora</button></div><div class="s" id="remixStat" style="white-space:normal">${(()=>{const linked=S.songs.filter(x=>origArtistsOf(x).length>0).length;return linked?`${linked} ${linked===1?'brano modificato collegato':'brani modificati collegati'} all'autore originale.`:'Nessun brano modificato collegato finora.'})()}</div></div><div class="t secsep">Libreria · barra in basso</div><div class="s">Cartelle: una per genere o raccolta importata. Playlist: raccolte scelte a mano. Entrambe: tutte e due.</div>${lib}<div class="t" style="margin-top:14px">Come si vedono cartelle e playlist</div>${seg('libview',s.libView||'cards',[['cards','Schede'],['list','Elenco']])}<div class="t" style="margin-top:14px">Ordine iniziale dei brani</div>${so}<div class="t" style="margin-top:14px">Ordine dei brani dentro le cartelle</div>${seg('fsort',S.settings.folderSort||'az',FSL)}<p class="sub">${S.songs.length} brani · ${artists().length} artisti · ${folders().length} cartelle · ${S.playlists.length} playlist. Spazio usato: <span id="stor">…</span></p>`)}
   ${acc('eq','Equalizzatore','Bassi, voci, acuti',eqHtml())}
   ${acc('profilo','Profilo','Nome, età, gusti',`${setRow('Il tuo profilo',pn?esc(pn)+(S.profile.age?' · '+esc(S.profile.age)+' anni':''):'Non ancora creato','<button class="btn alt" data-a="prof">'+(pn?'Modifica':'Crea')+'</button>')}${setRow('Condividi il profilo con '+AIN(),'Nome, età e gusti vengono inclusi nei messaggi a '+AIN()+' solo con un\'IA collegata.',sw('useProfile','Condividi il profilo'))}`)}
   ${acc('dati','Dati e privacy','Backup, azzera ascolti, svuota libreria, privacy',`<div class="t">Backup e ripristino</div><p class="sub">Salva o ripristina impostazioni, temi, sfondi salvati, profilo, playlist, cartelle, testi, commenti e ascolti in un file .json. I file audio restano sul telefono: se cambi dispositivo, dopo il ripristino reimporta le cartelle e tutto si ricollega.</p><div class="bar"><button class="btn" data-a="bkexp">${ic('down')} Esporta backup</button><label class="btn alt" for="bkIn" tabindex="0">${ic('up')} Carica backup</label></div><div class="t secsep">Eliminazione dati</div><div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t secsep">Privacy</div><div class="privwrap">${privacyHtml()}</div>`)}
-  <div class="ffoot">Monster Music · versione 58 · 25 novembre 2026</div>`;
+  <div class="ffoot">Monster Music · versione 60 · 25 novembre 2026</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
@@ -2105,7 +2264,7 @@ function playerSayHtml(s){
 function renderPlayer(){
   const s=cur();if(!s)return;
   const html=`<div class="grab"></div>${playerVisualHtml(s)}
-  <h2 class="ptitle" style="margin:0">${esc(s.title)}</h2><p class="psub" id="psub">${artistLinks(s)} · ${esc(s.album||'Singolo')}</p>
+  <h2 class="ptitle" style="margin:0">${esc(s.title)}</h2><p class="psub" id="psub">${artistLinks(s)}${s.album&&String(s.album).trim()?' · '+esc(String(s.album).trim()):''}</p><p class="origline" id="porig"${origArtistsOf(s).length?'':' hidden'}>${origArtistsOf(s).length?'Originale: '+origArtistLinks(s):''}</p>
   <div class="seek"><span id="pt">${mmss(P.pos)}</span><input type="range" id="seek" min="0" max="${Math.floor(s.dur)}" value="${Math.floor(P.pos)}" aria-label="Posizione"><span>${mmss(s.dur)}</span></div>
   <div class="ctl" id="ctl">${ctlHtml()}</div>
   <div class="say sk">${playerSayHtml(s)}</div>
@@ -2116,7 +2275,7 @@ function renderPlayer(){
 function updatePlayer(){
   const s=cur(),vis=$('#disc')||$('#pcover');if(!s||!vis)return renderPlayer();
   $('.ptitle').textContent=s.title;
-  $('#psub').innerHTML=`${artistLinks(s)} · ${esc(s.album||'Singolo')}`;
+  $('#psub').innerHTML=`${artistLinks(s)}${s.album&&String(s.album).trim()?' · '+esc(String(s.album).trim()):''}`;{const po=$('#porig'),oa=origArtistsOf(s);if(po){po.hidden=!oa.length;po.innerHTML=oa.length?'Originale: '+origArtistLinks(s):''}}
   vis.innerHTML=scov(s);vis.classList.remove('swap');void vis.offsetWidth;vis.classList.add('swap');setTimeout(()=>vis.classList.remove('swap'),400);
   const eb=$('#panel [data-a="edit"]');if(eb)eb.dataset.id=s.id;
   const r=$('#seek');if(r){r.max=Math.floor(s.dur);r.value=Math.floor(P.pos);r.nextElementSibling.textContent=mmss(s.dur)}
@@ -2138,6 +2297,7 @@ function editSheet(id){
   <form class="form" id="editf" data-id="${s.id}">
    <label>Titolo<input id="e_title" value="${esc(s.title)}" required></label>
    <label>Artista<input id="e_artist" list="artl" value="${esc(s.artist)}" required><datalist id="artl">${artists().map(a=>`<option value="${esc(a)}">`).join('')}</datalist><span class="s" style="white-space:normal;font-size:14px">Più artisti? Separali con virgola, «&amp;» o «feat.» (es. Artista 1, Artista 2).</span></label>
+   <label>Artista originale (per remix / slowed)<input id="e_orig" list="artl" value="${esc(s.origArtist||origArtistsOf(s).join(', '))}" placeholder="Opzionale: es. Skillet"><span class="s" style="white-space:normal;font-size:14px">Collega questo brano al profilo dell'autore originale. Svuotalo per scollegarlo.</span></label>
    <label>Album<input id="e_album" value="${esc(s.album)}"></label>
    <div class="two"><label>Anno<input id="e_year" inputmode="numeric" value="${esc(s.year)}"></label><label>Genere<input id="e_genre" value="${esc(s.genre)}"></label></div>
    <label>Cartella<select id="e_folder">${fo}</select></label>
@@ -2268,13 +2428,9 @@ async function saveLyr(s,text,src){const c=cleanLyr(text);s.lyrChk=true;if(!c)re
 async function getLyr(id){try{const d=await idb();return await new Promise(res=>{const q=d.transaction('f').objectStore('f').get('l'+id);q.onsuccess=async()=>{const b=q.result;res(b?await b.text():'')};q.onerror=()=>res('')})}catch(e){return ''}}
 /* Ricerca online: solo se l'utente l'ha attivata. Fonte: LRCLIB (database libero e aperto). Lancia errore se la rete non risponde. */
 function cleanTrackTitle(raw){
-  let s=String(raw||'');
-  const kw=/(slowed|sped\s*up|speed\s*up|nightcore|daycore|reverb|bass\s*boost|8d|audio|video|lyric|official|remaster|version|edit|tiktok|clean|explicit|hq|hd|4k|live|acoustic|instrumental|karaoke|mono|stereo|radio|extended|mix|remix|pitch|boosted|ultra|super|feat\.?|ft\.?|prod\.?)/i;
-  s=s.replace(/\s*[\(\[\{]([^\)\]\}]*)[\)\]\}]\s*/g,(m,inner)=>kw.test(inner)?' ':m);
-  s=s.replace(/\s*[-–—|\/]\s*(slowed|sped\s*up|speed\s*up|nightcore|daycore|reverb|bass\s*boost|8d|official|lyric|remaster|tiktok|clean|explicit|nightcore|daycore).*$/i,'');
-  s=s.replace(/\b(super\s+|ultra\s+)?(slowed(\s+down)?|sped\s*up|speed\s*up|nightcore|daycore|reverb|bass\s*boosted|8d(\s*audio)?|tiktok\s*version|official\s*(music\s*)?(video|audio)|lyrics?)\b/gi,' ');
-  s=s.replace(/[\(\[\{]\s*[\)\]\}]/g,' ').replace(/[\+&]\s*$/g,'').replace(/\s*[-–—|\/+]\s*$/g,'').replace(/\s{2,}/g,' ').trim();
-  return s;
+  const pref=extractTitleArtistPrefix(raw,true);
+  if(pref&&pref.track)return pref.track;
+  return stripModTags(raw);
 }
 function cleanArtistName(raw){
   const main=splitArtistRaw(raw)[0]||String(raw||'');
@@ -2283,14 +2439,15 @@ function cleanArtistName(raw){
 async function fetchWebLyr(s){
   const base='https://lrclib.net/api/',ask=async u=>{const r=await fetch(u);if(r.status===404)return null;if(!r.ok)throw new Error('http '+r.status);return r.json()};
   const unk=/^artista sconosciuto$/i.test(s.artist||'');
+  const oa=origArtistsOf(s)[0]||'';
   let j=await ask(base+'get?'+new URLSearchParams({track_name:s.title,artist_name:unk?'':s.artist,album_name:s.album||'',duration:Math.round(s.dur||0)}));
   if(!j||!j.plainLyrics){
     const arr=await ask(base+'search?'+new URLSearchParams(unk?{track_name:s.title}:{track_name:s.title,artist_name:s.artist}));
     j=(arr||[]).find(x=>x&&x.plainLyrics)||null;
   }
   if(j&&j.plainLyrics)return {exact:true,text:j.plainLyrics,trackName:j.trackName||s.title,artistName:j.artistName||s.artist};
-  const ct=cleanTrackTitle(s.title),ca=unk?'':cleanArtistName(s.artist);
-  const changed=(ct&&ct.toLowerCase()!==String(s.title||'').trim().toLowerCase())||(ca&&ca.toLowerCase()!==String(s.artist||'').trim().toLowerCase());
+  const ct=cleanTrackTitle(s.title),ca=oa||(unk?'':cleanArtistName(s.artist));
+  const changed=!!oa||(ct&&ct.toLowerCase()!==String(s.title||'').trim().toLowerCase())||(ca&&ca.toLowerCase()!==String(s.artist||'').trim().toLowerCase());
   if(ct&&changed){
     let arr=await ask(base+'search?'+new URLSearchParams(ca?{track_name:ct,artist_name:ca}:{track_name:ct}));
     let cand=(arr||[]).find(x=>x&&x.plainLyrics)||null;
@@ -2307,6 +2464,104 @@ async function fetchWebLyr(s){
     }
   }
   return {exact:true,text:''};
+}
+/* ---------- Ricerca online autore originale per versioni modificate / remix / slowed ---------- */
+async function fetchOrigArtistOnline(s){
+  const ct=songCleanBaseTitle(s);
+  if(!ct||ct.length<2)return '';
+  const normK=str=>String(str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+  const nct=normK(ct),ownSet=new Set(songArtists(s).map(akey));
+  const libArts=new Set();
+  S.songs.forEach(x=>{if(!isModifiedText(x.title))songArtists(x).forEach(a=>{const k=akey(a);if(k&&k!=='artista sconosciuto')libArts.add(k)})});
+  const cands=[];
+  const addCand=(artist,track,src)=>{
+    const ar=cleanArtistName(artist),tr=String(track||'').trim();
+    if(!ar||ar.length<2||/^(various artists|artisti vari|unknown|artista sconosciuto)$/i.test(ar))return;
+    if(ownSet.has(akey(ar))||isModifiedText(tr)||isModifiedText(ar))return;
+    const ntr=normK(stripModTags(tr));
+    if(!ntr)return;
+    let sc=0;
+    if(ntr===nct)sc+=60;
+    else if((' '+nct+' ').includes(' '+ntr+' ')||(' '+ntr+' ').includes(' '+nct+' '))sc+=32;
+    else{
+      const tw=new Set(nct.split(' ').filter(w=>w.length>2));
+      const rw=ntr.split(' ').filter(w=>w.length>2);
+      const hit=rw.filter(w=>tw.has(w)).length;
+      if(hit>=2)sc+=18+hit*4;
+      else if(src==='itunes'&&hit>=1)sc+=14;
+      else if(src==='lrclib-q')sc+=12;
+      else return;
+    }
+    if(libArts.has(akey(ar)))sc+=45;
+    if(src==='lrclib')sc+=6;
+    cands.push({artist:ar,track:tr,sc});
+  };
+  const safeJson=async u=>{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),7000);try{const r=await fetch(u,{signal:ac.signal});if(!r.ok)return null;return await r.json()}catch(e){return null}finally{clearTimeout(tm)}};
+  // 1. LRCLIB (titolo pulito e ricerca generale)
+  const l1=await safeJson('https://lrclib.net/api/search?'+new URLSearchParams({track_name:ct}));
+  if(Array.isArray(l1))l1.slice(0,12).forEach(x=>addCand(x.artistName,x.trackName,'lrclib'));
+  if(!cands.length){
+    const l2=await safeJson('https://lrclib.net/api/search?'+new URLSearchParams({q:ct}));
+    if(Array.isArray(l2))l2.slice(0,10).forEach(x=>addCand(x.artistName,x.trackName,'lrclib-q'));
+  }
+  // 2. Fallback iTunes Search API (utile per titoli ispirati al ritornello o brani popolari)
+  if(!cands.length||cands.every(c=>c.sc<50)){
+    const it=await safeJson('https://itunes.apple.com/search?'+new URLSearchParams({term:ct,entity:'song',limit:'8'}));
+    if(it&&Array.isArray(it.results))it.results.forEach(x=>addCand(x.artistName,x.trackName,'itunes'));
+  }
+  if(!cands.length)return '';
+  cands.sort((a,b)=>b.sc-a.sc);
+  return cands[0].sc>=24?cands[0].artist:'';
+}
+let remixBusy=false;
+function remixAuto(s){
+  if(!s||S.settings.detectRemixes===false||!S.settings.remixOnline)return;
+  if(s.origOff||s.origEdited||s.origChk||!isModifiedTrack(s)||origArtistsOf(s).length)return;
+  setTimeout(async()=>{
+    if(!S.settings.remixOnline||S.settings.detectRemixes===false||s.origChk||s.origOff||s.origEdited)return;
+    s.origChk=true;
+    const ar=await fetchOrigArtistOnline(s);
+    if(ar){
+      s.origArtist=ar;s.origSrc='web';
+      save();
+      if(sheetKind==='player'&&cur()&&String(cur().id)===String(s.id))updatePlayer();
+      softRefresh();
+    }else save();
+  },1500);
+}
+async function scanRemixes(force){
+  if(S.settings.detectRemixes===false){toast('Attiva prima «Rileva versioni modificate»');return}
+  if(remixBusy){toast('Analisi già in corso…');return}
+  remixBusy=true;
+  try{
+    invalidateOrigCache();
+    ensureOrigIndex();
+    const offFound=S.songs.filter(s=>origArtistsOf(s).length>0).length;
+    if(!S.settings.remixOnline){
+      render(true);
+      toast(offFound?`Analisi completata: ${offFound} brani modificati collegati`:'Nessun brano modificato trovato offline');
+      return;
+    }
+    const todo=S.songs.filter(s=>!s.origOff&&!s.origEdited&&isModifiedTrack(s)&&(force?(!origArtistsOf(s).length||s.origSrc==='web'):(!s.origChk&&!origArtistsOf(s).length)));
+    if(!todo.length){
+      render(true);
+      toast(offFound?`Libreria già aggiornata (${offFound} brani collegati)`:'Nessun brano modificato da cercare online');
+      return;
+    }
+    let added=0;
+    for(let i=0;i<todo.length;i++){
+      const s=todo[i];
+      toast(`Cerco autore originale… ${i+1} di ${todo.length}`);
+      const ar=await fetchOrigArtistOnline(s);
+      s.origChk=true;
+      if(ar){s.origArtist=ar;s.origSrc='web';added++}
+      if(i%4===3){save();render(true)}
+      if(i<todo.length-1)await new Promise(z=>setTimeout(z,220));
+    }
+    save();render(true);
+    const tot=S.songs.filter(s=>origArtistsOf(s).length>0).length;
+    toast(added?`Trovati ${added} nuovi autori originali (${tot} totali)`:`Analisi finita: ${tot} brani modificati collegati`);
+  }finally{remixBusy=false}
 }
 async function lyrOnlineFetch(s){
   try{
@@ -2552,6 +2807,7 @@ document.addEventListener('click',e=>{
    case'import':case'importfolder':importTarget=null;break;
    case'addhere':importTarget=id;break;
    case'retag':retag(true);break;
+   case'scanremixes':scanRemixes(true);break;
    case'syncall':pickFiles(dirSupported,null);break;
    case'lyrics':{const b=$('#lyrbox'),c=cur();if(!b||!c)break;if(!b.hidden){b.classList.remove('in');b.classList.add('out');setTimeout(()=>{b.hidden=true;b.classList.remove('out')},240);break}b.hidden=false;b.classList.remove('out','in');void b.offsetWidth;b.classList.add('in');showLyr(c);break}
    case'lyrok':{const s=byId(id);if(s&&s._lyrCand){saveLyr(s,s._lyrCand.text,'web').then(()=>{s.lyrWeb=true;delete s._lyrCand;save();showLyr(s);toast('Testo salvato')})}break}
@@ -2576,6 +2832,8 @@ document.addEventListener('click',e=>{
      buzz(6);save();applySettings();
      if(id==='eqOn'){eqApply();const es=$('#eqStatus');if(es)es.textContent=on?'Acceso.':'Spento: le regolazioni si sentono solo con l\'interruttore acceso.'}
      if(id==='fastScroll'){const fw=$('#fsideWrap');if(fw)fw.hidden=!on}
+     if(id==='detectRemixes'){invalidateOrigCache();const rw=$('#remixWrap');if(rw)rw.hidden=!on;if(sheetKind==='player')updatePlayer();render(true)}
+     if(id==='remixOnline'&&on&&S.settings.detectRemixes!==false){scanRemixes(false)}
      break;
    }
    case'pview':S.settings.playerView=id;save();render(true);if(sheetKind==='player')renderPlayer();break;
@@ -2643,9 +2901,9 @@ document.addEventListener('input',e=>{if(e.target&&e.target.id==='spd'){setSpeed
 });
 document.addEventListener('submit',e=>{
   e.preventDefault();const f=e.target;
-  if(f.id==='editf'){const s=byId(f.dataset.id);s.title=$('#e_title').value.trim()||s.title;s.artist=$('#e_artist').value.trim()||s.artist;s.album=$('#e_album').value.trim();s.year=$('#e_year').value.trim();s.genre=$('#e_genre').value.trim();s.folder=$('#e_folder').value;s.edited=true;save();closeSheet();render(true);renderMini();toast('Brano aggiornato');if(selMode)exitSel()}
+  if(f.id==='editf'){const s=byId(f.dataset.id),prevAuto=origArtistsOf(s).join(', '),eo=$('#e_orig')?$('#e_orig').value.trim():'';s.title=$('#e_title').value.trim()||s.title;s.artist=$('#e_artist').value.trim()||s.artist;s.album=$('#e_album').value.trim();s.year=$('#e_year').value.trim();s.genre=$('#e_genre').value.trim();s.folder=$('#e_folder').value;if(eo){if(eo!==prevAuto||s.origArtist){s.origArtist=eo;s.origEdited=true;delete s.origOff}}else if(s.origArtist||prevAuto){s.origArtist='';s.origOff=true;s.origEdited=true}s.edited=true;save();closeSheet();render(true);renderMini();if(sheetKind==='player')updatePlayer();toast('Brano aggiornato');if(selMode)exitSel()}
   if(f.id==='newpl'){const n=$('#npname').value.trim();if(!n)return;const p={id:'p'+Date.now(),name:n,songs:[]};S.playlists.push(p);ui.newpl='';ui.detail={t:'pl',id:p.id};save();render();toast('Playlist creata')}
-  if(f.id==='renartf'){const old=f.dataset.old,nn=$('#r_name').value.trim();if(!nn)return;const ok=akey(old);S.songs.forEach(s=>{if(!hasArtist(s,old))return;const list=songArtists(s).map(a=>akey(a)===ok?nn:a);const seen=new Set(),ded=[];for(const a of list){const k=akey(a);if(!seen.has(k)){seen.add(k);ded.push(a)}}s.artist=ded.join(', ');s.edited=true});save();closeSheet();ui.detail={t:'art',id:nn};render(true);renderMini();toast('Artista rinominato')}
+  if(f.id==='renartf'){const old=f.dataset.old,nn=$('#r_name').value.trim();if(!nn)return;const ok=akey(old);S.songs.forEach(s=>{let ch=false;if(hasOwnArtist(s,old)){const list=songArtists(s).map(a=>akey(a)===ok?nn:a);const seen=new Set(),ded=[];for(const a of list){const k=akey(a);if(!seen.has(k)){seen.add(k);ded.push(a)}}s.artist=ded.join(', ');s.edited=true;ch=true}if(hasOrigArtist(s,old)){const olist=origArtistsOf(s).map(a=>akey(a)===ok?nn:a);const seen=new Set(),ded=[];for(const a of olist){const k=akey(a);if(!seen.has(k)){seen.add(k);ded.push(a)}}s.origArtist=ded.join(', ');s.origEdited=true;delete s.origOff;ch=true}});save();closeSheet();ui.detail={t:'art',id:nn};render(true);renderMini();toast('Artista rinominato')}
   if(f.id==='aikeyf'){const k=f.dataset.k;S.settings[k]=$('#k_val').value.trim();const m=$('#k_model');if(m&&m.value.trim())S.settings.geminiModel=m.value.trim();save();closeSheet();render(true);toast(S.settings[k]?'Chiave salvata':'Chiave rimossa')}
   if(f.id==='ainamef'){S.settings.aiName=$('#ai_n').value.trim().slice(0,20);save();applyAIName();closeSheet();render(true);renderChat();toast('Nome salvato')}
   if(f.id==='proff'){const g=i=>$('#'+i).value.trim();let age=parseInt(g('p_age'),10);if(!(age>=3&&age<=110))age='';S.profile={first:g('p_first'),last:g('p_last'),user:g('p_user'),sex:$('#p_sex').value,age:age===''?'':String(age),city:g('p_city'),genres:g('p_genres'),artists:g('p_artists'),when:g('p_when'),notes:g('p_notes')};save();closeSheet();render(true);toast('Profilo salvato')}
@@ -2698,7 +2956,7 @@ function renderChat(){
   $('#quick').innerHTML=chat.length<3?QUICK.map(q=>`<button class="chip" data-a="quick">${esc(q)}</button>`).join(''):'';
 }
 const NOWS=()=>{const d=new Date();return 'Data di oggi: '+d.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' (anno '+d.getFullYear()+'). Usa sempre questa data, e non una tua idea dell\'anno, per calcolare quanti anni fa è uscito un brano o in che anno siamo.'};
-const GUIDEF=()=>`Monster Music è un'app per ascoltare musica offline. La barra in basso ha cinque sezioni: Brani (ricerca e menu Ordina), Cartelle o Playlist (scelte in Impostazioni → Ascolto e navigazione), Home al centro (riprendi da qui, più ascoltati, artisti preferiti, playlist, casuale), Artisti (riconosce automaticamente anche i brani con più artisti o featuring e permette di rinominarli) e Top (resoconto per Giorno, Settimana, 3 mesi o Anno). Nel lettore a schermo intero puoi toccare ogni singolo artista di un brano, aprire i testi, regolare la velocità, scegliere tra disco girevole o copertina grande e attivare l'equalizzatore. Le Impostazioni (ingranaggio in alto a destra) includono stili (Inferno, Neon, Dark, Sea, Sunny, Sunset, Natural, Disegno, Personalizzato), sfondi salvati con nome, modalità dispositivo poco potente, backup e ripristino in JSON, profilo e motore IA di ${AIN()}.`;
+const GUIDEF=()=>`Monster Music è un'app per ascoltare musica offline. La barra in basso ha cinque sezioni: Brani (ricerca e menu Ordina), Cartelle o Playlist (scelte in Impostazioni → Ascolto e navigazione), Home al centro (riprendi da qui, più ascoltati, artisti preferiti, playlist, casuale), Artisti (riconosce automaticamente più artisti, featuring e anche versioni modificate/slowed/remix collegandole all'autore originale) e Top (resoconto per Giorno, Settimana, 3 mesi o Anno). Nel lettore a schermo intero puoi toccare ogni singolo artista di un brano, aprire i testi, regolare la velocità, scegliere tra disco girevole o copertina grande e attivare l'equalizzatore. Le Impostazioni (ingranaggio in alto a destra) includono stili (Inferno, Neon, Dark, Sea, Sunny, Sunset, Natural, Disegno, Personalizzato), sfondi salvati con nome, modalità dispositivo poco potente, backup e ripristino in JSON, profilo e motore IA di ${AIN()}.`;
 const GUIDE_=()=>GUIDEF();
 function profText(){const p=S.profile,L=[];if(p.first||p.last)L.push('Nome: '+[p.first,p.last].filter(Boolean).join(' '));if(p.user)L.push('Username: '+p.user);if(p.sex)L.push('Sesso: '+p.sex);if(p.age)L.push('Età: '+p.age+' anni');if(p.city)L.push('Città: '+p.city);if(p.genres)L.push('Generi preferiti: '+p.genres);if(p.artists)L.push('Artisti preferiti: '+p.artists);if(p.when)L.push('Ascolta musica quando: '+p.when);if(p.notes)L.push('Altro: '+p.notes);return L.join('. ')}
 function libSummary(){
@@ -2873,6 +3131,14 @@ function localAnswer(rawQ){
     return smartFormat(`${sayLead}Nell'${pLabel}${nm} ${V('hai','ha')} totalizzato ${stUse.n} ascolti su ${stUse.songs.length} brani diversi, per circa ${fmtDur(stUse.sec)}. In libreria ci sono ${S.songs.length} brani e ${artists().length} artisti.`,cfg,['⏱️','🎧']);
   }
 
+  // 6a. Versioni modificate / slowed / remix
+  if(/slowed|sped up|nightcore|remix|modificat|hoodtrap|dj/.test(q)){
+    const mods=S.songs.filter(s=>origArtistsOf(s).length>0);
+    if(S.settings.detectRemixes===false)return smartFormat(`Il rilevamento delle versioni modificate è spento: ${V('puoi','può')} riattivarlo in Impostazioni → Ascolto e navigazione.`,cfg,['🎛️']);
+    if(!mods.length)return smartFormat(`Al momento non ci sono brani modificati collegati a un autore originale. ${V('Puoi','Può')} avviare «Analizza la libreria ora» in Impostazioni → Ascolto e navigazione.`,cfg,['🔍']);
+    const sample=mods.slice(0,4).map(s=>`«${s.title}» (orig. ${origArtistsOf(s).join(', ')})`).join(', ');
+    return smartFormat(`${sayLead}${V('Hai','Ha')} ${mods.length} ${mods.length===1?'versione modificata collegata':'versioni modificate collegate'} all'autore originale, ad esempio: ${sample}. Le trovi nella sezione «Versioni modificate e remix» dentro il profilo dell'artista.`,cfg,['🎛️','🎵']);
+  }
   // 6. Collaborazioni / duetti / due artisti
   if(/collab|feat|duett|due artist|piu artist/.test(q)){
     const colls=S.songs.filter(s=>songArtists(s).length>1);
@@ -3138,7 +3404,7 @@ async function exportBackup(){
     for(const item of (S.settings.bgs||[])){const b=await getBlob('bg_'+item.id);if(b)bgs['bg_'+item.id]=await blobToDataUrl(b)}
     const lyrics={};
     for(const s of [...S.songs,...(S.hidden||[])]){if(s.lyr){const t=await getLyr(s.id);if(t)lyrics[String(s.id)]=t}}
-    const payload={app:'monster-music',version:58,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
+    const payload={app:'monster-music',version:60,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const url=URL.createObjectURL(blob),a=document.createElement('a');
     const dt=new Date().toISOString().slice(0,10);
