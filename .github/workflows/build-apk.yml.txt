@@ -1,0 +1,394 @@
+name: Compila Monster Music APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'index.html'
+      - '.github/workflows/build-apk.yml'
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica i file del progetto
+        uses: actions/checkout@v4
+
+      - name: Configura Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Configura Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Prepara il progetto Capacitor
+        run: |
+          mkdir -p _apkbuild/www
+          cp index.html _apkbuild/www/
+          cp -f manifest.webmanifest _apkbuild/www/ 2>/dev/null || true
+          cp -f *.png _apkbuild/www/ 2>/dev/null || true
+          cd _apkbuild
+          cat << 'EOF' > package.json
+          {
+            "name": "monster-music-apk",
+            "version": "1.0.62",
+            "private": true,
+            "dependencies": {
+              "@capacitor/core": "^8.0.0",
+              "@capacitor/android": "^8.0.0"
+            },
+            "devDependencies": {
+              "@capacitor/cli": "^8.0.0"
+            }
+          }
+          EOF
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.monstermusic.player",
+            "appName": "Monster Music",
+            "webDir": "www",
+            "android": {
+              "backgroundColor": "#0b0506"
+            }
+          }
+          EOF
+          npm install --no-audit --no-fund
+          npx cap add android
+
+      - name: Aggiungi plugin nativo cartelle/file e icone
+        run: |
+          PKG_DIR="_apkbuild/android/app/src/main/java/com/monstermusic/player"
+          mkdir -p "$PKG_DIR"
+
+          cat << 'EOF' > "$PKG_DIR/FolderPickerPlugin.java"
+          package com.monstermusic.player;
+
+          import android.app.Activity;
+          import android.content.ClipData;
+          import android.content.ContentResolver;
+          import android.content.Intent;
+          import android.database.Cursor;
+          import android.net.Uri;
+          import android.provider.OpenableColumns;
+          import android.util.Base64;
+          import androidx.activity.result.ActivityResult;
+          import androidx.documentfile.provider.DocumentFile;
+          import com.getcapacitor.JSArray;
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.ActivityCallback;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+          import java.io.ByteArrayOutputStream;
+          import java.io.InputStream;
+          import java.io.OutputStream;
+          import java.nio.charset.StandardCharsets;
+          import java.util.Locale;
+          import java.util.concurrent.ExecutorService;
+          import java.util.concurrent.Executors;
+
+          @CapacitorPlugin(name = "FolderPicker")
+          public class FolderPickerPlugin extends Plugin {
+
+              private final ExecutorService executor = Executors.newSingleThreadExecutor();
+              private String pendingSaveContent = null;
+
+              private static boolean isWantedFile(String name, String mime) {
+                  if (name == null) return false;
+                  String low = name.toLowerCase(Locale.ROOT);
+                  if (mime != null && mime.startsWith("audio/")) return true;
+                  return low.endsWith(".mp3") || low.endsWith(".m4a") || low.endsWith(".mp4")
+                      || low.endsWith(".wav") || low.endsWith(".ogg") || low.endsWith(".oga")
+                      || low.endsWith(".flac") || low.endsWith(".aac") || low.endsWith(".opus")
+                      || low.endsWith(".lrc") || low.endsWith(".txt");
+              }
+
+              private static void walkDir(DocumentFile dir, String prefix, JSArray out) {
+                  DocumentFile[] children = dir.listFiles();
+                  if (children == null) return;
+                  for (DocumentFile doc : children) {
+                      if (doc == null) continue;
+                      String name = doc.getName();
+                      if (name == null || name.startsWith(".")) continue;
+                      if (doc.isDirectory()) {
+                          walkDir(doc, prefix + "/" + name, out);
+                      } else if (doc.isFile()) {
+                          String mime = doc.getType();
+                          if (isWantedFile(name, mime)) {
+                              JSObject item = new JSObject();
+                              item.put("name", name);
+                              item.put("rel", prefix + "/" + name);
+                              item.put("uri", doc.getUri().toString());
+                              item.put("type", mime != null ? mime : "");
+                              item.put("size", doc.length());
+                              out.put(item);
+                          }
+                      }
+                  }
+              }
+
+              @PluginMethod
+              public void pickDirectory(PluginCall call) {
+                  Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                  intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                  startActivityForResult(call, intent, "onPickDirResult");
+              }
+
+              @ActivityCallback
+              private void onPickDirResult(PluginCall call, ActivityResult result) {
+                  if (call == null) return;
+                  if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null || result.getData().getData() == null) {
+                      JSObject ret = new JSObject();
+                      ret.put("cancelled", true);
+                      call.resolve(ret);
+                      return;
+                  }
+                  Uri treeUri = result.getData().getData();
+                  try {
+                      getContext().getContentResolver().takePersistableUriPermission(
+                          treeUri,
+                          Intent.FLAG_GRANT_READ_URI_PERMISSION
+                      );
+                  } catch (Exception ignored) {}
+
+                  executor.execute(() -> {
+                      try {
+                          DocumentFile root = DocumentFile.fromTreeUri(getContext(), treeUri);
+                          if (root == null) {
+                              call.reject("Impossibile aprire la cartella");
+                              return;
+                          }
+                          String rootName = root.getName();
+                          if (rootName == null || rootName.isEmpty()) rootName = "Musica";
+                          JSArray files = new JSArray();
+                          walkDir(root, rootName, files);
+                          JSObject ret = new JSObject();
+                          ret.put("cancelled", false);
+                          ret.put("rootName", rootName);
+                          ret.put("treeUri", treeUri.toString());
+                          ret.put("files", files);
+                          call.resolve(ret);
+                      } catch (Exception e) {
+                          call.reject("Errore lettura cartella: " + e.getMessage());
+                      }
+                  });
+              }
+
+              @PluginMethod
+              public void pickAudioFiles(PluginCall call) {
+                  Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                  intent.addCategory(Intent.CATEGORY_OPENABLE);
+                  intent.setType("*/*");
+                  intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"audio/*", "application/ogg"});
+                  intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                  intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                  startActivityForResult(call, intent, "onPickFilesResult");
+              }
+
+              private JSObject uriMeta(Uri uri) {
+                  ContentResolver cr = getContext().getContentResolver();
+                  String name = "brano.mp3";
+                  long size = 0;
+                  try (Cursor c = cr.query(uri, new String[]{OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE}, null, null, null)) {
+                      if (c != null && c.moveToFirst()) {
+                          int ni = c.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                          int si = c.getColumnIndex(OpenableColumns.SIZE);
+                          if (ni >= 0 && !c.isNull(ni)) name = c.getString(ni);
+                          if (si >= 0 && !c.isNull(si)) size = c.getLong(si);
+                      }
+                  } catch (Exception ignored) {}
+                  String mime = cr.getType(uri);
+                  JSObject obj = new JSObject();
+                  obj.put("name", name);
+                  obj.put("rel", "");
+                  obj.put("uri", uri.toString());
+                  obj.put("type", mime != null ? mime : "audio/mpeg");
+                  obj.put("size", size);
+                  return obj;
+              }
+
+              @ActivityCallback
+              private void onPickFilesResult(PluginCall call, ActivityResult result) {
+                  if (call == null) return;
+                  if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                      JSObject ret = new JSObject();
+                      ret.put("cancelled", true);
+                      call.resolve(ret);
+                      return;
+                  }
+                  Intent data = result.getData();
+                  JSArray files = new JSArray();
+                  ClipData clip = data.getClipData();
+                  if (clip != null) {
+                      for (int i = 0; i < clip.getItemCount(); i++) {
+                          Uri u = clip.getItemAt(i).getUri();
+                          if (u != null) files.put(uriMeta(u));
+                      }
+                  } else if (data.getData() != null) {
+                      files.put(uriMeta(data.getData()));
+                  }
+                  JSObject ret = new JSObject();
+                  ret.put("cancelled", false);
+                  ret.put("files", files);
+                  call.resolve(ret);
+              }
+
+              @PluginMethod
+              public void readFileBase64(PluginCall call) {
+                  String uriStr = call.getString("uri");
+                  if (uriStr == null || uriStr.isEmpty()) {
+                      call.reject("URI mancante");
+                      return;
+                  }
+                  executor.execute(() -> {
+                      try (InputStream is = getContext().getContentResolver().openInputStream(Uri.parse(uriStr))) {
+                          if (is == null) {
+                              call.reject("Impossibile aprire il file");
+                              return;
+                          }
+                          ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                          byte[] buf = new byte[32768];
+                          int n;
+                          while ((n = is.read(buf)) != -1) {
+                              bos.write(buf, 0, n);
+                          }
+                          String b64 = Base64.encodeToString(bos.toByteArray(), Base64.NO_WRAP);
+                          JSObject ret = new JSObject();
+                          ret.put("data", b64);
+                          call.resolve(ret);
+                      } catch (Exception e) {
+                          call.reject("Errore lettura file: " + e.getMessage());
+                      }
+                  });
+              }
+
+              @PluginMethod
+              public void saveTextFile(PluginCall call) {
+                  String filename = call.getString("filename", "monster-music-backup.json");
+                  String content = call.getString("content", "");
+                  pendingSaveContent = content;
+                  Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                  intent.addCategory(Intent.CATEGORY_OPENABLE);
+                  intent.setType("application/json");
+                  intent.putExtra(Intent.EXTRA_TITLE, filename);
+                  startActivityForResult(call, intent, "onSaveTextResult");
+              }
+
+              @ActivityCallback
+              private void onSaveTextResult(PluginCall call, ActivityResult result) {
+                  String content = pendingSaveContent;
+                  pendingSaveContent = null;
+                  if (call == null) return;
+                  if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null || result.getData().getData() == null) {
+                      JSObject ret = new JSObject();
+                      ret.put("cancelled", true);
+                      call.resolve(ret);
+                      return;
+                  }
+                  Uri outUri = result.getData().getData();
+                  executor.execute(() -> {
+                      try (OutputStream os = getContext().getContentResolver().openOutputStream(outUri)) {
+                          if (os == null) {
+                              call.reject("Impossibile salvare il file");
+                              return;
+                          }
+                          os.write((content != null ? content : "").getBytes(StandardCharsets.UTF_8));
+                          os.flush();
+                          JSObject ret = new JSObject();
+                          ret.put("cancelled", false);
+                          call.resolve(ret);
+                      } catch (Exception e) {
+                          call.reject("Errore salvataggio: " + e.getMessage());
+                      }
+                  });
+              }
+          }
+          EOF
+
+          cat << 'EOF' > "$PKG_DIR/MainActivity.java"
+          package com.monstermusic.player;
+
+          import android.os.Bundle;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(FolderPickerPlugin.class);
+                  super.onCreate(savedInstanceState);
+                  if (this.bridge != null && this.bridge.getWebView() != null) {
+                      this.bridge.getWebView().getSettings().setMediaPlaybackRequiresUserGesture(false);
+                  }
+              }
+          }
+          EOF
+
+          python3 - << 'PYEOF'
+          import os, subprocess, sys
+
+          bg = "_apkbuild/android/app/build.gradle"
+          with open(bg, "r", encoding="utf-8") as f:
+              txt = f.read()
+          dep = '    implementation "androidx.documentfile:documentfile:1.0.1"\n'
+          if "androidx.documentfile" not in txt:
+              txt = txt.replace("dependencies {\n", "dependencies {\n" + dep, 1)
+              with open(bg, "w", encoding="utf-8") as f:
+                  f.write(txt)
+
+          src_icon = "icon-mm-512.png"
+          if os.path.exists(src_icon):
+              try:
+                  from PIL import Image
+              except ImportError:
+                  subprocess.check_call([sys.executable, "-m", "pip", "install", "--quiet", "pillow"])
+                  from PIL import Image
+              res_dir = "_apkbuild/android/app/src/main/res"
+              im = Image.open(src_icon).convert("RGBA")
+              for d, sz in [("mdpi",48),("hdpi",72),("xhdpi",96),("xxhdpi",144),("xxxhdpi",192)]:
+                  out = os.path.join(res_dir, f"mipmap-{d}")
+                  os.makedirs(out, exist_ok=True)
+                  r = im.resize((sz, sz), Image.LANCZOS)
+                  r.save(os.path.join(out, "ic_launcher.png"))
+                  r.save(os.path.join(out, "ic_launcher_round.png"))
+              for d, sz in [("mdpi",108),("hdpi",162),("xhdpi",216),("xxhdpi",324),("xxxhdpi",432)]:
+                  out = os.path.join(res_dir, f"mipmap-{d}")
+                  os.makedirs(out, exist_ok=True)
+                  canvas = Image.new("RGBA", (sz, sz), (11, 5, 6, 255))
+                  inner = int(sz * 0.68)
+                  r = im.resize((inner, inner), Image.LANCZOS)
+                  off = (sz - inner) // 2
+                  canvas.paste(r, (off, off), r)
+                  canvas.save(os.path.join(out, "ic_launcher_foreground.png"))
+              bg_xml = os.path.join(res_dir, "values", "ic_launcher_background.xml")
+              os.makedirs(os.path.dirname(bg_xml), exist_ok=True)
+              with open(bg_xml, "w", encoding="utf-8") as f:
+                  f.write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#0b0506</color>\n</resources>\n')
+              anydpi = os.path.join(res_dir, "mipmap-anydpi-v26")
+              os.makedirs(anydpi, exist_ok=True)
+              ad_xml = '<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@color/ic_launcher_background"/>\n    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n</adaptive-icon>\n'
+              for fn in ("ic_launcher.xml", "ic_launcher_round.xml"):
+                  with open(os.path.join(anydpi, fn), "w", encoding="utf-8") as f:
+                      f.write(ad_xml)
+          PYEOF
+
+      - name: Compila APK Android
+        run: |
+          cd _apkbuild
+          npx cap copy android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+          mkdir -p ../dist
+          cp app/build/outputs/apk/debug/app-debug.apk ../dist/Monster-Music.apk
+
+      - name: Carica APK scaricabile
+        uses: actions/upload-artifact@v4
+        with:
+          name: Monster-Music-APK
+          path: _apkbuild/dist/Monster-Music.apk
