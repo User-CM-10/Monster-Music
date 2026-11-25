@@ -782,6 +782,11 @@ html[data-style="natura"][data-season="inverno"] .ffoot::before{background:url("
 .origline .linkish{color:var(--violet);font-weight:600}
 #remixWrap{display:flex;flex-direction:column;gap:12px;margin:0!important}
 #remixWrap[hidden]{display:none!important}
+
+/* ===== v62: Compatibilità APK Capacitor (safe-area edge-to-edge) ===== */
+body{padding-top:var(--safe-area-inset-top,env(safe-area-inset-top,0px));padding-bottom:var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px))}
+#drawer{padding:var(--safe-area-inset-top,env(safe-area-inset-top,0px)) env(safe-area-inset-right,0px) var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)) 0}
+.sheet .panel{padding-bottom:calc(18px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
 </style>
 </head>
 <body>
@@ -2136,7 +2141,7 @@ function vOpzioni(){
   ${acc('eq','Equalizzatore','Bassi, voci, acuti',eqHtml())}
   ${acc('profilo','Profilo','Nome, età, gusti',`${setRow('Il tuo profilo',pn?esc(pn)+(S.profile.age?' · '+esc(S.profile.age)+' anni':''):'Non ancora creato','<button class="btn alt" data-a="prof">'+(pn?'Modifica':'Crea')+'</button>')}${setRow('Condividi il profilo con '+AIN(),'Nome, età e gusti vengono inclusi nei messaggi a '+AIN()+' solo con un\'IA collegata.',sw('useProfile','Condividi il profilo'))}`)}
   ${acc('dati','Dati e privacy','Backup, azzera ascolti, svuota libreria, privacy',`<div class="t">Backup e ripristino</div><p class="sub">Salva o ripristina impostazioni, temi, sfondi salvati, profilo, playlist, cartelle, testi, commenti e ascolti in un file .json. I file audio restano sul telefono: se cambi dispositivo, dopo il ripristino reimporta le cartelle e tutto si ricollega.</p><div class="bar"><button class="btn" data-a="bkexp">${ic('down')} Esporta backup</button><label class="btn alt" for="bkIn" tabindex="0">${ic('up')} Carica backup</label></div><div class="t secsep">Eliminazione dati</div><div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t secsep">Privacy</div><div class="privwrap">${privacyHtml()}</div>`)}
-  <div class="ffoot">Monster Music · versione 61 · 25 novembre 2026</div>`;
+  <div class="ffoot">Monster Music · versione 62 · 25 novembre 2026</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
@@ -2310,10 +2315,45 @@ function pickerSheet(){
 }
 let toastT=0;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('on'),2200)}
 
-/* ---------- importazione file ---------- */
-const dirSupported='webkitdirectory' in $('#dirIn');
+/* ---------- importazione file (web + bridge nativo Capacitor APK) ---------- */
+const isCapNative=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+const capFP=()=>isCapNative&&window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.FolderPicker||null;
+const dirSupported=('webkitdirectory' in $('#dirIn'))||isCapNative;
 let importTarget=null;
-function pickFiles(dir,folder){importTarget=folder||null;const i=$(dir?'#dirIn':'#fileIn');i.value='';i.click()}
+async function capMaterializeFile(f){
+  if(!f||!f._capUri)return f;
+  const fp=capFP();if(!fp)throw new Error('Plugin nativo non disponibile');
+  const res=await fp.readFileBase64({uri:f._capUri});
+  const bin=atob(res.data||'');
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  return new File([bytes],f.name,{type:f.type||'audio/mpeg'});
+}
+async function pickNativeDir(){
+  const fp=capFP();if(!fp)return false;
+  toast('Apro le cartelle del telefono…');
+  try{
+    const res=await fp.pickDirectory();
+    if(!res||res.cancelled)return true;
+    const arr=(res.files||[]).map(x=>({name:x.name,webkitRelativePath:x.rel||'',type:x.type||'',size:x.size||0,_capUri:x.uri}));
+    if(!arr.length){toast('Nessun file audio in questa cartella');return true}
+    await importFiles(arr,true);
+  }catch(e){toast('Impossibile leggere questa cartella')}
+  return true;
+}
+async function pickNativeAudio(folder){
+  const fp=capFP();if(!fp)return false;
+  importTarget=folder||null;
+  try{
+    const res=await fp.pickAudioFiles();
+    if(!res||res.cancelled){importTarget=null;return true}
+    const arr=(res.files||[]).map(x=>({name:x.name,webkitRelativePath:'',type:x.type||'',size:x.size||0,_capUri:x.uri}));
+    if(!arr.length){importTarget=null;toast('Nessun file selezionato');return true}
+    await importFiles(arr,false);
+  }catch(e){importTarget=null;toast('Impossibile leggere i file')}
+  return true;
+}
+function pickFiles(dir,folder){if(dir&&capFP()){importTarget=folder||null;pickNativeDir();return}if(!dir&&capFP()){pickNativeAudio(folder);return}importTarget=folder||null;const i=$(dir?'#dirIn':'#fileIn');i.value='';i.click()}
 $('#fileIn').addEventListener('change',e=>{const l=[...e.target.files];e.target.value='';importFiles(l,false)});
 $('#dirIn').addEventListener('change',e=>{const l=[...e.target.files];e.target.value='';importFiles(l,true)});
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('mm-files',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
@@ -2694,7 +2734,7 @@ async function importFiles(files,dir){
         const fr=fullRelOf(nf),p=fr.split('/');
         ms.rel=fr;ms.src=p.slice(0,-1).join('/')||p[0];
         if(!ms.edited)ms.folder=p.length>2?p[p.length-2]:p[0];
-        if(ms.nofile){const okr=await putBlob(ms.id,nf);if(okr){ms.url=URL.createObjectURL(nf);ms.stored=true;delete ms.nofile}}
+        if(ms.nofile){const rf=await capMaterializeFile(nf);const okr=await putBlob(ms.id,rf);if(okr){ms.url=URL.createObjectURL(rf);ms.stored=true;delete ms.nofile}}
         have.add(fr);movedIds.add(String(ms.id));moved++;
       }
       if(movedIds.size)missing=missing.filter(s=>!movedIds.has(String(s.id)));
@@ -2709,18 +2749,19 @@ async function importFiles(files,dir){
     const fr=fullRelOf(f);
     if(fr&&have.has(fr)){
       const ex=allPrev().find(x=>x.rel&&relKey(x.rel)===fr&&x.nofile);
-      if(ex){const okr=await putBlob(ex.id,f);if(okr){ex.url=URL.createObjectURL(f);ex.stored=true;delete ex.nofile;relinked++;toast('Ricollego '+relinked+'…')}}
+      if(ex){const rf=await capMaterializeFile(f);const okr=await putBlob(ex.id,rf);if(okr){ex.url=URL.createObjectURL(rf);ex.stored=true;delete ex.nofile;relinked++;toast('Ricollego '+relinked+'…')}}
       continue;
     }
     added++;toast('Importo '+added+' di '+toImport.length+'…');
-    const base=f.name.replace(/\.[^.]+$/,'').replace(/^\d+[\s.\-_]+/,''),parts=base.split(/\s+-\s+/),url=URL.createObjectURL(f);
+    let rf;try{rf=await capMaterializeFile(f)}catch(e){continue}
+    const base=rf.name.replace(/\.[^.]+$/,'').replace(/^\d+[\s.\-_]+/,''),parts=base.split(/\s+-\s+/),url=URL.createObjectURL(rf);
     let folder=importTarget||'Importati',gArtist='',gAlbum='',src='';
     if(dir&&fr){const p=fr.split('/');src=p.slice(0,-1).join('/')||p[0];folder=p.length>2?p[p.length-2]:p[0];if(p.length>=4){gArtist=p[p.length-3];gAlbum=p[p.length-2]}}
     const durP=new Promise(res=>{const a=new Audio();a.preload='metadata';a.onloadedmetadata=()=>res(a.duration||180);a.onerror=()=>res(180);setTimeout(()=>res(180),2500);a.src=url});
-    const [dur,t]=await Promise.all([durP,readTags(f)]);
+    const [dur,t]=await Promise.all([durP,readTags(rf)]);
     const id='u'+Date.now()+Math.random().toString(36).slice(2,6);
-    const ok2=await putBlob(id,f);if(!ok2)lost++;
-    const ns={rel:fr,src:src||'File aggiunti',id,title:(t.title||(parts[1]||parts[0])).trim(),artist:(t.artist||t.albumArtist||(parts[1]?parts[0]:'')||gArtist||'Artista sconosciuto').trim(),album:(t.album||gAlbum||'').trim(),year:t.year||'',genre:t.genre||'',dur,folder,stored:ok2,tagged:true,url};await saveCover(ns,t);if(t.lyr)await saveLyr(ns,t.lyr,'tag');else{const sf=side.get(keyOf(f));if(sf)await saveLyr(ns,await sf.text(),'file');else ns.lyrChk=true}S.songs.push(ns);
+    const ok2=await putBlob(id,rf);if(!ok2)lost++;
+    const ns={rel:fr,src:src||'File aggiunti',id,title:(t.title||(parts[1]||parts[0])).trim(),artist:(t.artist||t.albumArtist||(parts[1]?parts[0]:'')||gArtist||'Artista sconosciuto').trim(),album:(t.album||gAlbum||'').trim(),year:t.year||'',genre:t.genre||'',dur,folder,stored:ok2,tagged:true,url};await saveCover(ns,t);if(t.lyr)await saveLyr(ns,t.lyr,'tag');else{const sf=side.get(keyOf(f));if(sf){try{const srf=await capMaterializeFile(sf);await saveLyr(ns,await srf.text(),'file')}catch(e){ns.lyrChk=true}}else ns.lyrChk=true}S.songs.push(ns);
     if(added%10===0){save();render(true)}
   }
   importTarget=null;save();render(true);renderMini();
@@ -2896,11 +2937,12 @@ document.addEventListener('click',e=>{
    case'period':ui.period=id;render(true);break;
    case'open':ui.dir=1;ui.detail={t:t.dataset.t,id};ui.tabMem[ui.tab]={detail:ui.detail,scroll:0};render();break;
    case'back':ui.dir=-1;ui.detail=null;ui.tabMem[ui.tab]={detail:null,scroll:0};render();break;
-   case'import':case'importfolder':importTarget=null;break;
-   case'addhere':importTarget=id;break;
+   case'import':if(capFP()){e.preventDefault();pickNativeAudio(null);break}importTarget=null;break;
+   case'importfolder':if(capFP()){e.preventDefault();importTarget=null;pickNativeDir();break}importTarget=null;break;
+   case'addhere':if(capFP()){e.preventDefault();pickNativeAudio(id);break}importTarget=id;break;
    case'retag':retag(true);break;
    case'scanremixes':scanRemixes(true);break;
-   case'syncall':pickFiles(dirSupported,null);break;
+   case'syncall':if(capFP()){importTarget=null;pickNativeDir();break}pickFiles(dirSupported,null);break;
    case'lyrics':{const b=$('#lyrbox'),c=cur();if(!b||!c)break;if(!b.hidden){b.classList.remove('in');b.classList.add('out');setTimeout(()=>{b.hidden=true;b.classList.remove('out')},240);break}b.hidden=false;b.classList.remove('out','in');void b.offsetWidth;b.classList.add('in');showLyr(c);break}
    case'lyrok':{const s=byId(id);if(s&&s._lyrCand){saveLyr(s,s._lyrCand.text,'web').then(()=>{s.lyrWeb=true;delete s._lyrCand;save();showLyr(s);toast('Testo salvato')})}break}
    case'lyrno':{const s=byId(id);if(s){delete s._lyrCand;s.lyrWeb=true;save();showLyr(s);toast('Testo scartato')}break}
@@ -3496,11 +3538,18 @@ async function exportBackup(){
     for(const item of (S.settings.bgs||[])){const b=await getBlob('bg_'+item.id);if(b)bgs['bg_'+item.id]=await blobToDataUrl(b)}
     const lyrics={};
     for(const s of [...S.songs,...(S.hidden||[])]){if(s.lyr){const t=await getLyr(s.id);if(t)lyrics[String(s.id)]=t}}
-    const payload={app:'monster-music',version:61,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
-    const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
-    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    const payload={app:'monster-music',version:62,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
     const dt=new Date().toISOString().slice(0,10);
-    a.href=url;a.download='monster-music-backup-'+dt+'.json';
+    const fname='monster-music-backup-'+dt+'.json';
+    const jsonTxt=JSON.stringify(payload);
+    if(capFP()&&capFP().saveTextFile){
+      const res=await capFP().saveTextFile({filename:fname,content:jsonTxt});
+      if(!res||!res.cancelled)toast('Backup esportato!');
+      return;
+    }
+    const blob=new Blob([jsonTxt],{type:'application/json'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=fname;
     document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),4000);
     toast('Backup esportato!');
@@ -3600,6 +3649,6 @@ document.addEventListener('change',e=>{if(e.target.id==='ptext'){S.settings.pers
   (async()=>{try{sampleFn=await window.claude?.use?.('sample')}catch(e){sampleFn=null}})();
 })();
 </script>
-<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script>
+<script>if("serviceWorker" in navigator&&!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script>
 </body>
 </html>
