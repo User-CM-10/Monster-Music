@@ -1,0 +1,64 @@
+
+          python3 - << 'PYEOF'
+          import os, subprocess, sys
+
+          bg = "_apkbuild/android/app/build.gradle"
+          with open(bg, "r", encoding="utf-8") as f:
+              txt = f.read()
+          dep = '    implementation "androidx.documentfile:documentfile:1.0.1"\n'
+          if "androidx.documentfile" not in txt:
+              txt = txt.replace("dependencies {\n", "dependencies {\n" + dep, 1)
+              with open(bg, "w", encoding="utf-8") as f:
+                  f.write(txt)
+
+          src_icon = "icon-mm-512.png"
+          if os.path.exists(src_icon):
+              try:
+                  from PIL import Image
+              except ImportError:
+                  subprocess.check_call([sys.executable, "-m", "pip", "install", "--quiet", "pillow"])
+                  from PIL import Image
+              res_dir = "_apkbuild/android/app/src/main/res"
+              im = Image.open(src_icon).convert("RGBA")
+              for d, sz in [("mdpi",48),("hdpi",72),("xhdpi",96),("xxhdpi",144),("xxxhdpi",192)]:
+                  out = os.path.join(res_dir, f"mipmap-{d}")
+                  os.makedirs(out, exist_ok=True)
+                  r = im.resize((sz, sz), Image.LANCZOS)
+                  r.save(os.path.join(out, "ic_launcher.png"))
+                  r.save(os.path.join(out, "ic_launcher_round.png"))
+              for d, sz in [("mdpi",108),("hdpi",162),("xhdpi",216),("xxhdpi",324),("xxxhdpi",432)]:
+                  out = os.path.join(res_dir, f"mipmap-{d}")
+                  os.makedirs(out, exist_ok=True)
+                  canvas = Image.new("RGBA", (sz, sz), (11, 5, 6, 255))
+                  inner = int(sz * 0.68)
+                  r = im.resize((inner, inner), Image.LANCZOS)
+                  off = (sz - inner) // 2
+                  canvas.paste(r, (off, off), r)
+                  canvas.save(os.path.join(out, "ic_launcher_foreground.png"))
+              bg_xml = os.path.join(res_dir, "values", "ic_launcher_background.xml")
+              os.makedirs(os.path.dirname(bg_xml), exist_ok=True)
+              with open(bg_xml, "w", encoding="utf-8") as f:
+                  f.write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#0b0506</color>\n</resources>\n')
+              anydpi = os.path.join(res_dir, "mipmap-anydpi-v26")
+              os.makedirs(anydpi, exist_ok=True)
+              ad_xml = '<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@color/ic_launcher_background"/>\n    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n</adaptive-icon>\n'
+              for fn in ("ic_launcher.xml", "ic_launcher_round.xml"):
+                  with open(os.path.join(anydpi, fn), "w", encoding="utf-8") as f:
+                      f.write(ad_xml)
+          PYEOF
+
+      - name: Compila APK Android
+        run: |
+          cd _apkbuild
+          npx cap copy android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+          mkdir -p ../dist
+          cp app/build/outputs/apk/debug/app-debug.apk ../dist/Monster-Music.apk
+
+      - name: Carica APK scaricabile
+        uses: actions/upload-artifact@v4
+        with:
+          name: Monster-Music-APK
+          path: _apkbuild/dist/Monster-Music.apk
