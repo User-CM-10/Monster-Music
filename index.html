@@ -1959,11 +1959,11 @@ function srcBlock(){const sl=srcList();if(!sl.length&&!dirSupported)return '';
 function vCartelle(){
   if(ui.detail&&ui.detail.t==='folder'){const n=ui.detail.id,l=S.songs.filter(s=>s.folder===n).sort(FSORT[S.settings.folderSort]||FSORT.az),fch=fsortChips();
     return `<button class="back" data-a="back">${ic('back')} Tutte le cartelle</button><div class="hero sk">${folderSvg(n)}<div style="min-width:0"><h1>${esc(n)}</h1><div class="sub" style="margin:0">${l.length} brani importati da qui</div></div></div>
-    <div class="bar">${l.length?`<button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button>`:''}<label class="btn alt" for="fileIn" tabindex="0" data-a="addhere" data-id="${esc(n)}">${ic('up')} Aggiungi file qui</label>${l.length?'':`<button class="btn bad" data-a="delfold" data-id="${esc(n)}">${ic('trash')} Elimina</button>`}</div>${fch}${songList(l)}`}
+    <div class="bar">${l.length?`<button class="btn" data-a="playall">${ic('play',1)} Riproduci</button><button class="btn alt" data-a="shufctx">${ic('shuffle')} Casuale</button>`:''}${dirSupported?`<button class="btn alt" data-a="syncall">${ic('refresh')} Sincronizza</button>`:''}<label class="btn alt" for="fileIn" tabindex="0" data-a="addhere" data-id="${esc(n)}">${ic('up')} Aggiungi file qui</label>${l.length?'':`<button class="btn bad" data-a="delfold" data-id="${esc(n)}">${ic('trash')} Elimina</button>`}</div>${fch}${songList(l)}`}
   const f=folders();
   return `<h1>Le <span class="hl">cartelle</span></h1><p class="sub">Da qui arrivano le tue canzoni.</p>
   <div class="bar"><label class="btn alt" for="fileIn" tabindex="0" data-a="import">${ic('up')} Scegli file</label>${dirSupported?'<button class="btn alt" data-a="syncall">Aggiorna la sincronizzazione</button>':''}</div>
-  ${dirSupported?'<p class="sub">Hai scaricato brani nuovi dentro una cartella già importata? Tocca «Aggiorna la sincronizzazione» e scegli la stessa cartella: vengono aggiunti solo i brani nuovi.</p>':''}
+  ${dirSupported?'<p class="sub">Hai aggiunto o eliminato brani dentro una cartella già importata? Tocca «Aggiorna la sincronizzazione» e scegli quella cartella: aggiunge i nuovi brani e rimuove dall\'app quelli cancellati dal telefono.</p>':''}
   ${srcBlock()}${dirSupported?'':'<p class="sub">Su questo dispositivo non si possono scegliere intere cartelle. Crea una cartella qui sotto, aprila e aggiungi i file dentro.</p>'}
   <p class="sub">Se toccando non si apre nulla, apri questa pagina in Chrome o Safari: l'app potrebbe non permettere di scegliere i file.</p>
   <form class="newpl" id="newfold"><input id="nfname" placeholder="Nome della nuova cartella" aria-label="Nome cartella" autocomplete="off"><button class="btn">${ic('plus')} Crea</button></form>
@@ -2136,7 +2136,7 @@ function vOpzioni(){
   ${acc('eq','Equalizzatore','Bassi, voci, acuti',eqHtml())}
   ${acc('profilo','Profilo','Nome, età, gusti',`${setRow('Il tuo profilo',pn?esc(pn)+(S.profile.age?' · '+esc(S.profile.age)+' anni':''):'Non ancora creato','<button class="btn alt" data-a="prof">'+(pn?'Modifica':'Crea')+'</button>')}${setRow('Condividi il profilo con '+AIN(),'Nome, età e gusti vengono inclusi nei messaggi a '+AIN()+' solo con un\'IA collegata.',sw('useProfile','Condividi il profilo'))}`)}
   ${acc('dati','Dati e privacy','Backup, azzera ascolti, svuota libreria, privacy',`<div class="t">Backup e ripristino</div><p class="sub">Salva o ripristina impostazioni, temi, sfondi salvati, profilo, playlist, cartelle, testi, commenti e ascolti in un file .json. I file audio restano sul telefono: se cambi dispositivo, dopo il ripristino reimporta le cartelle e tutto si ricollega.</p><div class="bar"><button class="btn" data-a="bkexp">${ic('down')} Esporta backup</button><label class="btn alt" for="bkIn" tabindex="0">${ic('up')} Carica backup</label></div><div class="t secsep">Eliminazione dati</div><div class="bar"><button class="btn bad" data-a="resethist">${ic('trash')} Azzera ascolti</button><button class="btn bad" data-a="clearlib">${ic('trash')} Svuota libreria</button></div><p class="sub">Svuotare la libreria toglie solo le copie dentro l'app: i file originali sul telefono restano dove sono.</p><div class="t secsep">Privacy</div><div class="privwrap">${privacyHtml()}</div>`)}
-  <div class="ffoot">Monster Music · versione 60 · 25 novembre 2026</div>`;
+  <div class="ffoot">Monster Music · versione 61 · 25 novembre 2026</div>`;
 }
 function profSheet(){
   const p=S.profile,f=(id,l,v,ph)=>`<label>${l}<input id="${id}" value="${esc(v)}" placeholder="${ph||''}" autocomplete="off"></label>`;
@@ -2301,7 +2301,7 @@ function editSheet(id){
    <label>Album<input id="e_album" value="${esc(s.album)}"></label>
    <div class="two"><label>Anno<input id="e_year" inputmode="numeric" value="${esc(s.year)}"></label><label>Genere<input id="e_genre" value="${esc(s.genre)}"></label></div>
    <label>Cartella<select id="e_folder">${fo}</select></label>
-   <div class="bar"><button class="btn">${ic('plus')} Salva</button><button type="button" class="btn alt" data-a="closeall">Annulla</button></div>
+   <div class="bar"><button class="btn">${ic('plus')} Salva</button><button type="button" class="btn alt" data-a="closeall">Annulla</button><button type="button" class="btn bad" data-a="delsong" data-id="${s.id}">${ic('trash')} Elimina</button></div>
   </form>`);
 }
 function pickerSheet(){
@@ -2612,33 +2612,125 @@ async function retag(force){
   }
   save();render(true);toast('Tag e copertine aggiornati');
 }
+const relKey=p=>String(p||'').replace(/\\/g,'/').normalize('NFC');
+const baseNameOf=p=>relKey(p).split('/').pop().toLowerCase();
+function purgeSongsByIds(idList){
+  const ids=new Set(idList.map(String));
+  if(!ids.size)return 0;
+  const hit=[...S.songs,...S.hidden].filter(s=>ids.has(String(s.id)));
+  hit.forEach(s=>{
+    if(s.url)try{URL.revokeObjectURL(s.url)}catch(e){}
+    if(COV[s.id])try{URL.revokeObjectURL(COV[s.id])}catch(e){}
+    delBlob(s.id);delBlob('c'+s.id);delBlob('l'+s.id);
+    delete COV[s.id];
+  });
+  S.songs=S.songs.filter(s=>!ids.has(String(s.id)));
+  S.hidden=S.hidden.filter(s=>!ids.has(String(s.id)));
+  S.playlists.forEach(p=>{p.songs=p.songs.filter(x=>!ids.has(String(x)))});
+  S.recentPlayed=(S.recentPlayed||[]).filter(x=>!ids.has(String(x)));
+  const wasCur=cur()&&ids.has(String(cur().id));
+  P.q=P.q.filter(x=>!ids.has(String(x)));
+  if(wasCur){
+    P.i=Math.min(P.i,P.q.length-1);
+    P.audio.pause();P.playing=false;mediaState();
+    if(sheetKind==='player'&&!cur())closeSheet();
+  }
+  return hit.length;
+}
 async function importFiles(files,dir){
   const ok=files.filter(f=>/^audio\//.test(f.type)||/\.(mp3|m4a|mp4|wav|ogg|oga|flac|aac|opus)$/i.test(f.name));
   if(!ok.length){toast('Non ho trovato file audio');return}
-  let n=0,lost=0;
-  if(dir){const srcs=new Set(ok.map(f=>(f.webkitRelativePath||'').split('/')[0]).filter(Boolean));const tp=s=>srcOf(s).split('/')[0];if(srcs.size){const back=S.hidden.filter(s=>srcs.has(tp(s)));S.hidden=S.hidden.filter(s=>!srcs.has(tp(s)));S.songs.push(...back)}}
-  const have=new Set([...S.songs,...S.hidden].map(s=>s.rel).filter(Boolean));
-  const keyOf=f=>(f.webkitRelativePath||f.name).replace(/\.[^./]+$/,'').toLowerCase();
+  let added=0,relinked=0,removed=0,moved=0,lost=0;
+  let pathPrefix='',scopePrefix='',scopeSrc='';
+  const allPrev=()=>[...S.songs,...S.hidden];
+  if(dir){
+    const roots=new Set(ok.map(f=>relKey(f.webkitRelativePath||'').split('/')[0]).filter(Boolean));
+    if(roots.size===1){
+      const root=[...roots][0];
+      const exactHit=allPrev().some(s=>s.rel&&relKey(s.rel).startsWith(root+'/'));
+      if(exactHit){
+        scopePrefix=root+'/';scopeSrc=root;
+      }else{
+        const parents=new Set();
+        const needle='/'+root+'/';
+        for(const s of allPrev()){
+          if(!s.rel)continue;
+          const rk=relKey(s.rel),idx=rk.indexOf(needle);
+          if(idx>0)parents.add(rk.slice(0,idx+1));
+        }
+        if(parents.size===1){
+          pathPrefix=[...parents][0];
+          scopePrefix=pathPrefix+root+'/';
+          scopeSrc=scopePrefix.slice(0,-1);
+        }else{
+          scopePrefix=root+'/';scopeSrc=root;
+        }
+      }
+      const back=S.hidden.filter(s=>inSrc(s,scopeSrc)||(s.rel&&relKey(s.rel).startsWith(scopePrefix)));
+      if(back.length){const bs=new Set(back);S.hidden=S.hidden.filter(s=>!bs.has(s));S.songs.push(...back)}
+    }else if(roots.size>1){
+      const tp=s=>srcOf(s).split('/')[0];
+      const back=S.hidden.filter(s=>roots.has(tp(s)));
+      if(back.length){S.hidden=S.hidden.filter(s=>!roots.has(tp(s)));S.songs.push(...back)}
+    }
+  }
+  const fullRelOf=f=>dir&&f.webkitRelativePath?relKey(pathPrefix+f.webkitRelativePath):'';
+  const have=new Set(allPrev().map(s=>s.rel?relKey(s.rel):'').filter(Boolean));
+  const incomingRels=new Set(ok.map(fullRelOf).filter(Boolean));
+
+  // Rileva brani eliminati (o spostati in un'altra sottocartella) dentro la cartella sincronizzata
+  if(dir&&scopePrefix&&incomingRels.size){
+    const scoped=allPrev().filter(s=>s.rel&&relKey(s.rel).startsWith(scopePrefix));
+    let missing=scoped.filter(s=>!incomingRels.has(relKey(s.rel)));
+    if(missing.length){
+      const newFiles=ok.filter(f=>{const r=fullRelOf(f);return r&&!have.has(r)});
+      const missByBase=new Map(),newByBase=new Map();
+      missing.forEach(s=>{const b=baseNameOf(s.rel);missByBase.set(b,missByBase.has(b)?null:s)});
+      newFiles.forEach(f=>{const b=baseNameOf(fullRelOf(f));newByBase.set(b,newByBase.has(b)?null:f)});
+      const movedIds=new Set();
+      for(const [b,ms] of missByBase){
+        const nf=newByBase.get(b);
+        if(!ms||!nf)continue;
+        const fr=fullRelOf(nf),p=fr.split('/');
+        ms.rel=fr;ms.src=p.slice(0,-1).join('/')||p[0];
+        if(!ms.edited)ms.folder=p.length>2?p[p.length-2]:p[0];
+        if(ms.nofile){const okr=await putBlob(ms.id,nf);if(okr){ms.url=URL.createObjectURL(nf);ms.stored=true;delete ms.nofile}}
+        have.add(fr);movedIds.add(String(ms.id));moved++;
+      }
+      if(movedIds.size)missing=missing.filter(s=>!movedIds.has(String(s.id)));
+      if(missing.length)removed=purgeSongsByIds(missing.map(s=>s.id));
+    }
+  }
+
+  const keyOf=f=>(fullRelOf(f)||f.name).replace(/\.[^./]+$/,'').toLowerCase();
   const side=new Map();files.forEach(f=>{if(LYR_OK.test(f.name))side.set(keyOf(f),f)});
+  const toImport=ok.filter(f=>{const fr=fullRelOf(f);return !(fr&&have.has(fr))});
   for(const f of ok){
-    if(f.webkitRelativePath&&have.has(f.webkitRelativePath)){
-      const ex=[...S.songs,...S.hidden].find(x=>x.rel===f.webkitRelativePath&&x.nofile);
-      if(ex){const okr=await putBlob(ex.id,f);if(okr){ex.url=URL.createObjectURL(f);ex.stored=true;delete ex.nofile;n++;toast('Ricollego '+n+'…')}}
+    const fr=fullRelOf(f);
+    if(fr&&have.has(fr)){
+      const ex=allPrev().find(x=>x.rel&&relKey(x.rel)===fr&&x.nofile);
+      if(ex){const okr=await putBlob(ex.id,f);if(okr){ex.url=URL.createObjectURL(f);ex.stored=true;delete ex.nofile;relinked++;toast('Ricollego '+relinked+'…')}}
       continue;
     }
-    n++;toast('Importo '+n+' di '+ok.length+'…');
+    added++;toast('Importo '+added+' di '+toImport.length+'…');
     const base=f.name.replace(/\.[^.]+$/,'').replace(/^\d+[\s.\-_]+/,''),parts=base.split(/\s+-\s+/),url=URL.createObjectURL(f);
     let folder=importTarget||'Importati',gArtist='',gAlbum='',src='';
-    if(dir&&f.webkitRelativePath){const p=f.webkitRelativePath.split('/');src=p.slice(0,-1).join('/')||p[0];folder=p.length>2?p[p.length-2]:p[0];if(p.length>=4){gArtist=p[p.length-3];gAlbum=p[p.length-2]}}
+    if(dir&&fr){const p=fr.split('/');src=p.slice(0,-1).join('/')||p[0];folder=p.length>2?p[p.length-2]:p[0];if(p.length>=4){gArtist=p[p.length-3];gAlbum=p[p.length-2]}}
     const durP=new Promise(res=>{const a=new Audio();a.preload='metadata';a.onloadedmetadata=()=>res(a.duration||180);a.onerror=()=>res(180);setTimeout(()=>res(180),2500);a.src=url});
     const [dur,t]=await Promise.all([durP,readTags(f)]);
     const id='u'+Date.now()+Math.random().toString(36).slice(2,6);
     const ok2=await putBlob(id,f);if(!ok2)lost++;
-    const ns={rel:f.webkitRelativePath||'',src:src||'File aggiunti',id,title:(t.title||(parts[1]||parts[0])).trim(),artist:(t.artist||t.albumArtist||(parts[1]?parts[0]:'')||gArtist||'Artista sconosciuto').trim(),album:(t.album||gAlbum||'').trim(),year:t.year||'',genre:t.genre||'',dur,folder,stored:ok2,tagged:true,url};await saveCover(ns,t);if(t.lyr)await saveLyr(ns,t.lyr,'tag');else{const sf=side.get(keyOf(f));if(sf)await saveLyr(ns,await sf.text(),'file');else ns.lyrChk=true}S.songs.push(ns);
-    if(n%10===0){save();render(true)}
+    const ns={rel:fr,src:src||'File aggiunti',id,title:(t.title||(parts[1]||parts[0])).trim(),artist:(t.artist||t.albumArtist||(parts[1]?parts[0]:'')||gArtist||'Artista sconosciuto').trim(),album:(t.album||gAlbum||'').trim(),year:t.year||'',genre:t.genre||'',dur,folder,stored:ok2,tagged:true,url};await saveCover(ns,t);if(t.lyr)await saveLyr(ns,t.lyr,'tag');else{const sf=side.get(keyOf(f));if(sf)await saveLyr(ns,await sf.text(),'file');else ns.lyrChk=true}S.songs.push(ns);
+    if(added%10===0){save();render(true)}
   }
-  importTarget=null;save();render(true);
-  toast(lost?ok.length+' brani aggiunti, ma '+lost+' resteranno solo finché la pagina è aperta':ok.length+' brani importati');
+  importTarget=null;save();render(true);renderMini();
+  if(lost){toast(added+' brani aggiunti, ma '+lost+' resteranno solo finché la pagina è aperta');return}
+  const msg=[];
+  if(added)msg.push(added+(added===1?' aggiunto':' aggiunti'));
+  if(removed)msg.push(removed+(removed===1?' rimosso':' rimossi'));
+  if(moved)msg.push(moved+(moved===1?' spostato':' spostati'));
+  if(relinked)msg.push(relinked+(relinked===1?' ricollegato':' ricollegati'));
+  toast(msg.length?(dir?'Sincronizzato: '+msg.join(', '):msg.join(', ')):(dir?'Cartella già sincronizzata: nessuna modifica':'Nessun nuovo brano da importare'));
 }
 
 /* ---------- equalizzatore ---------- */
@@ -2821,7 +2913,7 @@ document.addEventListener('click',e=>{
    case'picker':pickerSheet();break;
    case'rmsong':{const p=S.playlists.find(x=>x.id===ui.detail.id);p.songs=p.songs.filter(x=>String(x)!==String(id));save();render(true);break}
    case'delpl':if(confirmTap(t,'Tocca ancora')){S.playlists=S.playlists.filter(x=>x.id!==id);ui.detail=null;ui.tabMem[ui.tab]={detail:null,scroll:0};save();render();toast('Playlist eliminata')}break;
-   case'delsong':if(confirmTap(t,'Tocca ancora')){delBlob(id);delBlob('c'+id);S.songs=S.songs.filter(s=>String(s.id)!==String(id));S.playlists.forEach(p=>p.songs=p.songs.filter(x=>String(x)!==String(id)));S.recentPlayed=(S.recentPlayed||[]).filter(x=>String(x)!==String(id));const wasCur=cur()&&String(cur().id)===String(id);P.q=P.q.filter(x=>String(x)!==String(id));if(wasCur){P.i=Math.min(P.i,P.q.length-1);P.audio.pause();P.playing=false}save();closeSheet();render(true);toast('Brano eliminato')}break;
+   case'delsong':if(confirmTap(t,'Tocca ancora')){purgeSongsByIds([id]);save();closeSheet();render(true);renderMini();toast('Brano eliminato')}break;
    case'opzioni':if(ui.tab==='opzioni'){go(ui.prevTab&&ui.prevTab!=='opzioni'?ui.prevTab:'home')}else{ui.prevTab=ui.tab;jump('opzioni',null)}break;
    case'goart':closeSheet();jump('artisti',{t:'art',id});break;
    case'gopl':jump('playlist',{t:'pl',id});break;
@@ -3194,7 +3286,7 @@ function localAnswer(rawQ){
   if(/sfond|immagine|foto/.test(q))return smartFormat(`In Impostazioni → Aspetto → Sfondo ${V('puoi','può')} scegliere una foto dalla galleria, darle un nome e salvarla nell'app per riapplicarla quando ${V('vuoi','desidera')}.`,cfg,['🖼️']);
   if(/testo|testi|parole|lyric/.test(q))return smartFormat(`Nel player tocca «Testo». Se il file non ha il testo integrato, ${V('puoi','può')} attivare «Cerca i testi online» in Impostazioni → Ascolto e navigazione.`,cfg,['📝']);
   if(/modific|cambi|rinom|elimin|selezion/.test(q))return smartFormat(V('Tieni premuto su un brano per selezionarne uno o più insieme, oppure apri il player e tocca «Modifica» per cambiare titolo, artisti, album, anno, genere o cartella.','Tenga premuto su un brano per la selezione multipla, oppure apra il lettore e tocchi «Modifica» per aggiornare i dettagli del brano.'),cfg,['✏️']);
-  if(/cartell|import|sincron/.test(q))return smartFormat(`In «Cartelle» ${V('puoi','può')} importare intere cartelle del telefono o aggiornare la sincronizzazione per aggiungere solo i file nuovi.`,cfg,['📁']);
+  if(/cartell|import|sincron/.test(q))return smartFormat(`In «Cartelle» ${V('puoi','può')} importare intere cartelle del telefono o usare «Aggiorna la sincronizzazione»: aggiunge i file nuovi e rimuove dall'app quelli che ${V('hai','ha')} cancellato dal telefono.`,cfg,['📁']);
   if(/playlist/.test(q))return smartFormat(`In «Playlist» (o dalla Home in fondo) ${V('puoi','può')} creare nuove raccolte e aggiungere brani con il tasto «Aggiungi brani». Attualmente ${V('hai','ha')} ${S.playlists.length} playlist.`,cfg,['🎶']);
   if(/tem[ai]|neon|inferno|scuro|chiaro|impostaz|opzion|stile|lento|potente/.test(q))return smartFormat(`Tocca l'ingranaggio in alto a destra → Aspetto: ora lo stile attivo è «${S.settings.style}». ${V('Trovi','Troverà')} Inferno, Neon, Dark, Sea, Sunny, Sunset, Natural, Disegno, Personalizzato e la modalità Dispositivo poco potente.`,cfg,['🎨']);
   if(/top|resoconto|period|classific/.test(q))return smartFormat(`Nella scheda «Top» in basso ${V('puoi','può')} filtrare il resoconto dal menu «Periodo» (Giorno, Settimana, 3 mesi, Anno) con podio e classifica completa.`,cfg,['📊']);
@@ -3404,7 +3496,7 @@ async function exportBackup(){
     for(const item of (S.settings.bgs||[])){const b=await getBlob('bg_'+item.id);if(b)bgs['bg_'+item.id]=await blobToDataUrl(b)}
     const lyrics={};
     for(const s of [...S.songs,...(S.hidden||[])]){if(s.lyr){const t=await getLyr(s.id);if(t)lyrics[String(s.id)]=t}}
-    const payload={app:'monster-music',version:60,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
+    const payload={app:'monster-music',version:61,exportedAt:new Date().toISOString(),state:cleanState,bgs,lyrics};
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
     const url=URL.createObjectURL(blob),a=document.createElement('a');
     const dt=new Date().toISOString().slice(0,10);
