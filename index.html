@@ -567,7 +567,7 @@ html[data-btn="glass"] .nav button.on span:last-child{opacity:1;transform:none}
 html[data-btn="m3"] .nav button,html[data-btn="m3"] .btn,html[data-btn="m3"] .chip{position:relative;overflow:hidden}
 html[data-btn="m3"] .m3rip{position:absolute;border-radius:50%;background:currentColor;opacity:.2;transform:scale(0);pointer-events:none;animation:m3rip .65s cubic-bezier(.2,0,0,1) forwards}
 @keyframes m3rip{to{transform:scale(1);opacity:0}}
-@keyframes m3page{0%{opacity:0;transform:translate3d(var(--dx,24px),0,0) scale(.97);filter:blur(3px)}60%{filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes m3page{0%{opacity:0;transform:translate3d(var(--dx,24px),0,0) scale(.97)}100%{opacity:1;transform:none}}
 @keyframes m3item{0%{opacity:0;transform:translate3d(0,14px,0) scale(.96)}70%{opacity:1}100%{opacity:1;transform:none}}
 html[data-btn="glass"] main.enter{animation-duration:.5s}
 html[data-btn="glass"] main.enter :is(.list,.grid,.shelf)>*{animation-duration:.42s}
@@ -784,6 +784,7 @@ html[data-style="natura"][data-season="inverno"] .ffoot::before{background:url("
 #remixWrap[hidden]{display:none!important}
 
 /* ===== v62: Compatibilità APK Capacitor (safe-area edge-to-edge) ===== */
+#dock{contain:layout style}#nav{transform:translateZ(0)}#navind{will-change:transform,width,opacity}
 body{padding-top:var(--safe-area-inset-top,env(safe-area-inset-top,0px));padding-bottom:var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px))}
 #drawer{padding:var(--safe-area-inset-top,env(safe-area-inset-top,0px)) env(safe-area-inset-right,0px) var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)) 0}
 .sheet .panel{padding-bottom:calc(18px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
@@ -2176,11 +2177,7 @@ function render(keepScroll,restoreY){
   const m=$('#main'),y=m.scrollTop;m.innerHTML=VIEWS[ui.tab]();
   if(keepScroll){m.scrollTop=y;m.classList.remove('enter')}
   else{m.scrollTop=typeof restoreY==='number'?restoreY:0;m.style.setProperty('--dx',(ui.dir||1)*30+'px');m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter')}
-  {const T=tabs(),nv=$('#nav'),key=T.map(t=>t[0]).join(',');
-    nv.style.gridTemplateColumns='repeat('+T.length+',1fr)';
-    if(nv.dataset.k!==key){nv.dataset.k=key;nv.innerHTML='<span id="navind" aria-hidden="true"></span>'+T.map(([k,l,i])=>`<button data-a="tab" data-id="${k}" aria-label="${l}"><span class="nic">${ic(i)}</span><span>${l}</span></button>`).join('');nv.dataset.fresh='1'}
-    nv.querySelectorAll('button').forEach(b=>{const on=b.dataset.id===ui.tab;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
-    if(nv.dataset.fresh){delete nv.dataset.fresh;snapInd()}else moveInd()}
+  syncNav();
   renderMini();renderSel();if(window.paintFast)paintFast();
 }
 function snapInd(){const ind=$('#navind');if(!ind)return;ind.style.setProperty('transition','none','important');moveInd(true);void ind.offsetWidth;ind.style.removeProperty('transition')}
@@ -2204,6 +2201,14 @@ function moveInd(snap){
   ind.style.transform='translate3d('+b.offsetLeft+'px,0,0) scale(1)';
 }
 let softT=0;function softRefresh(){clearTimeout(softT);softT=setTimeout(()=>{const a=document.activeElement;if(a&&(a.id==='q'||a.id==='npname'||a.id==='hq'||a.id==='nfname'))return;render(true)},400)}
+function syncNav(){
+  const T=tabs(),nv=$('#nav'),key=T.map(t=>t[0]).join(',');
+  nv.style.gridTemplateColumns='repeat('+T.length+',1fr)';
+  if(nv.dataset.k!==key){nv.dataset.k=key;nv.innerHTML='<span id="navind" aria-hidden="true"></span>'+T.map(([k,l,i])=>`<button data-a="tab" data-id="${k}" aria-label="${l}"><span class="nic">${ic(i)}</span><span>${l}</span></button>`).join('');nv.dataset.fresh='1'}
+  nv.querySelectorAll('button').forEach(b=>{const on=b.dataset.id===ui.tab;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  if(nv.dataset.fresh){delete nv.dataset.fresh;snapInd()}else moveInd();
+}
+let goRaf=0;
 function go(tab){
   if(tab===ui.tab){
     if(ui.detail){ui.dir=-1;ui.detail=null;ui.tabMem[tab]={detail:null,scroll:0};render();return}
@@ -2217,7 +2222,9 @@ function go(tab){
   const mem=ui.tabMem[tab];
   ui.detail=mem?mem.detail:null;
   armBack();
-  render(false,mem?mem.scroll:0);
+  syncNav();
+  cancelAnimationFrame(goRaf);
+  goRaf=requestAnimationFrame(()=>{goRaf=0;render(false,mem?mem.scroll:0)});
 }
 /* tasto indietro: chiude player/cassetto senza flash, poi risale o torna alla Home */
 let sentinel=false,armT=0;
@@ -2364,7 +2371,7 @@ async function restoreBlobs(){
     for(const s of [...S.songs,...S.hidden]){if(!s.stored)continue;
       const b=await new Promise(res=>{const q=d.transaction('f').objectStore('f').get(String(s.id));q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)});
       if(b)s.url=URL.createObjectURL(b);else s.nofile=true;
-      if(s.hasCov){const c=await new Promise(res=>{const q=d.transaction('f').objectStore('f').get('c'+s.id);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)});if(c)COV[s.id]=URL.createObjectURL(c)}}
+      if(s.hasCov){const c=await new Promise(res=>{const q=d.transaction('f').objectStore('f').get('c'+s.id);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)});if(c)COV[s.id]=URL.createObjectURL(c);else{s.hasCov=false;s.covDone=false}}else if(!s.nofile&&!COV[s.id]){s.covDone=false}}
   }catch(e){S.songs.forEach(s=>{if(s.stored)s.nofile=true})}
   render(true);retag();
 }
@@ -2749,7 +2756,7 @@ async function importFiles(files,dir){
     const fr=fullRelOf(f);
     if(fr&&have.has(fr)){
       const ex=allPrev().find(x=>x.rel&&relKey(x.rel)===fr&&x.nofile);
-      if(ex){const rf=await capMaterializeFile(f);const okr=await putBlob(ex.id,rf);if(okr){ex.url=URL.createObjectURL(rf);ex.stored=true;delete ex.nofile;relinked++;toast('Ricollego '+relinked+'…')}}
+      if(ex){const rf=await capMaterializeFile(f);const okr=await putBlob(ex.id,rf);if(okr){ex.url=URL.createObjectURL(rf);ex.stored=true;delete ex.nofile;if(!COV[ex.id]){try{const rt=await readTags(rf);await saveCover(ex,rt)}catch(e){}}relinked++;toast('Ricollego '+relinked+'…')}}
       continue;
     }
     added++;toast('Importo '+added+' di '+toImport.length+'…');
@@ -3577,6 +3584,15 @@ async function applyPendingBackup(){
   const data=pendingBackup;pendingBackup=null;
   try{
     toast('Ripristino il backup…');
+    const prevSongs=[...(S.songs||[]),...(S.hidden||[])];
+    const byRel=new Map(),byBase=new Map(),byTA=new Map();
+    for(const os of prevSongs){
+      if(!os.stored)continue;
+      if(os.rel)byRel.set(relKey(os.rel),os);
+      if(os.rel){const bn=baseNameOf(os.rel);byBase.set(bn,byBase.has(bn)?null:os)}
+      const ta=norm(os.title)+'|'+norm(os.artist);
+      if(ta.length>2)byTA.set(ta,byTA.has(ta)?null:os);
+    }
     const st=data.state;
     S={
       songs:Array.isArray(st.songs)?st.songs:[],
@@ -3591,6 +3607,18 @@ async function applyPendingBackup(){
     };
     S.settings.discSpin=true;S.settings.btn='glass';if(S.settings.aiEngine==='local'||S.settings.aiEngine==='offline')S.settings.aiEngine='smart';
     if(!Array.isArray(S.settings.bgs))S.settings.bgs=[];
+    if(prevSongs.length){
+      for(const ns of [...S.songs,...S.hidden]){
+        const match=(ns.rel&&byRel.get(relKey(ns.rel)))||(ns.rel&&byBase.get(baseNameOf(ns.rel)))||byTA.get(norm(ns.title)+'|'+norm(ns.artist));
+        if(match&&String(match.id)!==String(ns.id)){
+          const ab=await getBlob(match.id);
+          if(ab){await putBlob(ns.id,ab);ns.stored=true;delete ns.nofile}
+          const cb=await getBlob('c'+match.id);
+          if(cb){await putBlob('c'+ns.id,cb);ns.hasCov=true;ns.covDone=true}
+          else{ns.hasCov=false;ns.covDone=false}
+        }
+      }
+    }
     for(const [k,u] of Object.entries(data.bgs||{})){try{const bl=await dataUrlToBlob(u);await putBlob(k,bl)}catch(e){}}
     for(const [id,txt] of Object.entries(data.lyrics||{})){try{await putBlob('l'+id,new Blob([txt],{type:'text/plain'}))}catch(e){}}
     save();closeSheet();applySettings();await applyBg();await restoreBlobs();render();renderChat();
