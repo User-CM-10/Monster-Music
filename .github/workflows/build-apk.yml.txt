@@ -1,0 +1,483 @@
+name: Compila Monster Music APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'index.html'
+      - '.github/workflows/build-apk.yml'
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica i file del progetto
+        uses: actions/checkout@v4
+
+      - name: Configura Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Configura Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Prepara progetto Capacitor Android
+        run: |
+          mkdir -p www
+          cp index.html www/
+          for f in manifest.webmanifest icon-mm-192.png icon-mm-512.png maskable-mm-512.png apple-touch-icon-mm.png; do
+            [ -f "$f" ] && cp "$f" www/ || true
+          done
+
+          cat << 'EOF' > package.json
+          {
+            "name": "monster-music",
+            "version": "1.0.62",
+            "private": true,
+            "dependencies": {
+              "@capacitor/core": "^6.1.2",
+              "@capacitor/android": "^6.1.2",
+              "@capacitor/app": "^6.0.1"
+            },
+            "devDependencies": {
+              "@capacitor/cli": "^6.1.2"
+            }
+          }
+          EOF
+
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.cmcompany.monstermusic",
+            "appName": "Monster Music",
+            "webDir": "www",
+            "android": {
+              "allowMixedContent": true,
+              "backgroundColor": "#0b0506"
+            }
+          }
+          EOF
+
+          npm install
+          npx cap add android
+
+      - name: Aggiungi AudioKeepAliveService, FolderPickerPlugin e MainActivity
+        run: |
+          PKG_DIR="android/app/src/main/java/com/cmcompany/monstermusic"
+          mkdir -p "$PKG_DIR"
+
+          cat << 'EOF' > "$PKG_DIR/AudioKeepAliveService.java"
+          package com.cmcompany.monstermusic;
+
+          import android.app.Notification;
+          import android.app.NotificationChannel;
+          import android.app.NotificationManager;
+          import android.app.PendingIntent;
+          import android.app.Service;
+          import android.content.Context;
+          import android.content.Intent;
+          import android.content.pm.ServiceInfo;
+          import android.os.Build;
+          import android.os.IBinder;
+          import android.os.PowerManager;
+          import androidx.core.app.NotificationCompat;
+
+          public class AudioKeepAliveService extends Service {
+              public static final String CHANNEL_ID = "mm_audio_playback";
+              public static final int NOTIF_ID = 1001;
+              public static final String ACTION_START = "com.cmcompany.monstermusic.ACTION_START";
+              public static final String ACTION_STOP = "com.cmcompany.monstermusic.ACTION_STOP";
+
+              private PowerManager.WakeLock wakeLock;
+
+              @Override
+              public void onCreate() {
+                  super.onCreate();
+                  createChannel();
+              }
+
+              @Override
+              public int onStartCommand(Intent intent, int flags, int startId) {
+                  if (intent != null && ACTION_STOP.equals(intent.getAction())) {
+                      releaseLock();
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                          stopForeground(STOP_FOREGROUND_REMOVE);
+                      } else {
+                          stopForeground(true);
+                      }
+                      stopSelf();
+                      return START_NOT_STICKY;
+                  }
+
+                  String title = (intent != null && intent.getStringExtra("title") != null)
+                          ? intent.getStringExtra("title") : "Monster Music";
+                  String artist = (intent != null && intent.getStringExtra("artist") != null)
+                          ? intent.getStringExtra("artist") : "Riproduzione in corso";
+
+                  acquireLock();
+
+                  Intent openIntent = new Intent(this, MainActivity.class);
+                  openIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                  PendingIntent pendingIntent = PendingIntent.getActivity(
+                          this, 0, openIntent,
+                          PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                  );
+
+                  Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                          .setContentTitle(title)
+                          .setContentText(artist.isEmpty() ? "Riproduzione in corso" : artist)
+                          .setSmallIcon(android.R.drawable.ic_media_play)
+                          .setContentIntent(pendingIntent)
+                          .setOngoing(true)
+                          .setSilent(true)
+                          .setPriority(NotificationCompat.PRIORITY_LOW)
+                          .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                          .build();
+
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                      startForeground(NOTIF_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+                  } else {
+                      startForeground(NOTIF_ID, notification);
+                  }
+                  return START_STICKY;
+              }
+
+              private void createChannel() {
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                      NotificationChannel channel = new NotificationChannel(
+                              CHANNEL_ID,
+                              "Riproduzione Monster Music",
+                              NotificationManager.IMPORTANCE_LOW
+                      );
+                      channel.setDescription("Mantiene attiva la riproduzione musicale in background");
+                      channel.setShowBadge(false);
+                      NotificationManager nm = getSystemService(NotificationManager.class);
+                      if (nm != null) nm.createNotificationChannel(channel);
+                  }
+              }
+
+              private void acquireLock() {
+                  try {
+                      if (wakeLock == null) {
+                          PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                          if (pm != null) {
+                              wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MonsterMusic::AudioPlaybackLock");
+                              wakeLock.setReferenceCounted(false);
+                          }
+                      }
+                      if (wakeLock != null && !wakeLock.isHeld()) {
+                          wakeLock.acquire(4 * 60 * 60 * 1000L);
+                      }
+                  } catch (Exception ignored) {}
+              }
+
+              private void releaseLock() {
+                  try {
+                      if (wakeLock != null && wakeLock.isHeld()) {
+                          wakeLock.release();
+                      }
+                  } catch (Exception ignored) {}
+              }
+
+              @Override
+              public void onDestroy() {
+                  releaseLock();
+                  super.onDestroy();
+              }
+
+              @Override
+              public IBinder onBind(Intent intent) {
+                  return null;
+              }
+          }
+          EOF
+
+          cat << 'EOF' > "$PKG_DIR/FolderPickerPlugin.java"
+          package com.cmcompany.monstermusic;
+
+          import android.app.Activity;
+          import android.content.ClipData;
+          import android.content.ContentResolver;
+          import android.content.Context;
+          import android.content.Intent;
+          import android.database.Cursor;
+          import android.net.Uri;
+          import android.provider.OpenableColumns;
+          import android.util.Base64;
+          import androidx.activity.result.ActivityResult;
+          import androidx.core.content.ContextCompat;
+          import androidx.documentfile.provider.DocumentFile;
+          import com.getcapacitor.JSArray;
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.ActivityCallback;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+          import java.io.ByteArrayOutputStream;
+          import java.io.InputStream;
+
+          @CapacitorPlugin(name = "FolderPicker")
+          public class FolderPickerPlugin extends Plugin {
+
+              @PluginMethod
+              public void setPlaybackState(PluginCall call) {
+                  boolean playing = Boolean.TRUE.equals(call.getBoolean("playing", false));
+                  String title = call.getString("title", "Monster Music");
+                  String artist = call.getString("artist", "");
+                  Context ctx = getContext();
+                  try {
+                      Intent intent = new Intent(ctx, AudioKeepAliveService.class);
+                      if (playing) {
+                          intent.setAction(AudioKeepAliveService.ACTION_START);
+                          intent.putExtra("title", title);
+                          intent.putExtra("artist", artist);
+                          ContextCompat.startForegroundService(ctx, intent);
+                      } else {
+                          intent.setAction(AudioKeepAliveService.ACTION_STOP);
+                          ctx.stopService(intent);
+                      }
+                  } catch (Exception ignored) {}
+                  call.resolve();
+              }
+
+              @PluginMethod
+              public void pickDirectory(PluginCall call) {
+                  Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                  intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                  startActivityForResult(call, intent, "onDirPicked");
+              }
+
+              @ActivityCallback
+              private void onDirPicked(PluginCall call, ActivityResult result) {
+                  if (call == null) return;
+                  if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                      JSObject r = new JSObject();
+                      r.put("cancelled", true);
+                      call.resolve(r);
+                      return;
+                  }
+                  Uri treeUri = result.getData().getData();
+                  if (treeUri == null) {
+                      JSObject r = new JSObject();
+                      r.put("cancelled", true);
+                      call.resolve(r);
+                      return;
+                  }
+                  try {
+                      getContext().getContentResolver().takePersistableUriPermission(
+                              treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                      );
+                  } catch (Exception ignored) {}
+
+                  new Thread(() -> {
+                      JSArray files = new JSArray();
+                      DocumentFile root = DocumentFile.fromTreeUri(getContext(), treeUri);
+                      if (root != null) {
+                          String rootName = root.getName() != null ? root.getName() : "Musica";
+                          scanDoc(root, rootName, files);
+                      }
+                      JSObject out = new JSObject();
+                      out.put("cancelled", false);
+                      out.put("files", files);
+                      call.resolve(out);
+                  }).start();
+              }
+
+              private void scanDoc(DocumentFile dir, String prefix, JSArray out) {
+                  DocumentFile[] children = dir.listFiles();
+                  if (children == null) return;
+                  for (DocumentFile f : children) {
+                      String name = f.getName();
+                      if (name == null) continue;
+                      if (f.isDirectory()) {
+                          scanDoc(f, prefix + "/" + name, out);
+                      } else if (f.isFile()) {
+                          String low = name.toLowerCase();
+                          String mime = f.getType() != null ? f.getType() : "";
+                          if (mime.startsWith("audio/") || low.matches(".*\\.(mp3|m4a|mp4|wav|ogg|oga|flac|aac|opus|lrc|txt)$")) {
+                              JSObject o = new JSObject();
+                              o.put("name", name);
+                              o.put("rel", prefix + "/" + name);
+                              o.put("type", mime);
+                              o.put("size", f.length());
+                              o.put("uri", f.getUri().toString());
+                              out.put(o);
+                          }
+                      }
+                  }
+              }
+
+              @PluginMethod
+              public void pickAudioFiles(PluginCall call) {
+                  Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                  intent.addCategory(Intent.CATEGORY_OPENABLE);
+                  intent.setType("audio/*");
+                  intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                  intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                  startActivityForResult(call, intent, "onAudioPicked");
+              }
+
+              @ActivityCallback
+              private void onAudioPicked(PluginCall call, ActivityResult result) {
+                  if (call == null) return;
+                  if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                      JSObject r = new JSObject();
+                      r.put("cancelled", true);
+                      call.resolve(r);
+                      return;
+                  }
+                  Intent data = result.getData();
+                  JSArray files = new JSArray();
+                  ClipData clip = data.getClipData();
+                  if (clip != null) {
+                      for (int i = 0; i < clip.getItemCount(); i++) {
+                          addUriFile(clip.getItemAt(i).getUri(), files);
+                      }
+                  } else if (data.getData() != null) {
+                      addUriFile(data.getData(), files);
+                  }
+                  JSObject out = new JSObject();
+                  out.put("cancelled", false);
+                  out.put("files", files);
+                  call.resolve(out);
+              }
+
+              private void addUriFile(Uri uri, JSArray out) {
+                  if (uri == null) return;
+                  ContentResolver cr = getContext().getContentResolver();
+                  String name = "audio.mp3";
+                  long size = 0;
+                  try (Cursor c = cr.query(uri, null, null, null, null)) {
+                      if (c != null && c.moveToFirst()) {
+                          int ni = c.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                          int si = c.getColumnIndex(OpenableColumns.SIZE);
+                          if (ni >= 0) name = c.getString(ni);
+                          if (si >= 0) size = c.getLong(si);
+                      }
+                  } catch (Exception ignored) {}
+                  String mime = cr.getType(uri);
+                  JSObject o = new JSObject();
+                  o.put("name", name);
+                  o.put("rel", "");
+                  o.put("type", mime != null ? mime : "audio/mpeg");
+                  o.put("size", size);
+                  o.put("uri", uri.toString());
+                  out.put(o);
+              }
+
+              @PluginMethod
+              public void readFileBase64(PluginCall call) {
+                  String uriStr = call.getString("uri");
+                  if (uriStr == null) {
+                      call.reject("Missing uri");
+                      return;
+                  }
+                  new Thread(() -> {
+                      try (InputStream in = getContext().getContentResolver().openInputStream(Uri.parse(uriStr));
+                           ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                          if (in == null) {
+                              call.reject("Cannot open stream");
+                              return;
+                          }
+                          byte[] buf = new byte[16384];
+                          int len;
+                          while ((len = in.read(buf)) != -1) {
+                              bos.write(buf, 0, len);
+                          }
+                          JSObject out = new JSObject();
+                          out.put("data", Base64.encodeToString(bos.toByteArray(), Base64.NO_WRAP));
+                          call.resolve(out);
+                      } catch (Exception e) {
+                          call.reject("Read failed: " + e.getMessage());
+                      }
+                  }).start();
+              }
+          }
+          EOF
+
+          cat << 'EOF' > "$PKG_DIR/MainActivity.java"
+          package com.cmcompany.monstermusic;
+
+          import android.Manifest;
+          import android.content.pm.PackageManager;
+          import android.os.Build;
+          import android.os.Bundle;
+          import androidx.core.app.ActivityCompat;
+          import androidx.core.content.ContextCompat;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(FolderPickerPlugin.class);
+                  super.onCreate(savedInstanceState);
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                      if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                              != PackageManager.PERMISSION_GRANTED) {
+                          ActivityCompat.requestPermissions(this,
+                                  new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+                      }
+                  }
+              }
+          }
+          EOF
+
+      - name: Aggiorna AndroidManifest e dipendenze Gradle
+        run: |
+          python3 - << 'PY'
+          p = "android/app/src/main/AndroidManifest.xml"
+          with open(p, "r", encoding="utf-8") as f:
+              m = f.read()
+          perms = [
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />',
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />',
+              '<uses-permission android:name="android.permission.WAKE_LOCK" />',
+              '<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />',
+          ]
+          for perm in perms:
+              if perm not in m:
+                  m = m.replace("<application", perm + "\n    <application", 1)
+          svc = '        <service android:name=".AudioKeepAliveService" android:exported="false" android:foregroundServiceType="mediaPlayback" />'
+          if "AudioKeepAliveService" not in m:
+              m = m.replace("</application>", svc + "\n    </application>", 1)
+          with open(p, "w", encoding="utf-8") as f:
+              f.write(m)
+
+          g = "android/app/build.gradle"
+          with open(g, "r", encoding="utf-8") as f:
+              gr = f.read()
+          dep = '    implementation "androidx.documentfile:documentfile:1.0.1"'
+          if "androidx.documentfile" not in gr:
+              gr = gr.replace("dependencies {", "dependencies {\n" + dep, 1)
+          with open(g, "w", encoding="utf-8") as f:
+              f.write(gr)
+          PY
+
+      - name: Imposta icona app
+        run: |
+          if [ -f icon-mm-512.png ]; then
+            for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+              mkdir -p "android/app/src/main/res/$d"
+              cp icon-mm-512.png "android/app/src/main/res/$d/ic_launcher.png"
+              cp icon-mm-512.png "android/app/src/main/res/$d/ic_launcher_round.png"
+              cp icon-mm-512.png "android/app/src/main/res/$d/ic_launcher_foreground.png"
+            done
+          fi
+
+      - name: Compila APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk ../Monster-Music.apk
+
+      - name: Carica Monster-Music.apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: Monster-Music-APK
+          path: Monster-Music.apk
