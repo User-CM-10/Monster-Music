@@ -1835,6 +1835,20 @@ function toggle(){
 function toggleShuffle(){S.settings.shuffle=!S.settings.shuffle;P.back=[];save();syncPlayer();toast(S.settings.shuffle?'Riproduzione casuale attiva':'Riproduzione casuale spenta')}
 function cycleRepeat(){const o={off:'all',all:'one',one:'off'};S.settings.repeat=o[S.settings.repeat]||'off';save();syncPlayer();toast({off:'Ripetizione spenta',all:'Ripeti tutto',one:'Ripeti questo brano'}[S.settings.repeat])}
 function initMedia(){
+  try{
+    const fp=capFP();
+    if(fp&&fp.addListener){
+      fp.addListener('mediaAction',ev=>{
+        const a=ev&&ev.action,s=cur();
+        if(!s)return;
+        if(a==='play'){if(!P.playing||(s.url&&P.audio.paused))toggle()}
+        else if(a==='pause'||a==='stop'){if(P.playing||(s.url&&!P.audio.paused))toggle()}
+        else if(a==='toggle'){toggle()}
+        else if(a==='next'){step(1)}
+        else if(a==='prev'){step(-1)}
+      });
+    }
+  }catch(e){}
   if(!('mediaSession' in navigator))return;
   const set=(a,f)=>{try{navigator.mediaSession.setActionHandler(a,f)}catch(e){}};
   set('play',()=>{const s=cur();if(!s)return;if(!P.playing||(s.url&&P.audio.paused))toggle()});
